@@ -1,9 +1,6 @@
 using BaseCore.Entities;
 using BaseCore.Repository;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace BaseCore.Services
 {
@@ -18,21 +15,17 @@ namespace BaseCore.Services
 
         public async Task<List<Product>> GetAllProductsAsync()
         {
-            return await _context.Products
-                .Include(p => p.Category)
-                .ToListAsync();
+            return await _context.Products.ToListAsync(); // ❌ bỏ Include
         }
 
         public async Task<Product> GetProductByIdAsync(int id)
         {
             return await _context.Products
-                .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<Product> CreateProductAsync(Product product)
         {
-            // Giữ logic giống Mongo (tăng Id)
             var maxId = await _context.Products.MaxAsync(p => (int?)p.Id) ?? 0;
             product.Id = maxId + 1;
 
@@ -57,22 +50,21 @@ namespace BaseCore.Services
             }
         }
 
-        public async Task<(List<Product> Products, int TotalCount)> SearchAsync(string keyword, int? categoryId, int page, int pageSize)
+        public async Task<(List<Product> Products, int TotalCount)> SearchAsync(string keyword, int? productTypeId, int page, int pageSize)
         {
-            var query = _context.Products.Include(p => p.Category).AsQueryable();
+            var query = _context.Products.AsQueryable();
 
             if (!string.IsNullOrEmpty(keyword))
             {
                 keyword = keyword.ToLower();
                 query = query.Where(p =>
-                    p.Name.ToLower().Contains(keyword) ||
-                    p.Description.ToLower().Contains(keyword)
+                    p.Name.ToLower().Contains(keyword)
                 );
             }
 
-            if (categoryId.HasValue)
+            if (productTypeId.HasValue)
             {
-                query = query.Where(p => p.CategoryId == categoryId.Value);
+                query = query.Where(p => p.ProductTypeId == productTypeId.Value);
             }
 
             var totalCount = await query.CountAsync();

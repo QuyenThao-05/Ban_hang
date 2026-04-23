@@ -288,6 +288,10 @@
           <div class="col-md-12">
             <div class="section-title">
               <h3 class="title">New Products</h3>
+
+              <select id="filterType" style="margin-bottom: 20px; width: 200px">
+                <option value="">Tất cả</option>
+              </select>
               <div class="section-nav">
                 <ul class="section-tab-nav tab-nav">
                   <li class="active">
@@ -1353,10 +1357,16 @@
     <script>
       async function loadProducts() {
         try {
-          const res = await fetch("http://localhost:5001/api/products");
-          const result = await res.json();
+          const typeId = document.getElementById("filterType")?.value;
 
-          console.log(result);
+          let url = "http://localhost:5001/api/products";
+
+          if (typeId) {
+            url += `?productTypeId=${typeId}`;
+          }
+
+          const res = await fetch(url);
+          const result = await res.json();
 
           const data = result.items;
 
@@ -1365,31 +1375,46 @@
           container.innerHTML = data
             .map(
               (p) => `
-      <div class="col-md-3 col-xs-6">
-        <div class="product">
-          <div class="product-img">
-            <img src="${p.imageUrl || "./img/product01.png"}" alt="">
-          </div>
-          <div class="product-body">
-            <p class="product-category">${p.category?.name || ""}</p>
-            <h3 class="product-name">
-              <a href="#">${p.name}</a>
-            </h3>
-            <h4 class="product-price">
-              ${p.price.toLocaleString()} VND
-            </h4>
+        <div class="col-md-3 col-xs-6">
+          <div class="product">
+            <div class="product-img">
+              <img src="${p.image || "./img/product01.png"}">
+            </div>
+            <div class="product-body">
+              <h3 class="product-name">
+                <a href="product.html?id=${p.id}">${p.name}</a>
+              </h3>
+              <h4 class="product-price">
+                ${p.price.toLocaleString()} VND
+              </h4>
+            </div>
           </div>
         </div>
-      </div>
-    `,
+      `,
             )
             .join("");
         } catch (err) {
           console.error("Lỗi:", err);
         }
       }
+      async function loadProductTypes() {
+        const res = await fetch("http://localhost:5001/api/producttypes");
+        const data = await res.json();
 
+        const select = document.getElementById("filterType");
+
+        select.innerHTML = `<option value="">Tất cả</option>`;
+
+        data.forEach((t) => {
+          select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+        });
+      }
+      loadProductTypes();
       loadProducts();
+
+      document
+        .getElementById("filterType")
+        .addEventListener("change", loadProducts);
     </script>
   </body>
 </html>

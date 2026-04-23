@@ -3,13 +3,10 @@ using BaseCore.Entities;
 
 namespace BaseCore.Repository.EFCore
 {
-    /// <summary>
-    /// Product Repository using Entity Framework Core
-    /// </summary>
     public interface IProductRepositoryEF : IRepository<Product>
     {
-        Task<(List<Product> Products, int TotalCount)> SearchAsync(string? keyword, int? categoryId, int page, int pageSize);
-        Task<List<Product>> GetByCategoryAsync(int categoryId);
+        Task<(List<Product> Products, int TotalCount)> SearchAsync(string? keyword, int? productTypeId, int page, int pageSize);
+        Task<List<Product>> GetByProductTypeAsync(int productTypeId);
     }
 
     public class ProductRepositoryEF : Repository<Product>, IProductRepositoryEF
@@ -18,21 +15,21 @@ namespace BaseCore.Repository.EFCore
         {
         }
 
-        public async Task<(List<Product> Products, int TotalCount)> SearchAsync(string? keyword, int? categoryId, int page, int pageSize)
+        public async Task<(List<Product> Products, int TotalCount)> SearchAsync(string? keyword, int? productTypeId, int page, int pageSize)
         {
-            var query = _dbSet.Include(p => p.Category).AsQueryable();
+            var query = _dbSet.AsQueryable(); // ❌ bỏ Include
 
             if (!string.IsNullOrEmpty(keyword))
             {
                 keyword = keyword.ToLower();
                 query = query.Where(p =>
-                    p.Name.ToLower().Contains(keyword) ||
-                    (p.Description != null && p.Description.ToLower().Contains(keyword)));
+                    p.Name.ToLower().Contains(keyword)
+                );
             }
 
-            if (categoryId.HasValue && categoryId > 0)
+            if (productTypeId.HasValue && productTypeId > 0)
             {
-                query = query.Where(p => p.CategoryId == categoryId);
+                query = query.Where(p => p.ProductTypeId == productTypeId);
             }
 
             var totalCount = await query.CountAsync();
@@ -46,11 +43,10 @@ namespace BaseCore.Repository.EFCore
             return (products, totalCount);
         }
 
-        public async Task<List<Product>> GetByCategoryAsync(int categoryId)
+        public async Task<List<Product>> GetByProductTypeAsync(int productTypeId)
         {
             return await _dbSet
-                .Where(p => p.CategoryId == categoryId)
-                .Include(p => p.Category)
+                .Where(p => p.ProductTypeId == productTypeId)
                 .ToListAsync();
         }
     }

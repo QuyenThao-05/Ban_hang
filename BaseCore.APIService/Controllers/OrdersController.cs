@@ -87,8 +87,8 @@ namespace BaseCore.APIService.Controllers
                 if (product == null)
                     return BadRequest(new { message = $"Product {item.ProductId} not found" });
 
-                if (product.Stock < item.Quantity)
-                    return BadRequest(new { message = $"Insufficient stock for {product.Name}" });
+                if (product.Quantity < item.Quantity)
+                    return BadRequest(new { message = $"Insufficient quantity for {product.Name}" });
 
                 totalAmount += product.Price * item.Quantity;
                 orderDetails.Add(new OrderDetail
@@ -98,8 +98,8 @@ namespace BaseCore.APIService.Controllers
                     UnitPrice = product.Price
                 });
 
-                // Update stock
-                product.Stock -= item.Quantity;
+                // Update Quantity
+                product.Quantity -= item.Quantity;
                 await _productRepository.UpdateAsync(product);
             }
 
@@ -151,14 +151,14 @@ namespace BaseCore.APIService.Controllers
             if (order.Status == "Completed")
                 return BadRequest(new { message = "Cannot cancel completed order" });
 
-            // Restore stock
+            // Restore Quantity
             var details = await _orderDetailRepository.GetByOrderAsync(id);
             foreach (var detail in details)
             {
                 var product = await _productRepository.GetByIdAsync(detail.ProductId);
                 if (product != null)
                 {
-                    product.Stock += detail.Quantity;
+                    product.Quantity += detail.Quantity;
                     await _productRepository.UpdateAsync(product);
                 }
             }

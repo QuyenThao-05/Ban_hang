@@ -166,3 +166,60 @@
 	}
 
 })(jQuery);
+// ================= API PRODUCT =================
+
+async function loadProductTypes() {
+  const res = await fetch("http://localhost:5001/api/producttypes");
+  const data = await res.json();
+
+  const select = document.getElementById("filterType");
+  if (!select) return;
+
+  select.innerHTML = `<option value="">Tất cả</option>`;
+
+  data.forEach(t => {
+    select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+  });
+}
+
+async function loadProducts() {
+  const typeId = document.getElementById("filterType")?.value;
+
+  let url = "http://localhost:5001/api/products";
+  if (typeId) {
+    url += `?productTypeId=${typeId}`;
+  }
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  const list = document.getElementById("productList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  data.items.forEach(p => {
+    list.innerHTML += `
+      <div class="col-md-3 col-xs-6">
+        <div class="product">
+          <div class="product-body">
+            <h3 class="product-name">${p.name}</h3>
+            <h4 class="product-price">${p.price.toLocaleString()} đ</h4>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// ================= INIT =================
+
+document.addEventListener("DOMContentLoaded", function () {
+  loadProductTypes();
+  loadProducts();
+
+  const filter = document.getElementById("filterType");
+  if (filter) {
+    filter.addEventListener("change", loadProducts);
+  }
+});
