@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Cart</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Giỏ hàng</h2>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Ảnh</th>
+            <th>Tên</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="cart-body"></tbody>
+      </table>
+
+      <h3 id="total"></h3>
+    </div>
+
+    <script>
+      function loadCart() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        if (cart.length === 0) {
+          document.getElementById("cart-body").innerHTML =
+            "<tr><td colspan='5'>Giỏ hàng trống</td></tr>";
+          document.getElementById("total").innerText = "";
+          return;
+        }
+        const tbody = document.getElementById("cart-body");
+        tbody.innerHTML = "";
+
+        let total = 0;
+
+        cart.forEach((p, index) => {
+          total += p.price * p.quantity;
+
+          tbody.innerHTML += `
+      <tr>
+        <td><img src="${p.image}" width="50"></td>
+        <td>${p.name}</td>
+        <td>${p.price.toLocaleString()} VND</td>
+        <td>
+          <button onclick="changeQty(${index}, -1)">-</button>
+          ${p.quantity}
+          <button onclick="changeQty(${index}, 1)">+</button>
+        </td>
+        <td>
+          <button onclick="removeItem(${index})">Xóa</button>
+        </td>
+      </tr>
+    `;
+        });
+
+        document.getElementById("total").innerText =
+          "Tổng: " + total.toLocaleString() + " VND";
+      }
+
+      function removeItem(index) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.splice(index, 1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        loadCart();
+
+        window.dispatchEvent(new Event("cartUpdated"));
+      }
+      function changeQty(index, delta) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        cart[index].quantity += delta;
+
+        if (cart[index].quantity <= 0) {
+          cart.splice(index, 1);
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        loadCart();
+
+        window.dispatchEvent(new Event("cartUpdated"));
+      }
+
+      loadCart();
+    </script>
+    <script>
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        let totalQty = 0;
+
+        cart.forEach((p) => {
+          totalQty += p.quantity;
+        });
+
+        const el = document.getElementById("cart-count");
+        if (el) el.innerText = totalQty;
+      }
+
+      updateCartCount();
+    </script>
+  </body>
+</html>
