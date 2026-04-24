@@ -712,10 +712,39 @@
         totalEl.innerText = total.toLocaleString() + " VND";
       }
 
-      document.querySelector(".order-submit").onclick = () => {
-        alert("Đặt hàng thành công!");
-        localStorage.removeItem("cart");
-        window.location.href = "index.html";
+      document.querySelector(".order-submit").onclick = async () => {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        if (cart.length === 0) {
+          alert("Giỏ hàng đang trống!");
+          return;
+        }
+
+        // 🔥 dữ liệu gửi backend
+        const order = {
+          items: cart,
+          total: cart.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        };
+
+        try {
+          const res = await fetch("http://localhost:5002/api/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(order),
+          });
+
+          if (!res.ok) throw new Error("Lỗi đặt hàng");
+
+          alert("Đặt hàng thành công!");
+
+          localStorage.removeItem("cart");
+          window.location.href = "index.html";
+        } catch (err) {
+          alert("Lỗi khi đặt hàng!");
+          console.error(err);
+        }
       };
 
       loadCheckout();
@@ -731,6 +760,16 @@
 
       // chạy khi load trang
       updateCartCount();
+    </script>
+    <script>
+      window.addEventListener("load", function () {
+        const role = localStorage.getItem("role");
+
+        if (!role) {
+          alert("Bạn cần đăng nhập!");
+          window.location.href = "login.html";
+        }
+      });
     </script>
   </body>
 </html>
