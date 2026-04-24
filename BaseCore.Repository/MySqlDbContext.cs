@@ -28,14 +28,34 @@ namespace BaseCore.Repository
             // Configure User entity
             modelBuilder.Entity<User>(entity =>
             {
-                //entity.HasKey(e => e.Guid);
-                entity.Property(e => e.UserName).HasMaxLength(50).IsRequired();
-                entity.Property(e => e.Password).HasMaxLength(255).IsRequired();
-    
-                entity.Property(e => e.Name).HasMaxLength(100);
-                entity.Property(e => e.Email).HasMaxLength(100);
-                entity.Property(e => e.Phone).HasMaxLength(20);
-                entity.HasIndex(e => e.UserName).IsUnique();
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Username)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(e => e.Password)
+                    .HasMaxLength(255)
+                    .IsRequired();
+
+                entity.Property(e => e.FullName)
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.Address)
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Role)
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.CreatedAt);
+
+                entity.HasIndex(e => e.Username).IsUnique();
             });
 
             // Configure ProductType entity

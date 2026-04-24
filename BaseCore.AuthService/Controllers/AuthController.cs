@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
-using BaseCore.Common;
+using BaseCore.Entities;
 using BaseCore.Services.Authen;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace BaseCore.AuthService.Controllers
@@ -10,113 +10,79 @@ namespace BaseCore.AuthService.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
-        private const string SecretKey = "YourSecretKeyForAuthenticationShouldBeLongEnough";
-        private const int TokenExpirationMinutes = 480; // 8 hours
 
         public AuthController(IUserService userService)
         {
             _userService = userService;
         }
 
+        // 🔥 LOGIN
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             if (request == null || string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-            {
-                return BadRequest(new { message = "Username and password are required" });
-            }
+                return BadRequest("Thiếu username hoặc password");
 
             var user = await _userService.Authenticate(request.Username, request.Password);
 
             if (user == null)
-            {
-                return Unauthorized(new { message = "Invalid username or password" });
-            }
+                return Unauthorized("Sai tài khoản hoặc mật khẩu");
 
-            // Generate JWT token
-            var token = TokenHelper.GenerateToken(
-                SecretKey,
-                TokenExpirationMinutes,
-                user.Id.ToString(),
-                user.UserName,
-                user.UserType == 1 ? "Admin" : "User"
-            );
-
-            return Ok(new LoginResponse
+            return Ok(new
             {
-                Token = token,
-                UserId = user.Id.ToString(),
-                Username = user.UserName,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.UserType == 1 ? "Admin" : "User",
-                ExpiresIn = TokenExpirationMinutes * 60
+                token = "token_" + user.Username,
+                role = user.Role,
+                username = user.Username
             });
         }
 
+        // 🔥 REGISTER
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             if (request == null)
-            {
-                return BadRequest(new { message = "Invalid request" });
-            }
+                return BadRequest("Request không hợp lệ");
 
             if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-            {
-                return BadRequest(new { message = "Username and password are required" });
-            }
+                return BadRequest("Username và Password là bắt buộc");
 
             if (request.Password.Length < 6)
-            {
-                return BadRequest(new { message = "Password must be at least 6 characters" });
-            }
+                return BadRequest("Password phải >= 6 ký tự");
 
-            try
+            var user = new User
             {
-                var user = new BaseCore.Entities.User
-                {
-                    UserName = request.Username,
-                    Name = request.Name ?? request.Username,
-                    Email = request.Email,
-                    Phone = request.Phone,
-                    UserType = 0 // Default to regular user
-                };
+                Username = request.Username,
+                FullName = string.IsNullOrEmpty(request.FullName) ? request.Username : request.FullName,
+                Email = request.Email,
+                Phone = request.Phone,
+                Role = "user" // nên viết thường cho đồng nhất DB
+            };
 
-                var createdUser = await _userService.Create(user, request.Password);
+            var createdUser = await _userService.Create(user, request.Password);
 
-                return Ok(new { message = "Registration successful", userId = createdUser.Id });
-            }
-            catch (System.Exception ex)
+            return Ok(new
             {
-                return BadRequest(new { message = "Registration failed: " + ex.Message });
-            }
+                message = "Đăng ký thành công",
+                userId = createdUser.Id,
+                username = createdUser.Username
+            });
         }
     }
 
+    // 🔥 LOGIN REQUEST
     public class LoginRequest
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string? Username { get; set; }
+        public string? Password { get; set; }
     }
 
-    public class LoginResponse
-    {
-        public string Token { get; set; }
-        public string UserId { get; set; }
-        public string Username { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Role { get; set; }
-        public int ExpiresIn { get; set; }
-    }
-
+    // 🔥 REGISTER REQUEST
     public class RegisterRequest
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
+        public string? Username { get; set; }
+        public string? Password { get; set; }
+        public string? FullName { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
     }
 }

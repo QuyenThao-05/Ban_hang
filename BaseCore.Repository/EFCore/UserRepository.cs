@@ -20,7 +20,7 @@ namespace BaseCore.Repository.EFCore
 
         public async Task<User?> GetByUsernameAsync(string username)
         {
-            return await _dbSet.FirstOrDefaultAsync(u => u.UserName == username && u.IsActive);
+            return await _dbSet.FirstOrDefaultAsync(u => u.Username == username );
         }
 
         public async Task<(List<User> Users, int TotalCount)> SearchAsync(string? keyword, int page, int pageSize)
@@ -31,15 +31,17 @@ namespace BaseCore.Repository.EFCore
             {
                 keyword = keyword.ToLower();
                 query = query.Where(u =>
-                    u.UserName.ToLower().Contains(keyword) ||
-                    u.Name.ToLower().Contains(keyword) ||
-                    (u.Email != null && u.Email.ToLower().Contains(keyword)));
+                    u.Username.ToLower().Contains(keyword) ||
+                    (u.FullName != null && u.FullName.ToLower().Contains(keyword)) ||
+                    (u.Email != null && u.Email.ToLower().Contains(keyword)) ||
+                    (u.Phone != null && u.Phone.ToLower().Contains(keyword))
+                );
             }
 
             var totalCount = await query.CountAsync();
 
             var users = await query
-                .OrderByDescending(u => u.Created)
+                .OrderByDescending(u => u.CreatedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
