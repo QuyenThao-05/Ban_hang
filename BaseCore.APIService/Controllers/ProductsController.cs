@@ -29,10 +29,25 @@ namespace BaseCore.APIService.Controllers
         public async Task<IActionResult> GetAll(
             [FromQuery] string? keyword,
             [FromQuery] int? productTypeId,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
-            var (products, totalCount) = await _productRepository.SearchAsync(keyword, productTypeId, page, pageSize);
+            if (page <= 0) page = 1;
+            if (pageSize <= 0) pageSize = 10;
+            var (products, totalCount) = await _productRepository.SearchAsync(keyword, productTypeId, minPrice, maxPrice, page, pageSize);
+            var result = products.Select(p => new
+            {
+                p.Id,
+                p.Name,
+                p.Price,
+                p.Quantity,
+                p.Image,
+                p.ProductTypeId,
+                p.CreatedAt,
+                p.ManufacturerId
+            });
 
             return Ok(new
             {
@@ -40,7 +55,7 @@ namespace BaseCore.APIService.Controllers
                 totalCount,
                 page,
                 pageSize,
-                totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+                totalPages = totalCount == 0 ? 1 : (int)Math.Ceiling((double)totalCount / pageSize)
             });
         }
 
@@ -53,8 +68,18 @@ namespace BaseCore.APIService.Controllers
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
                 return NotFound(new { message = "Product not found" });
-
-            return Ok(product);
+            var result = new
+            {
+                product.Id,
+                product.Name,
+                product.Price,
+                product.Quantity,
+                product.Image,
+                product.ProductTypeId,
+                product.CreatedAt,
+                product.ManufacturerId
+            };
+            return Ok(result);
         }
 
         /// <summary>
@@ -75,7 +100,9 @@ namespace BaseCore.APIService.Controllers
                 Price = dto.Price,
                 Quantity = dto.Quantity,
                 ProductTypeId = dto.ProductTypeId,
-                Image = dto.Image ?? ""
+                Image = dto.Image ?? "",
+                ManufacturerId = dto.ManufacturerId,
+                CreatedAt = DateTime.Now
             };
 
             await _productRepository.AddAsync(product);
@@ -98,14 +125,17 @@ namespace BaseCore.APIService.Controllers
             product.Quantity = dto.Quantity ?? product.Quantity;
             product.ProductTypeId = dto.ProductTypeId ?? product.ProductTypeId;
             product.Image = dto.Image ?? product.Image;
+            product.ManufacturerId = dto.ManufacturerId ?? product.ManufacturerId;
 
             await _productRepository.UpdateAsync(product);
+
             return Ok(product);
         }
 
         /// <summary>
         /// Delete product (requires authentication)
         /// </summary>
+       // ==========================
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(int id)
@@ -115,8 +145,10 @@ namespace BaseCore.APIService.Controllers
                 return NotFound(new { message = "Product not found" });
 
             await _productRepository.DeleteAsync(product);
+
             return Ok(new { message = "Product deleted successfully" });
         }
+
 
         /// <summary>
         /// Get products by productType
@@ -125,7 +157,16 @@ namespace BaseCore.APIService.Controllers
         public async Task<IActionResult> GetByProductType(int productTypeId)
         {
             var products = await _productRepository.GetByProductTypeAsync(productTypeId);
-            return Ok(products);
+
+            var result = products.Select(p => new
+            {
+                p.Id,
+                p.Name,
+                p.Price,
+                p.Image
+            });
+
+            return Ok(result);
         }
     }
 
@@ -137,6 +178,7 @@ namespace BaseCore.APIService.Controllers
         public int Quantity { get; set; }
         public int ProductTypeId { get; set; }
         public string? Image { get; set; }
+        public int ManufacturerId { get; set; }
     }
 
     public class ProductUpdateDto
@@ -146,5 +188,6 @@ namespace BaseCore.APIService.Controllers
         public int? Quantity { get; set; }
         public int? ProductTypeId { get; set; }
         public string? Image { get; set; }
+        public int? ManufacturerId { get; set; }
     }
 }

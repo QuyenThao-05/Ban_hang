@@ -65,7 +65,7 @@ namespace BaseCore.Repository.Authen
 
         public async Task DeleteAsync(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users  .FindAsync(id);
             if (user != null)
             {
                 _context.Users.Remove(user);

@@ -19,7 +19,8 @@ namespace BaseCore.Repository
         public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -30,6 +31,7 @@ namespace BaseCore.Repository
                 //entity.HasKey(e => e.Guid);
                 entity.Property(e => e.UserName).HasMaxLength(50).IsRequired();
                 entity.Property(e => e.Password).HasMaxLength(255).IsRequired();
+    
                 entity.Property(e => e.Name).HasMaxLength(100);
                 entity.Property(e => e.Email).HasMaxLength(100);
                 entity.Property(e => e.Phone).HasMaxLength(20);

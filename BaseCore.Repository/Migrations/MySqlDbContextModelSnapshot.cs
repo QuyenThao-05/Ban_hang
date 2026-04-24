@@ -22,7 +22,7 @@ namespace BaseCore.Repository.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BaseCore.Entities.Category", b =>
+            modelBuilder.Entity("BaseCore.Entities.Cart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,51 +30,41 @@ namespace BaseCore.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Carts", (string)null);
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Electronic devices and gadgets",
-                            Name = "Electronics"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Apparel and fashion items",
-                            Name = "Clothing"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Books and publications",
-                            Name = "Books"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Home and garden products",
-                            Name = "Home & Garden"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Sports equipment and accessories",
-                            Name = "Sports"
-                        });
+            modelBuilder.Entity("BaseCore.Entities.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsSelected")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("BaseCore.Entities.Order", b =>
@@ -106,7 +96,7 @@ namespace BaseCore.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("BaseCore.Entities.OrderDetail", b =>
@@ -141,7 +131,7 @@ namespace BaseCore.Repository.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("BaseCore.Entities.Product", b =>
@@ -152,18 +142,15 @@ namespace BaseCore.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
+                    b.Property<string>("Image")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ManufacturerId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -174,66 +161,37 @@ namespace BaseCore.Repository.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Stock")
+                    b.Property<int>("ProductTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.ToTable("Product", (string)null);
+                });
 
-                    b.ToTable("Products");
+            modelBuilder.Entity("BaseCore.Entities.ProductType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            Description = "High-performance laptop",
-                            ImageUrl = "",
-                            Name = "Laptop Dell XPS 15",
-                            Price = 35000000m,
-                            Stock = 10
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 1,
-                            Description = "Latest Apple smartphone",
-                            ImageUrl = "",
-                            Name = "iPhone 15 Pro",
-                            Price = 28000000m,
-                            Stock = 15
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryId = 2,
-                            Description = "Comfortable cotton t-shirt",
-                            ImageUrl = "",
-                            Name = "T-Shirt Cotton",
-                            Price = 250000m,
-                            Stock = 100
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryId = 3,
-                            Description = "Learn programming basics",
-                            ImageUrl = "",
-                            Name = "Programming Book",
-                            Price = 450000m,
-                            Stock = 50
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryId = 4,
-                            Description = "Complete gardening toolkit",
-                            ImageUrl = "",
-                            Name = "Garden Tools Set",
-                            Price = 850000m,
-                            Stock = 25
-                        });
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductType", (string)null);
                 });
 
             modelBuilder.Entity("BaseCore.Entities.User", b =>
@@ -242,14 +200,12 @@ namespace BaseCore.Repository.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Contact")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -271,7 +227,6 @@ namespace BaseCore.Repository.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -280,7 +235,6 @@ namespace BaseCore.Repository.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("Salt")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("UserName")
@@ -296,7 +250,24 @@ namespace BaseCore.Repository.Migrations
                     b.HasIndex("UserName")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("BaseCore.Entities.CartItem", b =>
+                {
+                    b.HasOne("BaseCore.Entities.Cart", null)
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BaseCore.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("BaseCore.Entities.OrderDetail", b =>
@@ -322,15 +293,9 @@ namespace BaseCore.Repository.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("BaseCore.Entities.Product", b =>
+            modelBuilder.Entity("BaseCore.Entities.Cart", b =>
                 {
-                    b.HasOne("BaseCore.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Category");
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("BaseCore.Entities.Order", b =>
