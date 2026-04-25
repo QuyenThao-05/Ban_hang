@@ -1,70 +1,81 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authApi } from '../services/api';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { authApi } from "../services/api";
 
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Check for stored user on mount
-        const storedUser = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
-        if (storedUser && token) {
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false);
-    }, []);
+  useEffect(() => {
+    // Check for stored user on mount
+    const storedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
 
-    const login = async (username, password) => {
-        try {
-            const response = await authApi.login(username, password);
-            const userData = response.data;
+        setUser(
+          parsedUser || { role: localStorage.getItem("role") || "Admin" },
+        );
+      } catch {
+        setUser({ role: "Admin" });
+      }
+    }
+    setLoading(false);
+  }, []);
 
-            localStorage.setItem('token', userData.token);
-            localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData);
+  const login = async (username, password) => {
+    try {
+      const response = await authApi.login(username, password);
+      const userData = response.data;
 
-            return { success: true };
-        } catch (error) {
-            const message = error.response?.data?.message || 'Login failed';
-            return { success: false, message };
-        }
-    };
+      localStorage.setItem("token", data.token);
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
-    };
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          username: username,
+          role: data.role,
+        }),
+      );
+      setUser(userData);
 
-    const isAdmin = () => {
-        return user?.role === 'Admin';
-    };
+      return { success: true };
+    } catch (error) {
+      const message = error.response?.data?.message || "Login failed";
+      return { success: false, message };
+    }
+  };
 
-    const value = {
-        user,
-        login,
-        logout,
-        isAdmin,
-        isAuthenticated: !!user,
-        loading,
-    };
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
 
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const isAdmin = () => {
+    return user?.role === "Admin";
+  };
+
+  const value = {
+    user,
+    login,
+    logout,
+    isAdmin,
+    isAuthenticated: !!localStorage.getItem("token"),
+    loading,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;

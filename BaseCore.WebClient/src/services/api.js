@@ -28,8 +28,7 @@ const addInterceptor = (instance) => {
         (res) => res,
         (err) => {
             if (err.response?.status === 401) {
-                localStorage.clear();
-                window.location.href = '/login';
+                console.warn("401 - Token có thể sai hoặc hết hạn");
             }
             return Promise.reject(err);
         }
@@ -65,19 +64,18 @@ export const productApi = {
     delete: (id) => mainApiInstance.delete(`/products/${id}`),
 };
 
-// Category API
-export const categoryApi = {
-    getAll: () => mainApiInstance.get('/categories'),
-    getById: (id) => mainApiInstance.get(`/categories/${id}`),
-    create: (data) => mainApiInstance.post('/categories', data),
-    update: (id, data) => mainApiInstance.put(`/categories/${id}`, data),
-    delete: (id) => mainApiInstance.delete(`/categories/${id}`),
+// Product Type API
+export const productTypeApi = {
+    getAll: () => mainApiInstance.get('/product-types'),
+    getById: (id) => mainApiInstance.get(`/product-types/${id}`),
+    create: (data) => mainApiInstance.post('/product-types', data),
+    update: (id, data) => mainApiInstance.put(`/product-types/${id}`, data),
+    delete: (id) => mainApiInstance.delete(`/product-types/${id}`),
 };
 
 // Order API
 export const orderApi = {
-    create: (data) => mainApiInstance.post('/orders', data),
-    getMyOrders: () => mainApiInstance.get('/orders'),
+    getAll: () => mainApiInstance.get('/orders'),
     getById: (id) => mainApiInstance.get(`/orders/${id}`),
+    create: (data) => mainApiInstance.post('/orders', data),
 };
-
