@@ -6,21 +6,23 @@ const Users = () => {
     const [loading, setLoading] = useState(true);
     const [keyword, setKeyword] = useState('');
     const [page, setPage] = useState(1);
-    const [pageSize] = useState(10);
+    const [pageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
+
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+
     const [formData, setFormData] = useState({
         username: '',
         password: '',
-        name: '',
+        fullName: '',
         email: '',
         phone: '',
-        position: '',
-        userType: 0,
-        isActive: true,
+        address: '',
+        role: 'user',
     });
+
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -30,12 +32,13 @@ const Users = () => {
     const loadUsers = async () => {
         setLoading(true);
         try {
-            const response = await userApi.getAll({ keyword, page, pageSize });
-            setUsers(response.data.data || []);
-            setTotalPages(response.data.totalPages || 0);
-            setTotalCount(response.data.totalCount || 0);
-        } catch (error) {
-            console.error('Failed to load users:', error);
+            const res = await userApi.getAll({ keyword, page, pageSize });
+
+            setUsers(res.data.data || []);
+            setTotalPages(res.data.totalPages || 0);
+            setTotalCount(res.data.totalCount || 0);
+        } catch (err) {
+            console.error('Load users error:', err);
         } finally {
             setLoading(false);
         }
@@ -44,8 +47,9 @@ const Users = () => {
     const handleSearch = (e) => {
         e.preventDefault();
         setPage(1);
-        loadUsers();
     };
+
+    // ================= CRUD =================
 
     const openModal = (user = null) => {
         if (user) {
@@ -53,24 +57,22 @@ const Users = () => {
             setFormData({
                 username: user.username,
                 password: '',
-                name: user.name || '',
+                fullName: user.fullName || '',
                 email: user.email || '',
                 phone: user.phone || '',
-                position: user.position || '',
-                userType: user.userType || 0,
-                isActive: user.isActive,
+                address: user.address || '',
+                role: user.role || 'user',
             });
         } else {
             setEditingUser(null);
             setFormData({
                 username: '',
                 password: '',
-                name: '',
+                fullName: '',
                 email: '',
                 phone: '',
-                position: '',
-                userType: 0,
-                isActive: true,
+                address: '',
+                role: 'user',
             });
         }
         setError('');
@@ -90,293 +92,270 @@ const Users = () => {
         try {
             if (editingUser) {
                 const updateData = {
-                    name: formData.name,
+                    fullName: formData.fullName,
                     email: formData.email,
                     phone: formData.phone,
-                    position: formData.position,
-                    userType: parseInt(formData.userType),
-                    isActive: formData.isActive,
+                    address: formData.address,
+                    role: formData.role,
                 };
+
                 if (formData.password) {
                     updateData.password = formData.password;
                 }
+
                 await userApi.update(editingUser.id, updateData);
             } else {
                 if (!formData.password) {
-                    setError('Password is required for new user');
+                    setError('Password is required');
                     return;
                 }
+
                 await userApi.create({
                     username: formData.username,
                     password: formData.password,
-                    name: formData.name,
+                    fullName: formData.fullName,
                     email: formData.email,
                     phone: formData.phone,
-                    position: formData.position,
-                    userType: parseInt(formData.userType),
+                    address: formData.address,
+                    role: formData.role,
                 });
             }
 
             closeModal();
             loadUsers();
-        } catch (error) {
-            setError(error.response?.data?.message || 'Operation failed');
+        } catch (err) {
+            setError(err.response?.data?.message || 'Operation failed');
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this user?')) return;
+    const handleDelete = async (user) => {
+        if (user.role === 'admin') {
+            alert('Không thể xóa admin');
+            return;
+        }
+
+        if (!window.confirm('Xóa user này?')) return;
 
         try {
-            await userApi.delete(id);
+            await userApi.delete(user.id);
             loadUsers();
-        } catch (error) {
-            alert('Failed to delete user');
+        } catch {
+            alert('Delete failed');
         }
     };
 
-    const renderPagination = () => {
-        const pages = [];
-        for (let i = 1; i <= totalPages; i++) {
-            pages.push(
-                <li key={i} className={`page-item ${page === i ? 'active' : ''}`}>
-                    <button className="page-link" onClick={() => setPage(i)}>{i}</button>
-                </li>
-            );
-        }
-        return pages;
-    };
+    // ================= UI =================
 
     return (
-        <div className="content-wrapper">
-            <div className="content-header">
-                <div className="container-fluid">
-                    <div className="row mb-2">
-                        <div className="col-sm-6">
-                            <h1 className="m-0">Users Management</h1>
-                        </div>
-                    </div>
+        <div className="content-wrapper p-3">
+            <h2>Users Management</h2>
+
+            {/* SEARCH + ADD */}
+            <div className="d-flex justify-content-between mb-3">
+                <form onSubmit={handleSearch} className="d-flex">
+                    <input
+                        className="form-control mr-2"
+                        placeholder="Search username, email..."
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                    />
+                    <button className="btn btn-primary">Search</button>
+                </form>
+
+                <button className="btn btn-success" onClick={() => openModal()}>
+                    + Add User
+                </button>
+            </div>
+
+            {/* TABLE */}
+            <table className="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Role</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {loading ? (
+                        <tr>
+                            <td colSpan="8" className="text-center">
+                                Loading...
+                            </td>
+                        </tr>
+                    ) : users.length === 0 ? (
+                        <tr>
+                            <td colSpan="8" className="text-center">
+                                No users found
+                            </td>
+                        </tr>
+                    ) : (
+                        users.map((u) => (
+                            <tr key={u.id}>
+                                <td>{u.username}</td>
+                                <td>{u.fullName}</td>
+                                <td>{u.email}</td>
+                                <td>{u.phone}</td>
+                                <td>{u.address}</td>
+
+                                <td>
+                                    <span className={`badge ${u.role === 'admin' ? 'badge-danger' : 'badge-info'}`}>
+                                        {u.role}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {u.createdAt
+                                        ? new Date(u.createdAt).toLocaleDateString()
+                                        : ''}
+                                </td>
+
+                                <td>
+                                    <button
+                                        className="btn btn-sm btn-info mr-2"
+                                        onClick={() => openModal(u)}
+                                    >
+                                        ✏️
+                                    </button>
+
+                                    <button
+                                        className="btn btn-sm btn-danger"
+                                        onClick={() => handleDelete(u)}
+                                    >
+                                        🗑️
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
+
+            {/* PAGINATION + TOTAL */}
+            <div className="d-flex justify-content-between align-items-center mt-3">
+                <div>Total: {totalCount} users</div>
+
+                <div className="d-flex align-items-center">
+                    <button
+                        className="btn btn-secondary mr-2"
+                        disabled={page === 1}
+                        onClick={() => setPage(page - 1)}
+                    >
+                        ← Previous
+                    </button>
+
+                    <span>
+                        Trang {page} / {totalPages || 1}
+                    </span>
+
+                    <button
+                        className="btn btn-secondary ml-2"
+                        disabled={page === totalPages || totalPages === 0}
+                        onClick={() => setPage(page + 1)}
+                    >
+                        Next →
+                    </button>
                 </div>
             </div>
 
-            <section className="content">
-                <div className="container-fluid">
-                    <div className="card">
-                        <div className="card-header">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <form onSubmit={handleSearch} className="form-inline">
-                                        <input
-                                            type="text"
-                                            className="form-control mr-2"
-                                            placeholder="Search by name, email, phone..."
-                                            value={keyword}
-                                            onChange={(e) => setKeyword(e.target.value)}
-                                        />
-                                        <button type="submit" className="btn btn-primary">
-                                            <i className="fas fa-search"></i> Search
-                                        </button>
-                                    </form>
-                                </div>
-                                <div className="col-md-6 text-right">
-                                    <button className="btn btn-success" onClick={() => openModal()}>
-                                        <i className="fas fa-plus"></i> Add User
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card-body">
-                            {loading ? (
-                                <div className="text-center py-5">
-                                    <div className="spinner-border text-primary"></div>
-                                </div>
-                            ) : (
-                                <>
-                                    <table className="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Username</th>
-                                                <th>Name</th>
-                                                <th>Email</th>
-                                                <th>Phone</th>
-                                                <th>Role</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {users.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan="7" className="text-center">
-                                                        No users found
-                                                    </td>
-                                                </tr>
-                                            ) : (
-                                                users.map(user => (
-                                                    <tr key={user.id}>
-                                                        <td>{user.username}</td>
-                                                        <td>{user.name}</td>
-                                                        <td>{user.email}</td>
-                                                        <td>{user.phone}</td>
-                                                        <td>
-                                                            <span className={`badge ${user.userType === 1 ? 'badge-danger' : 'badge-info'}`}>
-                                                                {user.userType === 1 ? 'Admin' : 'User'}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <span className={`badge ${user.isActive ? 'badge-success' : 'badge-secondary'}`}>
-                                                                {user.isActive ? 'Active' : 'Inactive'}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                className="btn btn-sm btn-info mr-1"
-                                                                onClick={() => openModal(user)}
-                                                            >
-                                                                <i className="fas fa-edit"></i>
-                                                            </button>
-                                                            <button
-                                                                className="btn btn-sm btn-danger"
-                                                                onClick={() => handleDelete(user.id)}
-                                                            >
-                                                                <i className="fas fa-trash"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
-
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Total: {totalCount} users</span>
-                                        <nav>
-                                            <ul className="pagination mb-0">
-                                                <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => setPage(page - 1)}>
-                                                        Previous
-                                                    </button>
-                                                </li>
-                                                {renderPagination()}
-                                                <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => setPage(page + 1)}>
-                                                        Next
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Modal */}
+            {/* MODAL */}
             {showModal && (
-                <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
+                <div className="modal fade show d-block">
                     <div className="modal-dialog">
                         <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">
-                                    {editingUser ? 'Edit User' : 'Add User'}
-                                </h5>
-                                <button type="button" className="close" onClick={closeModal}>
-                                    <span>&times;</span>
-                                </button>
-                            </div>
                             <form onSubmit={handleSubmit}>
+                                <div className="modal-header">
+                                    <h5>{editingUser ? 'Edit User' : 'Add User'}</h5>
+                                </div>
+
                                 <div className="modal-body">
                                     {error && <div className="alert alert-danger">{error}</div>}
-                                    <div className="form-group">
-                                        <label>Username</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.username}
-                                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                            required
-                                            disabled={!!editingUser}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Password {editingUser && '(leave blank to keep current)'}</label>
-                                        <input
-                                            type="password"
-                                            className="form-control"
-                                            value={formData.password}
-                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                            required={!editingUser}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Name</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Email</label>
-                                        <input
-                                            type="email"
-                                            className="form-control"
-                                            value={formData.email}
-                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Phone</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Position</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={formData.position}
-                                            onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Role</label>
-                                        <select
-                                            className="form-control"
-                                            value={formData.userType}
-                                            onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
-                                        >
-                                            <option value="0">User</option>
-                                            <option value="1">Admin</option>
-                                        </select>
-                                    </div>
-                                    {editingUser && (
-                                        <div className="form-group">
-                                            <div className="custom-control custom-switch">
-                                                <input
-                                                    type="checkbox"
-                                                    className="custom-control-input"
-                                                    id="isActive"
-                                                    checked={formData.isActive}
-                                                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                                                />
-                                                <label className="custom-control-label" htmlFor="isActive">Active</label>
-                                            </div>
-                                        </div>
-                                    )}
+
+                                    <input
+                                        className="form-control mb-2"
+                                        placeholder="Username"
+                                        value={formData.username}
+                                        disabled={!!editingUser}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, username: e.target.value })
+                                        }
+                                        required
+                                    />
+
+                                    <input
+                                        type="password"
+                                        className="form-control mb-2"
+                                        placeholder="Password"
+                                        value={formData.password}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, password: e.target.value })
+                                        }
+                                    />
+
+                                    <input
+                                        className="form-control mb-2"
+                                        placeholder="Full Name"
+                                        value={formData.fullName}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, fullName: e.target.value })
+                                        }
+                                    />
+
+                                    <input
+                                        className="form-control mb-2"
+                                        placeholder="Email"
+                                        value={formData.email}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, email: e.target.value })
+                                        }
+                                    />
+
+                                    <input
+                                        className="form-control mb-2"
+                                        placeholder="Phone"
+                                        value={formData.phone}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, phone: e.target.value })
+                                        }
+                                    />
+
+                                    <input
+                                        className="form-control mb-2"
+                                        placeholder="Address"
+                                        value={formData.address}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, address: e.target.value })
+                                        }
+                                    />
+
+                                    <select
+                                        className="form-control"
+                                        value={formData.role}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, role: e.target.value })
+                                        }
+                                    >
+                                        <option value="user">User</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
                                 </div>
+
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={closeModal}
+                                    >
                                         Cancel
                                     </button>
-                                    <button type="submit" className="btn btn-primary">
+
+                                    <button className="btn btn-primary">
                                         {editingUser ? 'Update' : 'Create'}
                                     </button>
                                 </div>
@@ -385,7 +364,6 @@ const Users = () => {
                     </div>
                 </div>
             )}
-            {showModal && <div className="modal-backdrop fade show"></div>}
         </div>
     );
 };
