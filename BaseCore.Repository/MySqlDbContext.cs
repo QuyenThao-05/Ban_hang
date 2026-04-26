@@ -101,10 +101,15 @@ namespace BaseCore.Repository
                       .HasForeignKey(e => e.ProductId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
+            modelBuilder.Entity<Product>()
+            .HasOne(p => p.ProductType)
+            .WithMany(pt => pt.Products)
+            .HasForeignKey(p => p.ProductTypeId);
 
             // Seed initial data
             SeedData(modelBuilder);
         }
+
 
         private void SeedData(ModelBuilder modelBuilder)
         {

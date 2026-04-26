@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BaseCore.Entities;
 using BaseCore.Repository.EFCore;
+using BaseCore.DTO.Product;
 
 namespace BaseCore.APIService.Controllers
 {
@@ -15,6 +16,9 @@ namespace BaseCore.APIService.Controllers
     {
         private readonly IProductRepositoryEF _productRepository;
         private readonly ICategoryRepositoryEF _categoryRepository;
+      
+
+        
 
         public ProductsController(IProductRepositoryEF productRepository, ICategoryRepositoryEF categoryRepository)
         {
@@ -27,16 +31,24 @@ namespace BaseCore.APIService.Controllers
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll(
-            [FromQuery] string? keyword,
-            [FromQuery] int? productTypeId,
-            [FromQuery] decimal? minPrice,
-            [FromQuery] decimal? maxPrice,
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+    [FromQuery] string? keyword,
+    [FromQuery] int? productTypeId,
+    [FromQuery] decimal? minPrice,
+    [FromQuery] decimal? maxPrice,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
         {
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 10;
-            var (products, totalCount) = await _productRepository.SearchAsync(keyword, productTypeId, minPrice, maxPrice, page, pageSize);
+
+            var (products, totalCount) = await _productRepository.SearchAsync(
+                keyword,
+                productTypeId,
+                minPrice,
+                maxPrice,
+                page,
+                pageSize);
+
             var result = products.Select(p => new
             {
                 p.Id,
@@ -45,20 +57,21 @@ namespace BaseCore.APIService.Controllers
                 p.Quantity,
                 p.Image,
                 p.ProductTypeId,
+                ProductTypeName = p.ProductType != null ? p.ProductType.Name : "",
                 p.CreatedAt,
                 p.ManufacturerId
             });
 
             return Ok(new
             {
-                items = products,
+                items = result,
                 totalCount,
                 page,
                 pageSize,
-                totalPages = totalCount == 0 ? 1 : (int)Math.Ceiling((double)totalCount / pageSize)
+                totalPages = totalCount == 0 ? 1 :
+                    (int)Math.Ceiling((double)totalCount / pageSize)
             });
         }
-
         /// <summary>
         /// Get product by ID
         /// </summary>
@@ -167,6 +180,7 @@ namespace BaseCore.APIService.Controllers
             });
 
             return Ok(result);
+      
         }
     }
 

@@ -22,5 +22,7 @@ namespace BaseCore.Entities
         public DateTime CreatedAt { get; set; }
 
         public int ManufacturerId { get; set; }
+        public ProductType? ProductType { get; set; }
+
     }
 }

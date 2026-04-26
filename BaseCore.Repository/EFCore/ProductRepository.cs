@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore;
+using BaseCore.DTO.Product;
 using BaseCore.Entities;
-
+using Microsoft.EntityFrameworkCore;
+using BaseCore.DTO.Product;
 namespace BaseCore.Repository.EFCore
 {
     public interface IProductRepositoryEF : IRepository<Product>
@@ -13,6 +14,12 @@ namespace BaseCore.Repository.EFCore
     int page,
     int pageSize);
         Task<List<Product>> GetByProductTypeAsync(int productTypeId);
+        Task<(List<ProductDashboardResponse> Items, int TotalCount)> GetDashboardProductsAsync(
+    int page,
+    int pageSize,
+    string? search,
+    int? productTypeId);
+      
     }
 
     public class ProductRepositoryEF : Repository<Product>, IProductRepositoryEF
@@ -73,6 +80,54 @@ namespace BaseCore.Repository.EFCore
             return await _dbSet
                 .Where(p => p.ProductTypeId == productTypeId)
                 .ToListAsync();
+        }
+        public async Task<(List<ProductDashboardResponse> Items, int TotalCount)> GetDashboardProductsAsync(
+    int page,
+    int pageSize,
+    string? search,
+    int? productTypeId)
+        {
+            var query = _dbSet
+                .Include(p => p.ProductType)
+                .AsQueryable();
+
+            // 🔍 SEARCH
+            if (!string.IsNullOrEmpty(search))
+            {
+                search = search.ToLower();
+
+                query = query.Where(p =>
+                    p.Name.ToLower().Contains(search));
+            }
+
+            // 🎯 FILTER
+            if (productTypeId.HasValue && productTypeId > 0)
+            {
+                query = query.Where(p =>
+                    p.ProductTypeId == productTypeId.Value);
+            }
+
+            // 📊 TOTAL COUNT
+            var totalCount = await query.CountAsync();
+
+            // 📄 PAGINATION
+            var items = await query
+                .OrderByDescending(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new ProductDashboardResponse
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    Quantity = p.Quantity,
+                    Image = p.Image,
+                    ProductTypeId = p.ProductTypeId,
+                    ProductTypeName = p.ProductType.Name
+                })
+                .ToListAsync();
+
+            return (items, totalCount);
         }
     }
 }

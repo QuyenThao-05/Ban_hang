@@ -1,5 +1,7 @@
+using BaseCore.DTO.Product;
 using BaseCore.Entities;
 using BaseCore.Repository;
+using BaseCore.Repository.EFCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BaseCore.Services
@@ -7,12 +9,15 @@ namespace BaseCore.Services
     public class ProductService : IProductService
     {
         private readonly MySqlDbContext _context;
-
+        private readonly IProductRepositoryEF _productRepository;
         public ProductService(MySqlDbContext context)
         {
             _context = context;
         }
-
+        public ProductService(IProductRepositoryEF productRepository)
+        {
+            _productRepository = productRepository;
+        }
         public async Task<List<Product>> GetAllProductsAsync()
         {
             return await _context.Products.ToListAsync(); // ❌ bỏ Include
@@ -77,5 +82,18 @@ namespace BaseCore.Services
 
             return (products, totalCount);
         }
+        public async Task<(List<ProductDashboardResponse> Items, int TotalCount)> GetDashboardProducts(
+        int page,
+        int pageSize,
+        string search,
+        int? productTypeId)
+        {
+            return await _productRepository.GetDashboardProductsAsync(
+                page,
+                pageSize,
+                search,
+                productTypeId);
+        }
+
     }
 }
