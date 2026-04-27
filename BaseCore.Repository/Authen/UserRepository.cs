@@ -9,13 +9,13 @@ namespace BaseCore.Repository.Authen
 {
     public interface IUserRepository
     {
-        Task<User> GetByUsernameAsync(string username);
-        Task<User> GetByIdAsync(int id);
+        Task<User?> GetByUsernameAsync(string username);
+        Task<User?> GetByIdAsync(int id);
         Task<List<User>> GetAllAsync();
         Task CreateAsync(User user);
         Task UpdateAsync(User user);
         Task DeleteAsync(int id);
-        Task<(List<User> Users, int TotalCount)> SearchAsync(string keyword, int page, int pageSize);
+        Task<(List<User> Users, int TotalCount)> SearchAsync(string? keyword, int page, int pageSize);
     }
 
     public class UserRepository : IUserRepository
@@ -26,22 +26,24 @@ namespace BaseCore.Repository.Authen
         {
             _context = context;
         }
-
+        //Login
         public async Task<User> GetByUsernameAsync(string username)
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.Username == username);
         }
-
+        //get user by id
         public async Task<User> GetByIdAsync(int id)
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
-
+        //get all
         public async Task<List<User>> GetAllAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .OrderByDescending(u => u.CreatedAt)
+                .ToListAsync();
         }
 
         public async Task CreateAsync(User user)
@@ -67,28 +69,38 @@ namespace BaseCore.Repository.Authen
                 await _context.SaveChangesAsync();
             }
         }
-
-        public async Task<(List<User> Users, int TotalCount)> SearchAsync(string keyword, int page, int pageSize)
+        // SEARCH + PAGINATION
+        // =====================================================
+        public async Task<(List<User> Users, int TotalCount)> SearchAsync(
+            string? keyword,
+            int page,
+            int pageSize)
         {
             var query = _context.Users.AsQueryable();
 
+            // 🔍 Search
             if (!string.IsNullOrEmpty(keyword))
             {
                 keyword = keyword.ToLower();
 
                 query = query.Where(u =>
-                     u.Username.Contains(keyword) ||
+                    u.Username.ToLower().Contains(keyword) ||
 
-                    (u.FullName != null && u.FullName.Contains(keyword)) ||
-        
-                    (u.Email != null && u.Email.Contains(keyword)) ||
-    
-                    (u.Phone != null && u.Phone.Contains(keyword))
-                 );
+                    (u.FullName != null &&
+                     u.FullName.ToLower().Contains(keyword)) ||
+
+                    (u.Email != null &&
+                     u.Email.ToLower().Contains(keyword)) ||
+
+                    (u.Phone != null &&
+                     u.Phone.ToLower().Contains(keyword))
+                );
             }
 
+            // 📊 Total count
             var totalCount = await query.CountAsync();
 
+            // 📄 Pagination
             var users = await query
                 .OrderByDescending(u => u.CreatedAt)
                 .Skip((page - 1) * pageSize)
@@ -99,3 +111,4 @@ namespace BaseCore.Repository.Authen
         }
     }
 }
+

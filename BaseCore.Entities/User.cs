@@ -21,6 +21,7 @@ namespace BaseCore.Entities
         public string? Address { get; set; }
 
         public string Role { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public DateTime CreatedAt { get; set; }
     }

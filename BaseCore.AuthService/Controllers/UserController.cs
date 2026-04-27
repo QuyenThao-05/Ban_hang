@@ -1,56 +1,77 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using BaseCore.Entities;
 using BaseCore.Services.Authen;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
-namespace BaseCore.AuthService.Controllers
+namespace BaseCore.APIService.Controllers
 {
-    [Route("api/users")]
+    /// <summary>
+    /// API quản lý người dùng
+    /// ✔ CRUD
+    /// ✔ Search
+    /// ✔ Pagination
+    /// ✔ Role
+    /// ✔ Active / Inactive
+    /// </summary>
+    [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
 
-        public UserController(IUserService userService)
+        public UsersController(
+            IUserService userService)
         {
             _userService = userService;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAll(string keyword = "", int page = 1, int pageSize = 10)
-        {
-            var (users, totalCount) = await _userService.Search(keyword, page, pageSize);
 
-            var result = users.Select(u => new
+        // =====================================================
+        // GET ALL USERS + SEARCH + PAGINATION
+        // GET /api/users?search=admin&page=1&pageSize=10
+        // =====================================================
+        [HttpGet]
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? search,
+            int page = 1,
+            int pageSize = 10)
+        {
+            var result = await _userService.Search(
+                search,
+                page,
+                pageSize);
+
+            var items = result.Users.Select(u => new
             {
                 u.Id,
                 u.Username,
                 u.FullName,
                 u.Email,
                 u.Phone,
+                u.Address,
                 u.Role,
+                u.IsActive,
                 u.CreatedAt
             });
 
             return Ok(new
             {
-                data = result,
-                totalCount,
+                items,
+                totalCount = result.TotalCount,
                 page,
-                pageSize,
-                totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+                pageSize
             });
         }
-        // lấy theo id
+
+        // =====================================================
+        // GET USER BY ID
+        // GET /api/users/1
+        // =====================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var user = await _userService.GetById(id);
+
             if (user == null)
-                return NotFound("User not found");
+                return NotFound("Không tìm thấy user");
 
             return Ok(new
             {
@@ -59,94 +80,149 @@ namespace BaseCore.AuthService.Controllers
                 user.FullName,
                 user.Email,
                 user.Phone,
+                user.Address,
                 user.Role,
+                user.IsActive,
                 user.CreatedAt
             });
         }
-        //Tạo user
+
+        // =====================================================
+        // ADD USER
+        // POST /api/users
+        // =====================================================
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] User request)
+        public async Task<IActionResult> Add(
+            [FromBody] CreateUserRequest req)
         {
-            if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-                return BadRequest("Username và Password là bắt buộc");
+            if (req == null)
+                return BadRequest("Dữ liệu không hợp lệ");
 
-            var user = await _userService.Create(request, request.Password);
+            var user = new User
+            {
+                Username = req.Username,
+                FullName = req.FullName,
+                Email = req.Email,
+                Phone = req.Phone,
+                Address = req.Address,
+                Role = req.Role ?? "user",
+                IsActive = true
+            };
 
-            return Ok(user);
+            var createdUser =
+                await _userService.Create(
+                    user,
+                    req.Password);
+
+            return Ok(new
+            {
+                message = "Tạo user thành công",
+                userId = createdUser.Id
+            });
         }
-        //update user
+
+        // =====================================================
+        // UPDATE USER
+        // PUT /api/users/1
+        // =====================================================
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] User request)
+        public async Task<IActionResult> Update(
+            int id,
+            [FromBody] UpdateUserRequest req)
         {
-            var existingUser = await _userService.GetById(id);
+            var existingUser =
+                await _userService.GetById(id);
+
             if (existingUser == null)
-                return NotFound("User not found");
+                return NotFound("Không tìm thấy user");
 
-            existingUser.FullName = request.FullName ?? existingUser.FullName;
-            existingUser.Email = request.Email ?? existingUser.Email;
-            existingUser.Phone = request.Phone ?? existingUser.Phone;
-            existingUser.Role = request.Role ?? existingUser.Role;
+            existingUser.FullName =
+                req.FullName ?? existingUser.FullName;
 
-            await _userService.Update(existingUser, request.Password);
+            existingUser.Email =
+                req.Email ?? existingUser.Email;
 
-            return Ok(existingUser);
+            existingUser.Phone =
+                req.Phone ?? existingUser.Phone;
+
+            existingUser.Address =
+                req.Address ?? existingUser.Address;
+
+            existingUser.Role =
+                req.Role ?? existingUser.Role;
+
+            existingUser.IsActive =
+                req.IsActive ?? existingUser.IsActive;
+
+            await _userService.Update(
+                existingUser,
+                req.Password);
+
+            return Ok(new
+            {
+                message = "Cập nhật user thành công"
+            });
         }
-        //xoa user
+
+        // =====================================================
+        // DELETE USER
+        // DELETE /api/users/1
+        // =====================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await _userService.GetById(id);
+            var user =
+                await _userService.GetById(id);
+
             if (user == null)
-                return NotFound("User not found");
+                return NotFound("Không tìm thấy user");
 
             await _userService.Delete(id);
 
-            return Ok("Deleted");
+            return Ok(new
+            {
+                message = "Xóa user thành công"
+            });
         }
     }
 
-    public class UserResponse
-    {
-        public int Id { get; set; }
-
-        public string Username { get; set; }
-
-        public string FullName { get; set; }
-
-        public string Email { get; set; }
-
-        public string Phone { get; set; }
-
-        public string Role { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-    }
-
+    // =====================================================
+    // DTO CREATE USER
+    // =====================================================
     public class CreateUserRequest
     {
-        public string Username { get; set; }
+        public string Username { get; set; } = "";
 
-        public string Password { get; set; }
+        public string Password { get; set; } = "";
 
-        public string FullName { get; set; }
+        public string? FullName { get; set; }
 
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
-        public string Role { get; set; }
+        public string? Address { get; set; }
+
+        public string? Role { get; set; }
     }
 
+    // =====================================================
+    // DTO UPDATE USER
+    // =====================================================
     public class UpdateUserRequest
     {
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
-        public string FullName { get; set; }
+        public string? FullName { get; set; }
 
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
-        public string Role { get; set; }
+        public string? Address { get; set; }
+
+        public string? Role { get; set; }
+
+        public bool? IsActive { get; set; }
     }
 }
