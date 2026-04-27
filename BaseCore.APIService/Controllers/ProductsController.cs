@@ -31,7 +31,7 @@ namespace BaseCore.APIService.Controllers
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll(
-    [FromQuery] string? keyword,
+    [FromQuery] string? search,
     [FromQuery] int? productTypeId,
     [FromQuery] decimal? minPrice,
     [FromQuery] decimal? maxPrice,
@@ -42,7 +42,7 @@ namespace BaseCore.APIService.Controllers
             if (pageSize <= 0) pageSize = 10;
 
             var (products, totalCount) = await _productRepository.SearchAsync(
-                keyword,
+                search,
                 productTypeId,
                 minPrice,
                 maxPrice,
