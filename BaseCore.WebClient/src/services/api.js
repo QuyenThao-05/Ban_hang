@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const AUTH_API = 'http://localhost:5002/api';
-const MAIN_API = 'http://localhost:5001/api';
+const MAIN_API = 'http://localhost:5000/api';
 
 // Create axios instance
 const authApiInstance = axios.create({
@@ -66,11 +66,11 @@ export const productApi = {
 
 // Product Type API
 export const productTypeApi = {
-    getAll: () => mainApiInstance.get('/product-types'),
-    getById: (id) => mainApiInstance.get(`/product-types/${id}`),
-    create: (data) => mainApiInstance.post('/product-types', data),
-    update: (id, data) => mainApiInstance.put(`/product-types/${id}`, data),
-    delete: (id) => mainApiInstance.delete(`/product-types/${id}`),
+    getAll: () => mainApiInstance.get('/ProductTypes'),
+    getById: (id) => mainApiInstance.get(`/ProductTypes/${id}`),
+    create: (data) => mainApiInstance.post('/ProductTypes', data),
+    update: (id, data) => mainApiInstance.put(`/ProductTypes/${id}`, data),
+    delete: (id) => mainApiInstance.delete(`/ProductTypes/${id}`),
 };
 
 // Order API

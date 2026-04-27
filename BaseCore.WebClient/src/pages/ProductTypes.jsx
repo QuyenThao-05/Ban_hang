@@ -15,7 +15,6 @@ const ProductTypes = () => {
 
   const [form, setForm] = useState({
     name: "",
-    description: "",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +32,9 @@ const ProductTypes = () => {
     try {
       setLoading(true);
       const res = await productTypeApi.getAll();
+
+      console.log("DATA:", res.data); // debug
+
       setTypes(res.data || []);
     } catch (err) {
       console.log("Load failed", err);
@@ -43,14 +45,14 @@ const ProductTypes = () => {
 
   // FILTER
   const filtered = types.filter((t) =>
-    t.name?.toLowerCase().includes(search.toLowerCase()),
+    t.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
 
   const paginatedData = filtered.slice(
     (currentPage - 1) * pageSize,
-    currentPage * pageSize,
+    currentPage * pageSize
   );
 
   // MODAL
@@ -59,13 +61,11 @@ const ProductTypes = () => {
       setEditing(t);
       setForm({
         name: t.name,
-        description: t.description || "",
       });
     } else {
       setEditing(null);
       setForm({
         name: "",
-        description: "",
       });
     }
     setShowModal(true);
@@ -83,11 +83,12 @@ const ProductTypes = () => {
     try {
       if (editing) {
         await productTypeApi.update(editing.id, {
-          id: editing.id,
-          ...form,
+          name: form.name,
         });
       } else {
-        await productTypeApi.create(form);
+        await productTypeApi.create({
+          name: form.name,
+        });
       }
 
       closeModal();
@@ -126,11 +127,11 @@ const ProductTypes = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
 
-            
+            {isAdmin() && (
               <button className="btn btn-success" onClick={() => openModal()}>
                 <i className="fas fa-plus"></i> Thêm
               </button>
-           
+            )}
           </div>
 
           {/* TABLE */}
@@ -144,7 +145,6 @@ const ProductTypes = () => {
                     <tr>
                       <th>ID</th>
                       <th>Tên</th>
-                      <th>Mô tả</th>
                       {isAdmin() && <th>Action</th>}
                     </tr>
                   </thead>
@@ -152,7 +152,7 @@ const ProductTypes = () => {
                   <tbody>
                     {paginatedData.length === 0 ? (
                       <tr>
-                        <td colSpan="4" className="text-center">
+                        <td colSpan="3" className="text-center">
                           Không có dữ liệu
                         </td>
                       </tr>
@@ -161,7 +161,6 @@ const ProductTypes = () => {
                         <tr key={t.id}>
                           <td>{t.id}</td>
                           <td>{t.name}</td>
-                          <td>{t.description}</td>
 
                           {isAdmin() && (
                             <td>
@@ -191,10 +190,8 @@ const ProductTypes = () => {
 
           {/* PAGINATION */}
           <div className="d-flex justify-content-between mt-3">
-            {/* LEFT: TOTAL */}
             <div>Total: {filtered.length} loại</div>
 
-            {/* RIGHT: PAGINATION */}
             <div>
               <button
                 className="btn btn-secondary mr-2"
@@ -203,7 +200,9 @@ const ProductTypes = () => {
               >
                 ← Previous
               </button>
+
               Trang {currentPage} / {totalPages}
+
               <button
                 className="btn btn-secondary ml-2"
                 disabled={currentPage === totalPages}
@@ -241,18 +240,6 @@ const ProductTypes = () => {
                         setForm({ ...form, name: e.target.value })
                       }
                       required
-                    />
-
-                    <textarea
-                      className="form-control"
-                      placeholder="Mô tả"
-                      value={form.description}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          description: e.target.value,
-                        })
-                      }
                     />
                   </div>
 
