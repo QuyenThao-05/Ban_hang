@@ -1,78 +1,79 @@
 ﻿using BaseCore.DTO.ProductType;
 using BaseCore.Entities;
 using BaseCore.Repository.EFCore;
+
 namespace BaseCore.Services
-{ 
-public class ProductTypeService
 {
-    private readonly IProductTypeRepositoryEF _repository;
-
-    public ProductTypeService(
-        IProductTypeRepositoryEF repository)
+    public class ProductTypeService
     {
-        _repository = repository;
-    }
+        private readonly IProductTypeRepositoryEF _repository;
 
-    public async Task<(List<ProductTypeDashboardResponse> Items, int TotalCount)> GetAll(
-        string? keyword,
-        int page,
-        int pageSize)
-    {
-        var (items, totalCount) = await _repository.SearchAsync(
-            keyword,
-            page,
-            pageSize);
+        public ProductTypeService(
+            IProductTypeRepositoryEF repository)
+        {
+            _repository = repository;
+        }
 
-        var result = items.Select(x =>
-            new ProductTypeDashboardResponse
+        public async Task<(List<ProductTypeDashboardResponse> Items, int TotalCount)> GetAll(
+            string? keyword,
+            int page,
+            int pageSize)
+        {
+            var (items, totalCount) = await _repository.SearchAsync(
+                keyword,
+                page,
+                pageSize);
+
+            var result = items.Select(x =>
+                new ProductTypeDashboardResponse
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description
+                }).ToList();
+
+            return (result, totalCount);
+        }
+
+        public async Task<ProductType> Add(
+            ProductTypeCreateRequest req)
+        {
+            var entity = new ProductType
             {
-                Id = x.Id,
-                Name = x.Name,
-                Description = x.Description
-            }).ToList();
+                Name = req.Name,
+                Description = req.Description
+            };
 
-        return (result, totalCount);
-    }
+            await _repository.AddAsync(entity);
 
-    public async Task<ProductType> Add(
-        ProductTypeCreateRequest req)
-    {
-        var entity = new ProductType
+            return entity;
+        }
+
+        public async Task<ProductType?> Update(
+            int id,
+            ProductTypeUpdateRequest req)
         {
-            Name = req.Name,
-            Description = req.Description
-        };
+            var entity = await _repository.GetByIdAsync(id);
 
-        await _repository.AddAsync(entity);
+            if (entity == null)
+                return null;
 
-        return entity;
-    }
+            entity.Name = req.Name;
+            entity.Description = req.Description;
 
-    public async Task<ProductType?> Update(
-        int id,
-        ProductTypeUpdateRequest req)
-    {
-        var entity = await _repository.GetByIdAsync(id);
+            await _repository.UpdateAsync(entity);
 
-        if (entity == null)
-            return null;
+            return entity;
+        }
 
-        entity.Name = req.Name;
-        entity.Description = req.Description;
-
-        await _repository.UpdateAsync(entity);
-
-        return entity;
-    }
-
-    public async Task Delete(int id)
-    {
-        var entity = await _repository.GetByIdAsync(id);
-
-        if (entity != null)
+        public async Task Delete(int id)
         {
-            await _repository.DeleteAsync(entity);
+            var entity = await _repository.GetByIdAsync(id);
+
+            if (entity != null)
+            {
+                await _repository.DeleteAsync(entity);
+            }
         }
     }
-}
 }
