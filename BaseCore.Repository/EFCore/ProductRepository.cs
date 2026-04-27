@@ -1,7 +1,6 @@
 using BaseCore.DTO.Product;
 using BaseCore.Entities;
 using Microsoft.EntityFrameworkCore;
-using BaseCore.DTO.Product;
 namespace BaseCore.Repository.EFCore
 {
     public interface IProductRepositoryEF : IRepository<Product>
