@@ -60,9 +60,7 @@
             <li>
               <a href="#"><i class="fa fa-dollar"></i> USD</a>
             </li>
-            <li>
-              <a href="#"><i class="fa fa-user-o"></i> My Account</a>
-            </li>
+            <li id="account-area"></li>
           </ul>
         </div>
       </div>
@@ -89,11 +87,11 @@
               <div class="header-search">
                 <form>
                   <select class="input-select">
-                    <option value="0">All Categories</option>
-                    <option value="1">Category 01</option>
-                    <option value="1">Category 02</option>
+                    <option value="0">Loại sản phẩm</option>
+                    <option value="1">Bút</option>
+                    <option value="1">Vở / Sổ</option>
                   </select>
-                  <input class="input" placeholder="Search here" />
+                  <input class="input" placeholder="Tìm kiếm" />
                   <button class="search-btn">Search</button>
                 </form>
               </div>
@@ -107,7 +105,7 @@
                 <div>
                   <a href="#">
                     <i class="fa fa-heart-o"></i>
-                    <span>Your Wishlist</span>
+                    <span>Yêu thích</span>
                     <div class="qty">2</div>
                   </a>
                 </div>
@@ -121,7 +119,7 @@
                     aria-expanded="true"
                   >
                     <i class="fa fa-shopping-cart"></i>
-                    <span>Your Cart</span>
+                    <span>Giỏ hàng</span>
                     <div class="qty" id="cart-count">0</div>
                   </a>
                   <div class="cart-dropdown">
@@ -170,11 +168,11 @@
           <ul class="main-nav nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="#">Hot Deals</a></li>
-            <li><a href="#">Categories</a></li>
-            <li><a href="#">Laptops</a></li>
-            <li><a href="#">Smartphones</a></li>
-            <li><a href="#">Cameras</a></li>
-            <li><a href="#">Accessories</a></li>
+            <li><a href="#">Danh mục hàng</a></li>
+            <li><a href="#">Bút</a></li>
+            <li><a href="#">Vở / Sổ</a></li>
+            <li><a href="#">Giấy</a></li>
+            <li><a href="#">Khác</a></li>
           </ul>
           <!-- /NAV -->
         </div>
@@ -197,7 +195,7 @@
                 <img src="./img/shop01.png" alt="" />
               </div>
               <div class="shop-body">
-                <h3>Laptop<br />Collection</h3>
+                <h3>Bút</h3>
                 <a href="#" class="cta-btn"
                   >Shop now <i class="fa fa-arrow-circle-right"></i
                 ></a>
@@ -213,7 +211,7 @@
                 <img src="./img/shop03.png" alt="" />
               </div>
               <div class="shop-body">
-                <h3>Accessories<br />Collection</h3>
+                <h3>Vở / Sổ</h3>
                 <a href="#" class="cta-btn"
                   >Shop now <i class="fa fa-arrow-circle-right"></i
                 ></a>
@@ -229,7 +227,7 @@
                 <img src="./img/shop02.png" alt="" />
               </div>
               <div class="shop-body">
-                <h3>Cameras<br />Collection</h3>
+                <h3>Khác</h3>
                 <a href="#" class="cta-btn"
                   >Shop now <i class="fa fa-arrow-circle-right"></i
                 ></a>
@@ -261,11 +259,11 @@
               <div class="section-nav">
                 <ul class="section-tab-nav tab-nav">
                   <li class="active">
-                    <a data-toggle="tab" href="#tab1">Laptops</a>
+                    <a data-toggle="tab" href="#tab1">Bút</a>
                   </li>
-                  <li><a data-toggle="tab" href="#tab1">Smartphones</a></li>
-                  <li><a data-toggle="tab" href="#tab1">Cameras</a></li>
-                  <li><a data-toggle="tab" href="#tab1">Accessories</a></li>
+                  <li><a data-toggle="tab" href="#tab1">Vở / Sổ</a></li>
+                  <li><a data-toggle="tab" href="#tab1">Giấy</a></li>
+                  <li><a data-toggle="tab" href="#tab1">Khác</a></li>
                 </ul>
               </div>
             </div>
@@ -1364,16 +1362,29 @@
         }
       }
       async function loadProductTypes() {
-        const res = await fetch("http://localhost:5001/api/producttypes");
-        const data = await res.json();
+        try {
+          const res = await fetch("http://localhost:5001/api/producttypes");
+          const result = await res.json();
 
-        const select = document.getElementById("filterType");
+          console.log("TYPE RESULT:", result); // 🔥 debug
 
-        select.innerHTML = `<option value="">Tất cả</option>`;
+          const data = result.items; // chuẩn API của bạn
 
-        data.forEach((t) => {
-          select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-        });
+          const select = document.getElementById("filterType");
+
+          if (!select) {
+            console.error("Không tìm thấy select filterType");
+            return;
+          }
+
+          select.innerHTML = `<option value="">Tất cả</option>`;
+
+          data.forEach((t) => {
+            select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+          });
+        } catch (err) {
+          console.error("Lỗi loadProductTypes:", err);
+        }
       }
       loadProductTypes();
       loadProducts();
@@ -1442,6 +1453,31 @@
         e.preventDefault();
         e.stopPropagation();
         window.location.href = "checkout.html";
+      }
+    </script>
+    <script>
+      const user = JSON.parse(localStorage.getItem("user"));
+      const accountArea = document.getElementById("account-area");
+
+      if (user) {
+        accountArea.innerHTML = `
+      <a href="#"><i class="fa fa-user"></i> ${user.username}</a>
+      <a href="#" id="logout-btn" style="margin-left:10px;">
+        Logout
+      </a>
+    `;
+
+        document.getElementById("logout-btn").onclick = () => {
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          location.reload();
+        };
+      } else {
+        accountArea.innerHTML = `
+      <a href="/login">
+        <i class="fa fa-user-o"></i> My Account
+      </a>
+    `;
       }
     </script>
   </body>

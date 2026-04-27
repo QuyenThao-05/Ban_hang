@@ -28,25 +28,35 @@ const ProductTypes = () => {
     setCurrentPage(1);
   }, [search]);
 
+  // ================= LOAD =================
   const loadTypes = async () => {
     try {
       setLoading(true);
+
       const res = await productTypeApi.getAll();
 
-      console.log("DATA:", res.data); // debug
+      console.log("RAW TYPES:", res.data);
 
-      setTypes(res.data || []);
+      // 🔥 FIX QUAN TRỌNG
+      const data = Array.isArray(res.data)
+        ? res.data
+        : res.data?.data || res.data?.items || [];
+
+      setTypes(data);
     } catch (err) {
       console.log("Load failed", err);
+      setTypes([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // FILTER
-  const filtered = types.filter((t) =>
-    t.name?.toLowerCase().includes(search.toLowerCase())
-  );
+  // ================= FILTER =================
+  const filtered = Array.isArray(types)
+    ? types.filter((t) =>
+        t.name?.toLowerCase().includes(search.toLowerCase())
+      )
+    : [];
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
 
@@ -55,7 +65,7 @@ const ProductTypes = () => {
     currentPage * pageSize
   );
 
-  // MODAL
+  // ================= MODAL =================
   const openModal = (t = null) => {
     if (t) {
       setEditing(t);
@@ -76,7 +86,7 @@ const ProductTypes = () => {
     setEditing(null);
   };
 
-  // SAVE
+  // ================= SAVE =================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -98,7 +108,7 @@ const ProductTypes = () => {
     }
   };
 
-  // DELETE
+  // ================= DELETE =================
   const handleDelete = async (id) => {
     if (!window.confirm("Xoá loại sản phẩm?")) return;
 
@@ -110,6 +120,7 @@ const ProductTypes = () => {
     }
   };
 
+  // ================= UI =================
   return (
     <div className="content-wrapper">
       <div className="content-header">

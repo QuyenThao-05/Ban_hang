@@ -27,7 +27,7 @@ const Products = () => {
     productTypeId: "",
   });
 
-  // LOAD DATA
+  // ================= LOAD DATA =================
   useEffect(() => {
     loadData();
   }, [currentPage, keyword, filterType]);
@@ -36,6 +36,7 @@ const Products = () => {
     setLoading(true);
 
     try {
+      // 🔥 LOAD PRODUCTS
       const res = await productApi.getAll({
         page: currentPage,
         pageSize,
@@ -49,19 +50,29 @@ const Products = () => {
       setTotal(data.totalCount || 0);
     } catch (err) {
       console.error("Load products lỗi:", err);
+      setProducts([]);
     }
 
     try {
+      // 🔥 LOAD TYPES (FIX CHÍNH)
       const tRes = await productTypeApi.getAll();
-      setTypes(tRes.data || []);
-    } catch {
-      setTypes([]); // tránh crash
+
+      console.log("RAW TYPES:", tRes.data);
+
+      const typesData = Array.isArray(tRes.data)
+        ? tRes.data
+        : tRes.data?.data || tRes.data?.items || [];
+
+      setTypes(typesData);
+    } catch (err) {
+      console.log("Load types error:", err);
+      setTypes([]);
     }
 
     setLoading(false);
   };
 
-  // MODAL
+  // ================= MODAL =================
   const openModal = (p = null) => {
     if (p) {
       setEditing(p);
@@ -88,18 +99,25 @@ const Products = () => {
     setEditing(null);
   };
 
-  // SAVE
+  // ================= SAVE =================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      const payload = {
+        ...form,
+        price: Number(form.price),
+        quantity: Number(form.quantity),
+        productTypeId: Number(form.productTypeId),
+      };
+
       if (editing) {
         await productApi.update(editing.id, {
           id: editing.id,
-          ...form,
+          ...payload,
         });
       } else {
-        await productApi.create(form);
+        await productApi.create(payload);
       }
 
       closeModal();
@@ -109,7 +127,7 @@ const Products = () => {
     }
   };
 
-  // DELETE
+  // ================= DELETE =================
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn chắc chắn muốn xoá?")) return;
 
@@ -121,14 +139,18 @@ const Products = () => {
     }
   };
 
-  // FORMAT
-  const formatMoney = (v) => Number(v).toLocaleString("vi-VN") + " đ";
+  // ================= HELPERS =================
+  const formatMoney = (v) =>
+    Number(v || 0).toLocaleString("vi-VN") + " đ";
 
   const getTypeName = (id) =>
-    types.find((t) => t.id === id)?.name || "Không rõ";
+    Array.isArray(types)
+      ? types.find((t) => t.id === id)?.name || "Không rõ"
+      : "Không rõ";
 
   const totalPages = Math.ceil(total / pageSize) || 1;
 
+  // ================= UI =================
   return (
     <div className="content-wrapper">
       <div className="content-header">
@@ -158,11 +180,13 @@ const Products = () => {
               }}
             >
               <option value="">Tất cả loại</option>
-              {types.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
+
+              {Array.isArray(types) &&
+                types.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
             </select>
 
             {isAdmin() && (
@@ -259,7 +283,9 @@ const Products = () => {
               >
                 ← Previous
               </button>
+
               Trang {currentPage} / {totalPages}
+
               <button
                 className="btn btn-secondary ml-2"
                 disabled={currentPage === totalPages}
@@ -279,7 +305,7 @@ const Products = () => {
             <div className="modal-dialog">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title">
+                  <h5>
                     {editing ? "Sửa sản phẩm" : "Thêm sản phẩm"}
                   </h5>
                   <button className="close" onClick={closeModal}>
@@ -327,24 +353,31 @@ const Products = () => {
                       onChange={(e) =>
                         setForm({
                           ...form,
-                          productTypeId: e.target.value,
+                          productTypeId: Number(e.target.value),
                         })
                       }
                       required
                     >
                       <option value="">Chọn loại</option>
-                      {types.map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.name}
-                        </option>
-                      ))}
+
+                      {Array.isArray(types) &&
+                        types.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.name}
+                          </option>
+                        ))}
                     </select>
                   </div>
 
                   <div className="modal-footer">
-                    <button className="btn btn-secondary" onClick={closeModal}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={closeModal}
+                    >
                       Huỷ
                     </button>
+
                     <button type="submit" className="btn btn-primary">
                       Lưu
                     </button>

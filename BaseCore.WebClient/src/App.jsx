@@ -16,8 +16,6 @@ import ProductTypes from "./pages/ProductTypes";
 import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
 import Login from "./pages/Login";
-import { useEffect } from "react";
-
 
 // 🔥 ROUTE ADMIN
 const AdminRoute = ({ children }) => {
@@ -56,7 +54,7 @@ const HomeRedirect = () => {
     return <Navigate to="/dashboard" />;
   }
 
-  // USER → HTML web
+  // USER → HTML electro
   window.location.href = "/electro-master/index.html";
   return null;
 };
