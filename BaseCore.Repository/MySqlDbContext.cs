@@ -16,9 +16,10 @@ namespace BaseCore.Repository
         // DbSet for each entity
         public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductDetail> ProductDetails { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<Bill> Bills { get; set; }
+        public DbSet<BillDetail> BillDetails { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -77,34 +78,28 @@ namespace BaseCore.Repository
             });
 
             // Configure Order entity
-            modelBuilder.Entity<Order>(entity =>
+            modelBuilder.Entity<Bill>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.TotalAmount).HasPrecision(18, 2);
+                entity.Property(e => e.TotalPrice).HasPrecision(18, 2);
                 entity.Property(e => e.ShippingAddress).HasMaxLength(500);
             });
 
             // Configure OrderDetail entity
-            modelBuilder.Entity<OrderDetail>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
+            modelBuilder.Entity<BillDetail>()
+        .HasOne(bd => bd.Bill)
+        .WithMany(b => b.BillDetails)
+        .HasForeignKey(bd => bd.BillId);
 
-                // Relationships
-                entity.HasOne(e => e.Order)
-                      .WithMany()
-                      .HasForeignKey(e => e.OrderId)
-                      .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<BillDetail>()
+                .HasOne(bd => bd.Product)
+                .WithMany(p => p.BillDetails)
+                .HasForeignKey(bd => bd.ProductId);
 
-                entity.HasOne(e => e.Product)
-                      .WithMany()
-                      .HasForeignKey(e => e.ProductId)
-                      .OnDelete(DeleteBehavior.Restrict);
-            });
-            modelBuilder.Entity<Product>()
-            .HasOne(p => p.ProductType)
-            .WithMany(pt => pt.Products)
-            .HasForeignKey(p => p.ProductTypeId);
+            modelBuilder.Entity<BillDetail>()
+                .HasOne(bd => bd.ProductDetail)
+                .WithMany(pd => pd.BillDetails)
+                .HasForeignKey(bd => bd.ProductDetailId);
 
             // Seed initial data
             SeedData(modelBuilder);

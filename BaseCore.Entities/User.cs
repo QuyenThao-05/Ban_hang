@@ -24,5 +24,6 @@ namespace BaseCore.Entities
         public bool IsActive { get; set; } = true;
 
         public DateTime CreatedAt { get; set; }
+        public List<Bill> Bills { get; set; } = new();
     }
 }

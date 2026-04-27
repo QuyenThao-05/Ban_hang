@@ -76,14 +76,13 @@ builder.Services.AddDbContext<MySqlDbContext>(options =>
 // Repository Registration - Products, Categories, Orders
 builder.Services.AddScoped<IProductRepositoryEF, ProductRepositoryEF>();
 builder.Services.AddScoped<ICategoryRepositoryEF, CategoryRepositoryEF>();
-builder.Services.AddScoped<IOrderRepositoryEF, OrderRepositoryEF>();
-builder.Services.AddScoped<IOrderDetailRepositoryEF, OrderDetailRepositoryEF>();
 builder.Services.AddScoped<ICartRepositoryEF, CartRepositoryEF>();
 builder.Services.AddScoped<IProductTypeRepositoryEF, ProductTypeRepositoryEF>();
 builder.Services.AddScoped<ProductTypeService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBillRepositoryEF, BillRepositoryEF>();
+builder.Services.AddScoped<IBillService, BillService>();
 
 // JWT Authentication
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:SecretKey"] ?? "YourSecretKeyForAuthenticationShouldBeLongEnough");

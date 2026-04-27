@@ -6,8 +6,8 @@ namespace BaseCore.Services
 {
     public interface IOrderService
     {
-        Task<Order> CreateOrderAsync(Order order);
-        Task<List<Order>> GetOrdersByUserIdAsync(System.Guid userId);
-        Task<Order> GetOrderByIdAsync(int id);
+        Task<Bill> CreateOrderAsync(Bill order);
+        Task<List<Bill>> GetOrdersByUserIdAsync(System.Guid userId);
+        Task<Bill> GetOrderByIdAsync(int id);
     }
 }
