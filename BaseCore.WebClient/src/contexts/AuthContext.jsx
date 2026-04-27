@@ -19,16 +19,18 @@ export const AuthProvider = ({ children }) => {
 
   // LOAD USER KHI MỞ APP
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
     const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
 
-    if (token && storedUser) {
+    if (!token) {
+      navigate("/login");
+    } else if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
       } catch (err) {
         console.error("Parse user error:", err);
-        setUser(null);
+        navigate("/login");
       }
     }
 
@@ -41,19 +43,24 @@ export const AuthProvider = ({ children }) => {
       const response = await authApi.login(username, password);
       const data = response.data;
 
-      // Lưu token
       localStorage.setItem("token", data.token);
 
-      // Lưu user đúng format
       const userData = data.user
         ? data.user
         : {
             username: username,
-            role: data.role || "admin",
+            role: data.role || "user",
           };
 
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
+
+      // 🔥 PHÂN LUỒNG NGAY TẠI ĐÂY
+      if (userData.role === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/"); // web thường
+      }
 
       return { success: true };
     } catch (error) {
@@ -66,8 +73,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.clear();
 
-    window.location.href =
-      "http://127.0.0.1:5500/BaseCore.WebClient/electro-master/login.html";
+    navigate("/login");
   };
 
   // CHECK ADMIN

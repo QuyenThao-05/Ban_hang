@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import React from "react";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import MainLayout from "./components/MainLayout";
 
 import Dashboard from "./pages/Dashboard";
@@ -15,64 +15,129 @@ import Users from "./pages/Users";
 import ProductTypes from "./pages/ProductTypes";
 import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
+import Login from "./pages/Login";
+import { useEffect } from "react";
+
+
+// 🔥 ROUTE ADMIN
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (!user) return <Navigate to="/login" />;
+
+  if (user.role !== "admin") return <Navigate to="/" />;
+
+  return children;
+};
+
+// 🔥 ROUTE USER
+const UserRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (!user) return <Navigate to="/login" />;
+
+  return children;
+};
+
+// 🔥 HOME PHÂN LUỒNG
+const HomeRedirect = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (!user) return <Navigate to="/login" />;
+
+  // ADMIN → dashboard
+  if (user.role === "admin") {
+    return <Navigate to="/dashboard" />;
+  }
+
+  // USER → HTML web
+  window.location.href = "/electro-master/index.html";
+  return null;
+};
 
 function AppRoutes() {
   return (
     <Routes>
+      {/* LOGIN */}
+      <Route path="/login" element={<Login />} />
+
+      {/* HOME */}
+      <Route path="/" element={<HomeRedirect />} />
+
+      {/* ADMIN */}
       <Route
-        path="/"
+        path="/dashboard"
         element={
-          <MainLayout>
-            <Dashboard />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <Dashboard />
+            </MainLayout>
+          </AdminRoute>
         }
       />
 
       <Route
         path="/products"
         element={
-          <MainLayout>
-            <Products />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <Products />
+            </MainLayout>
+          </AdminRoute>
         }
       />
 
       <Route
         path="/users"
         element={
-          <MainLayout>
-            <Users />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <Users />
+            </MainLayout>
+          </AdminRoute>
         }
       />
 
       <Route
         path="/product-types"
         element={
-          <MainLayout>
-            <ProductTypes />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <ProductTypes />
+            </MainLayout>
+          </AdminRoute>
         }
       />
 
       <Route
         path="/orders"
         element={
-          <MainLayout>
-            <Orders />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <Orders />
+            </MainLayout>
+          </AdminRoute>
         }
       />
 
       <Route
         path="/orders/:id"
         element={
-          <MainLayout>
-            <OrderDetail />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <OrderDetail />
+            </MainLayout>
+          </AdminRoute>
         }
       />
 
+      {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

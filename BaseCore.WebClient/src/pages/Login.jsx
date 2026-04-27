@@ -1,106 +1,84 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-    const { login } = useAuth();
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+  });
 
-        const result = await login(username, password);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        if (result.success) {
-            navigate('/');
-        } else {
-            setError(result.message);
-        }
+    const res = await login(form.username, form.password);
 
-        setLoading(false);
-    };
+    if (!res.success) {
+      alert(res.message);
+    }
+  };
 
-    return (
-        <div className="login-page" style={{ minHeight: '100vh' }}>
-            <div className="login-box">
-                <div className="login-logo">
-                    <a href="/">BaseCore Sales</a>
-                </div>
-                <div className="card">
-                    <div className="card-body login-card-body">
-                        <p className="login-box-msg">Sign in to start your session</p>
-
-                        {error && (
-                            <div className="alert alert-danger alert-dismissible">
-                                <button type="button" className="close" onClick={() => setError('')}>
-                                    &times;
-                                </button>
-                                {error}
-                            </div>
-                        )}
-
-                        <form onSubmit={handleSubmit}>
-                            <div className="input-group mb-3">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    required
-                                />
-                                <div className="input-group-append">
-                                    <div className="input-group-text">
-                                        <span className="fas fa-user"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="input-group mb-3">
-                                <input
-                                    type="password"
-                                    className="form-control"
-                                    placeholder="Password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                                <div className="input-group-append">
-                                    <div className="input-group-text">
-                                        <span className="fas fa-lock"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-8">
-                                    <div className="icheck-primary">
-                                        <input type="checkbox" id="remember" />
-                                        <label htmlFor="remember">Remember Me</label>
-                                    </div>
-                                </div>
-                                <div className="col-4">
-                                    <button
-                                        type="submit"
-                                        className="btn btn-primary btn-block"
-                                        disabled={loading}
-                                    >
-                                        {loading ? (
-                                            <span className="spinner-border spinner-border-sm"></span>
-                                        ) : 'Sign In'}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg,#f8f9fa,#e9ecef)",
+      }}
+    >
+      <div
+        style={{
+          width: 420,
+          padding: 40,
+          background: "#fff",
+          borderRadius: 16,
+          boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <img src="/img/logo1.png" alt="" style={{ width: 180 }} />
         </div>
-    );
+
+        <h3 style={{ textAlign: "center", color: "#d10024" }}>Đăng nhập</h3>
+
+        <form onSubmit={handleSubmit}>
+          <input
+            className="form-control mb-3"
+            placeholder="👤 Username"
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+          />
+
+          <input
+            type="password"
+            className="form-control mb-3"
+            placeholder="🔒 Password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
+
+          <button
+            style={{
+              width: "100%",
+              padding: 12,
+              borderRadius: 30,
+              background: "#d10024",
+              color: "#fff",
+              border: "none",
+              fontWeight: 600,
+            }}
+          >
+            Đăng nhập
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default Login;
