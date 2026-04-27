@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { productApi, productTypeApi } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -10,251 +10,263 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
 
   const [keyword, setKeyword] = useState("");
-  const [typeId, setTypeId] = useState("");
+  const [filterType, setFilterType] = useState("");
+
+  const [total, setTotal] = useState(0);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const [showModal, setShowModal] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [editing, setEditing] = useState(null);
 
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     name: "",
     price: "",
-    stock: "",
-    description: "",
-    imageUrl: "",
+    quantity: "",
     productTypeId: "",
   });
 
-  const [error, setError] = useState("");
-
+  // LOAD DATA
   useEffect(() => {
-    loadTypes();
-    loadProducts();
-  }, []);
+    loadData();
+  }, [currentPage, keyword, filterType]);
 
-  // ================= LOAD DATA =================
-
-  const loadTypes = async () => {
-    try {
-      const res = await productTypeApi.getAll();
-      setTypes(res.data || []);
-    } catch (err) {
-      console.error("Load types failed", err);
-    }
-  };
-
-  const loadProducts = async () => {
+  const loadData = async () => {
     setLoading(true);
+
     try {
-      const res = await productApi.getAll();
+      const res = await productApi.getAll({
+        page: currentPage,
+        pageSize,
+        keyword,
+        typeId: filterType,
+      });
 
-      // API có thể trả nhiều dạng
-      const data =
-        res.data?.items ||
-        res.data?.data ||
-        res.data ||
-        [];
+      const data = res.data;
 
-      setProducts(data);
+      setProducts(data.items || []);
+      setTotal(data.totalCount || 0);
     } catch (err) {
-      console.error("Load products failed", err);
-    } finally {
-      setLoading(false);
+      console.error("Load products lỗi:", err);
     }
+
+    try {
+      const tRes = await productTypeApi.getAll();
+      setTypes(tRes.data || []);
+    } catch {
+      setTypes([]); // tránh crash
+    }
+
+    setLoading(false);
   };
 
-  // ================= SEARCH =================
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-
-    let filtered = [...products];
-
-    if (keyword) {
-      filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(keyword.toLowerCase())
-      );
-    }
-
-    if (typeId) {
-      filtered = filtered.filter(
-        (p) => p.productTypeId === parseInt(typeId)
-      );
-    }
-
-    setProducts(filtered);
-  };
-
-  // ================= MODAL =================
-
-  const openModal = (product = null) => {
-    if (product) {
-      setEditingProduct(product);
-      setFormData({
-        name: product.name,
-        price: product.price,
-        stock: product.stock,
-        description: product.description || "",
-        imageUrl: product.imageUrl || "",
-        productTypeId: product.productTypeId,
+  // MODAL
+  const openModal = (p = null) => {
+    if (p) {
+      setEditing(p);
+      setForm({
+        name: p.name,
+        price: p.price,
+        quantity: p.quantity,
+        productTypeId: p.productTypeId,
       });
     } else {
-      setEditingProduct(null);
-      setFormData({
+      setEditing(null);
+      setForm({
         name: "",
         price: "",
-        stock: "",
-        description: "",
-        imageUrl: "",
-        productTypeId: types[0]?.id || "",
+        quantity: "",
+        productTypeId: "",
       });
     }
-
-    setError("");
     setShowModal(true);
   };
 
   const closeModal = () => {
     setShowModal(false);
-    setEditingProduct(null);
+    setEditing(null);
   };
 
-  // ================= SUBMIT =================
-
+  // SAVE
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     try {
-      const data = {
-        name: formData.name,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock),
-        description: formData.description,
-        imageUrl: formData.imageUrl,
-        productTypeId: parseInt(formData.productTypeId),
-      };
-
-      if (editingProduct) {
-        await productApi.update(editingProduct.id, {
-          id: editingProduct.id,
-          ...data,
+      if (editing) {
+        await productApi.update(editing.id, {
+          id: editing.id,
+          ...form,
         });
       } else {
-        await productApi.create(data);
+        await productApi.create(form);
       }
 
       closeModal();
-      loadProducts();
-    } catch (err) {
-      setError(err.response?.data?.message || "Lỗi xử lý");
+      loadData();
+    } catch {
+      alert("Lỗi khi lưu");
     }
   };
 
-  // ================= DELETE =================
-
+  // DELETE
   const handleDelete = async (id) => {
-    if (!window.confirm("Xoá sản phẩm?")) return;
+    if (!window.confirm("Bạn chắc chắn muốn xoá?")) return;
 
     try {
       await productApi.delete(id);
-      loadProducts();
+      loadData();
     } catch {
       alert("Xoá thất bại");
     }
   };
 
-  // ================= UI =================
+  // FORMAT
+  const formatMoney = (v) => Number(v).toLocaleString("vi-VN") + " đ";
+
+  const getTypeName = (id) =>
+    types.find((t) => t.id === id)?.name || "Không rõ";
+
+  const totalPages = Math.ceil(total / pageSize) || 1;
 
   return (
     <div className="content-wrapper">
       <div className="content-header">
-        <h1 className="m-0">Quản lý sản phẩm</h1>
+        <h1 className="ml-3">Quản lý sản phẩm</h1>
       </div>
 
       <section className="content">
         <div className="container-fluid">
+          {/* FILTER */}
+          <div className="card p-3 mb-3 d-flex flex-row">
+            <input
+              className="form-control mr-2"
+              placeholder="Tìm sản phẩm..."
+              value={keyword}
+              onChange={(e) => {
+                setCurrentPage(1);
+                setKeyword(e.target.value);
+              }}
+            />
+
+            <select
+              className="form-control mr-2"
+              value={filterType}
+              onChange={(e) => {
+                setCurrentPage(1);
+                setFilterType(e.target.value);
+              }}
+            >
+              <option value="">Tất cả loại</option>
+              {types.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+
+            {isAdmin() && (
+              <button className="btn btn-success" onClick={() => openModal()}>
+                <i className="fas fa-plus"></i> Thêm
+              </button>
+            )}
+          </div>
+
+          {/* TABLE */}
           <div className="card">
-
-            {/* SEARCH */}
-            <div className="card-header d-flex justify-content-between">
-              <form onSubmit={handleSearch} className="form-inline">
-                <input
-                  className="form-control mr-2"
-                  placeholder="Tìm kiếm..."
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                />
-
-                <select
-                  className="form-control mr-2"
-                  value={typeId}
-                  onChange={(e) => setTypeId(e.target.value)}
-                >
-                  <option value="">Tất cả loại</option>
-                  {types.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name}
-                    </option>
-                  ))}
-                </select>
-
-                <button className="btn btn-primary">Tìm</button>
-              </form>
-
-              {isAdmin() && (
-                <button className="btn btn-success" onClick={() => openModal()}>
-                  + Thêm
-                </button>
-              )}
-            </div>
-
-            {/* TABLE */}
             <div className="card-body">
               {loading ? (
-                <div>Loading...</div>
+                <div className="text-center">Loading...</div>
               ) : (
-                <table className="table table-bordered">
+                <table className="table table-bordered table-striped">
                   <thead>
                     <tr>
                       <th>ID</th>
                       <th>Tên</th>
                       <th>Loại</th>
                       <th>Giá</th>
-                      <th>Kho</th>
-                      {isAdmin() && <th>Hành động</th>}
+                      <th>Tồn</th>
+                      <th>Trạng thái</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {products.map((p) => (
-                      <tr key={p.id}>
-                        <td>{p.id}</td>
-                        <td>{p.name}</td>
-                        <td>{p.productType?.name}</td>
-                        <td>{p.price?.toLocaleString()} đ</td>
-                        <td>{p.stock}</td>
+                    {products.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="text-center">
+                          Không có dữ liệu
+                        </td>
+                      </tr>
+                    ) : (
+                      products.map((p) => (
+                        <tr key={p.id}>
+                          <td>{p.id}</td>
+                          <td>{p.name}</td>
+                          <td>{getTypeName(p.productTypeId)}</td>
+                          <td>{formatMoney(p.price)}</td>
+                          <td>{p.quantity}</td>
 
-                        {isAdmin() && (
+                          <td>
+                            {p.quantity === 0 ? (
+                              <span className="badge badge-danger">
+                                Hết hàng
+                              </span>
+                            ) : p.quantity < 20 ? (
+                              <span className="badge badge-warning">
+                                Sắp hết
+                              </span>
+                            ) : (
+                              <span className="badge badge-success">
+                                Còn hàng
+                              </span>
+                            )}
+                          </td>
+
                           <td>
                             <button
-                              className="btn btn-info btn-sm mr-1"
+                              className="btn btn-sm btn-info mr-1"
                               onClick={() => openModal(p)}
                             >
-                              Sửa
+                              <i className="fas fa-edit"></i>
                             </button>
+
                             <button
-                              className="btn btn-danger btn-sm"
+                              className="btn btn-sm btn-danger"
                               onClick={() => handleDelete(p.id)}
                             >
-                              Xoá
+                              <i className="fas fa-trash"></i>
                             </button>
                           </td>
-                        )}
-                      </tr>
-                    ))}
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               )}
+            </div>
+          </div>
+
+          {/* PAGINATION */}
+          <div className="d-flex justify-content-between mt-3">
+            <div>Total: {total} sản phẩm</div>
+
+            <div>
+              <button
+                className="btn btn-secondary mr-2"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+              >
+                ← Previous
+              </button>
+              Trang {currentPage} / {totalPages}
+              <button
+                className="btn btn-secondary ml-2"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+              >
+                Next →
+              </button>
             </div>
           </div>
         </div>
@@ -267,49 +279,33 @@ const Products = () => {
             <div className="modal-dialog">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5>{editingProduct ? "Sửa" : "Thêm"} sản phẩm</h5>
-                  <button onClick={closeModal}>×</button>
+                  <h5 className="modal-title">
+                    {editing ? "Sửa sản phẩm" : "Thêm sản phẩm"}
+                  </h5>
+                  <button className="close" onClick={closeModal}>
+                    <span>&times;</span>
+                  </button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                   <div className="modal-body">
-                    {error && <div className="alert alert-danger">{error}</div>}
-
                     <input
                       className="form-control mb-2"
                       placeholder="Tên"
-                      value={formData.name}
+                      value={form.name}
                       onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
+                        setForm({ ...form, name: e.target.value })
                       }
                       required
                     />
-
-                    <select
-                      className="form-control mb-2"
-                      value={formData.productTypeId}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          productTypeId: e.target.value,
-                        })
-                      }
-                      required
-                    >
-                      {types.map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.name}
-                        </option>
-                      ))}
-                    </select>
 
                     <input
                       type="number"
                       className="form-control mb-2"
                       placeholder="Giá"
-                      value={formData.price}
+                      value={form.price}
                       onChange={(e) =>
-                        setFormData({ ...formData, price: e.target.value })
+                        setForm({ ...form, price: e.target.value })
                       }
                       required
                     />
@@ -318,19 +314,40 @@ const Products = () => {
                       type="number"
                       className="form-control mb-2"
                       placeholder="Số lượng"
-                      value={formData.stock}
+                      value={form.quantity}
                       onChange={(e) =>
-                        setFormData({ ...formData, stock: e.target.value })
+                        setForm({ ...form, quantity: e.target.value })
                       }
                       required
                     />
+
+                    <select
+                      className="form-control"
+                      value={form.productTypeId}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          productTypeId: e.target.value,
+                        })
+                      }
+                      required
+                    >
+                      <option value="">Chọn loại</option>
+                      {types.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="modal-footer">
                     <button className="btn btn-secondary" onClick={closeModal}>
                       Huỷ
                     </button>
-                    <button className="btn btn-primary">Lưu</button>
+                    <button type="submit" className="btn btn-primary">
+                      Lưu
+                    </button>
                   </div>
                 </form>
               </div>

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { authApi } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
@@ -14,39 +15,44 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
+  // LOAD USER KHI MỞ APP
   useEffect(() => {
-    // Check for stored user on mount
     const storedUser = localStorage.getItem("user");
     const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
 
-        setUser(
-          parsedUser || { role: localStorage.getItem("role") || "Admin" },
-        );
-      } catch {
-        setUser({ role: "Admin" });
+    if (token && storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (err) {
+        console.error("Parse user error:", err);
+        setUser(null);
       }
     }
+
     setLoading(false);
   }, []);
 
+  // LOGIN
   const login = async (username, password) => {
     try {
       const response = await authApi.login(username, password);
-      const userData = response.data;
+      const data = response.data;
 
+      // Lưu token
       localStorage.setItem("token", data.token);
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          username: username,
-          role: data.role,
-        }),
-      );
+      // Lưu user đúng format
+      const userData = data.user
+        ? data.user
+        : {
+            username: username,
+            role: data.role || "admin",
+          };
+
+      localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
 
       return { success: true };
@@ -56,14 +62,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // LOGOUT
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+    localStorage.clear();
+
+    window.location.href =
+      "http://127.0.0.1:5500/BaseCore.WebClient/electro-master/login.html";
   };
 
+  // CHECK ADMIN
   const isAdmin = () => {
-    return user?.role === "Admin";
+    return user?.role?.toLowerCase() === "admin";
   };
 
   const value = {
