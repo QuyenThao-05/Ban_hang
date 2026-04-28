@@ -16,7 +16,9 @@ namespace BaseCore.Entities
         public int Quantity { get; set; }
 
         public string? Image { get; set; }
+        public string? Description { get; set; }
 
+        public string? Detail { get; set; }
         public int ProductTypeId { get; set; }
 
         public DateTime CreatedAt { get; set; }

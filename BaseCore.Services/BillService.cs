@@ -97,7 +97,14 @@ namespace BaseCore.Services
                         $"Không tìm thấy sản phẩm ID {item.ProductId}");
 
                 ProductDetail? productDetail = null;
+                if (product == null)
+                    throw new Exception("Product null");
 
+                if (item == null)
+                    throw new Exception("Item null");
+
+                if (item.Price <= 0)
+                    throw new Exception("Price invalid");
                 if (item.ProductDetailId.HasValue)
                 {
                     productDetail =

@@ -12,6 +12,7 @@ namespace BaseCore.Repository.EFCore
     decimal? maxPrice,
     int page,
     int pageSize);
+        Task<Product?> GetFullDetailAsync(int id);
         Task<List<Product>> GetByProductTypeAsync(int productTypeId);
         Task<(List<ProductDashboardResponse> Items, int TotalCount)> GetDashboardProductsAsync(
     int page,
@@ -72,6 +73,13 @@ namespace BaseCore.Repository.EFCore
                 .ToListAsync();
 
             return (products, totalCount);
+        }
+        public async Task<Product?> GetFullDetailAsync(int id)
+        {
+            return await _dbSet
+                .Include(p => p.ProductType)
+                .Include(p => p.ProductDetails)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<List<Product>> GetByProductTypeAsync(int productTypeId)

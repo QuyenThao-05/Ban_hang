@@ -1,4 +1,5 @@
 using BaseCore.DTO.Product;
+using BaseCore.DTO.Product.BaseCore.DTO.Product;
 using BaseCore.Entities;
 using BaseCore.Repository;
 using BaseCore.Repository.EFCore;
@@ -6,6 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BaseCore.Services
 {
+    public interface IProductService
+    {
+    Task<ProductDetailResponse?> GetProductDetail(int id);
+    }
     public class ProductService : IProductService
     {
         private readonly MySqlDbContext _context;
@@ -93,6 +98,38 @@ namespace BaseCore.Services
                 pageSize,
                 search,
                 productTypeId);
+        }
+        public async Task<ProductDetailResponse?> GetProductDetail(int id)
+        {
+            var product =
+                await _productRepository.GetFullDetailAsync(id);
+
+            if (product == null)
+                return null;
+
+            return new ProductDetailResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Quantity = product.Quantity,
+                Image = product.Image,
+                Description = product.Description,
+                Detail = product.Detail,
+                ProductTypeId = product.ProductTypeId,
+                ProductTypeName = product.ProductType.Name,
+
+                Variants = product.ProductDetails
+                    .Select(v => new ProductVariantResponse
+                    {
+                        Id = v.Id,
+                        Brand = v.Brand,
+                        Color = v.Color,
+                        Size = v.Size,
+                        Quantity = v.Quantity
+                    })
+                    .ToList()
+            };
         }
 
     }
