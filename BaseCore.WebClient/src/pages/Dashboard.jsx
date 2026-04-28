@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  productApi,
-  userApi,
-  productTypeApi,
-  orderApi,
-} from "../services/api";
+import { productApi, userApi, productTypeApi, orderApi } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 
 const Dashboard = () => {
@@ -20,7 +15,6 @@ const Dashboard = () => {
 
   const [latestOrders, setLatestOrders] = useState([]);
   const [lowStock, setLowStock] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   // ===== HELPER =====
@@ -31,38 +25,54 @@ const Dashboard = () => {
     return [];
   };
 
-  // ===== LOAD =====
+  // ===== LOAD DASHBOARD =====
   useEffect(() => {
     loadDashboard();
-  }, []);
+  }, []); // ❌ KHÔNG phụ thuộc loading nữa
 
   const loadDashboard = async () => {
     try {
+      setLoading(true);
+
+      // ===== CALL API SONG SONG =====
       const [productsRes, typesRes] = await Promise.all([
         productApi.getAll(),
         productTypeApi.getAll(),
       ]);
 
-      let ordersRes = { data: [] };
+      let orders = [];
       let usersCount = 0;
 
+      // ===== ADMIN ONLY =====
       if (isAdmin()) {
+        // USERS
         try {
-          ordersRes = await orderApi.getAll();
-
           const usersRes = await userApi.getAll({
             page: 1,
-            pageSize: 1,
+            pageSize: 1000,
           });
 
-          usersCount = usersRes.data.totalCount || 0;
-        } catch (e) {
-          console.log("Admin API lỗi");
+          const usersData = usersRes.data;
+
+          usersCount =
+            usersData.totalCount ??
+            usersData.items?.length ??
+            (Array.isArray(usersData) ? usersData.length : 0);
+        } catch (err) {
+          console.log("Lỗi load users:", err);
+        }
+
+        // ORDERS (có thể lỗi 401 → bỏ qua)
+        try {
+          const ordersRes = await orderApi.getAll();
+          orders = getData(ordersRes);
+        } catch (err) {
+          console.log("Orders chưa có hoặc lỗi 401 → bỏ qua");
         }
       }
 
       const products = getData(productsRes);
-      const orders = getData(ordersRes);
+      const types = getData(typesRes);
 
       // ===== REVENUE =====
       const totalRevenue = orders.reduce(
@@ -75,9 +85,10 @@ const Dashboard = () => {
         (p) => p.quantity !== undefined && p.quantity < 20
       );
 
+      // ===== SET STATE =====
       setStats({
         products: products.length,
-        types: getData(typesRes).length,
+        types: types.length,
         orders: orders.length,
         users: usersCount,
         revenue: totalRevenue,
@@ -175,22 +186,6 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-
-              {/* ===== INFO ===== */}
-              <div className="card mt-3">
-                <div className="card-header">
-                  <h3>Hệ thống quản lý VPP</h3>
-                </div>
-                <div className="card-body">
-                  <ul>
-                    <li>Quản lý sản phẩm</li>
-                    <li>Quản lý loại sản phẩm</li>
-                    <li>Quản lý đơn hàng (Bill)</li>
-                    <li>Quản lý người dùng</li>
-                    <li>Theo dõi doanh thu</li>
-                  </ul>
-                </div>
-              </div>
             </>
           )}
         </div>
@@ -199,7 +194,7 @@ const Dashboard = () => {
   );
 };
 
-// ===== BOX COMPONENT =====
+// ===== BOX =====
 const Box = ({ title, value, color, icon }) => (
   <div className="col-lg-3 col-6">
     <div className={`small-box bg-${color}`}>

@@ -45,12 +45,10 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem("token", data.token);
 
-      const userData = data.user
-        ? data.user
-        : {
-            username: username,
-            role: data.role || "user",
-          };
+      const userData = {
+        username: data.user?.username || username,
+        role: data.user?.role || data.role || "user",
+      };
 
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);

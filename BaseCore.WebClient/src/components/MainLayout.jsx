@@ -148,7 +148,7 @@ const MainLayout = ({ children }) => {
       {/* Footer */}
       <footer className="main-footer">
         <strong>
-          Copyright &copy; 2024 <a href="#">BaseCore Sales</a>.
+          Copyright &copy; 2024 <a href="#">Stationery Shop</a>.
         </strong>
 
         <div className="float-right d-none d-sm-inline-block">
