@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using BaseCore.Entities;
 using BaseCore.Repository.EFCore;
 using BaseCore.DTO.Product;
+using BaseCore.Services;
 
 namespace BaseCore.APIService.Controllers
 {
@@ -16,14 +17,16 @@ namespace BaseCore.APIService.Controllers
     {
         private readonly IProductRepositoryEF _productRepository;
         private readonly ICategoryRepositoryEF _categoryRepository;
+        private readonly IProductService _productService;
       
 
         
 
-        public ProductsController(IProductRepositoryEF productRepository, ICategoryRepositoryEF categoryRepository)
+        public ProductsController(IProductRepositoryEF productRepository, ICategoryRepositoryEF categoryRepository,IProductService productService)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
+            _productService = productService;
         }
 
         /// <summary>
@@ -78,21 +81,18 @@ namespace BaseCore.APIService.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            var product =
+                await _productService.GetProductDetail(id);
+
             if (product == null)
-                return NotFound(new { message = "Product not found" });
-            var result = new
             {
-                product.Id,
-                product.Name,
-                product.Price,
-                product.Quantity,
-                product.Image,
-                product.ProductTypeId,
-                product.CreatedAt,
-                product.ManufacturerId
-            };
-            return Ok(result);
+                return NotFound(new
+                {
+                    message = "Product not found"
+                });
+            }
+
+            return Ok(product);
         }
 
         /// <summary>

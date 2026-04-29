@@ -7,7 +7,7 @@ namespace BaseCore.APIService.Controllers
     /// <summary>
     /// Product Reviews API
     /// </summary>
-    [Route("api/reviews")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ReviewsController : ControllerBase
     {
