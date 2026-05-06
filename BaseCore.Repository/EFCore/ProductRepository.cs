@@ -1,4 +1,5 @@
 using BaseCore.DTO.Product;
+using BaseCore.DTO.Product.BaseCore.DTO.Product;
 using BaseCore.Entities;
 using Microsoft.EntityFrameworkCore;
 namespace BaseCore.Repository.EFCore
@@ -38,20 +39,20 @@ namespace BaseCore.Repository.EFCore
         {
             var query = _dbSet.AsQueryable();
 
-            // 🔍 tìm theo tên
+            // tìm theo tên
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.Trim().ToLower();
                 query = query.Where(p => p.Name.ToLower().Contains(keyword));
             }
 
-            // 📂 lọc theo loại
+            //lọc theo loại
             if (productTypeId.HasValue && productTypeId > 0)
             {
                 query = query.Where(p => p.ProductTypeId == productTypeId.Value);
             }
 
-            // 💰 lọc theo giá
+            // lọc theo giá
             if (minPrice.HasValue)
             {
                 query = query.Where(p => p.Price >= minPrice.Value);
@@ -62,10 +63,10 @@ namespace BaseCore.Repository.EFCore
                 query = query.Where(p => p.Price <= maxPrice.Value);
             }
 
-            // 📊 tổng số bản ghi
+            // tổng số bản ghi
             var totalCount = await query.CountAsync();
 
-            // 📄 phân trang
+            // phân trang
             var products = await query
                 .OrderByDescending(p => p.Id)
                 .Skip((page - 1) * pageSize)

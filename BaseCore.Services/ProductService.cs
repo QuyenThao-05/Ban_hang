@@ -7,21 +7,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BaseCore.Services
 {
-    public interface IProductService
-    {
-    Task<ProductDetailResponse?> GetProductDetail(int id);
-    }
+    
     public class ProductService : IProductService
     {
         private readonly MySqlDbContext _context;
         private readonly IProductRepositoryEF _productRepository;
-        public ProductService(MySqlDbContext context)
-        {
-            _context = context;
-        }
-        public ProductService(IProductRepositoryEF productRepository)
+       
+        public ProductService(MySqlDbContext context, IProductRepositoryEF productRepository)
         {
             _productRepository = productRepository;
+            _context = context;
+
         }
         public async Task<List<Product>> GetAllProductsAsync()
         {

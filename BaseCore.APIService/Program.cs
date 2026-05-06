@@ -83,7 +83,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBillRepositoryEF, BillRepositoryEF>();
 builder.Services.AddScoped<IBillService, BillService>();
-
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IReviewRepositoryEF, ReviewRepositoryEF>();
 // JWT Authentication
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:SecretKey"] ?? "YourSecretKeyForAuthenticationShouldBeLongEnough");
 builder.Services.AddAuthentication(x =>
