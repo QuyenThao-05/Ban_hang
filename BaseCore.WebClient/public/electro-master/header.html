@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <!-- Các link CSS chung -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stationery Shop</title>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700"
+      rel="stylesheet"
+    />
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="css/slick.css" />
+    <link type="text/css" rel="stylesheet" href="css/slick-theme.css" />
+    <link type="text/css" rel="stylesheet" href="css/nouislider.min.css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header>
+      <!-- TOP HEADER -->
+      <div id="top-header">
+        <div class="container">
+          <ul class="header-links pull-left">
+            <li>
+              <a href="#"><i class="fa fa-phone"></i> +021-95-51-84</a>
+            </li>
+            <li>
+              <a href="#"><i class="fa fa-envelope-o"></i> email@email.com</a>
+            </li>
+            <li>
+              <a href="#"
+                ><i class="fa fa-map-marker"></i> 1734 Stonecoal Road</a
+              >
+            </li>
+          </ul>
+          <ul class="header-links pull-right">
+            <li id="account-area"></li>
+          </ul>
+        </div>
+      </div>
+      <!-- /TOP HEADER -->
+
+      <!-- MAIN HEADER -->
+      <div id="header">
+        <div class="container">
+          <div class="row">
+            <!-- LOGO -->
+            <div class="col-md-3">
+              <div class="header-logo">
+                <a href="index.html" class="logo">
+                  <img src="./img/logo.png" alt="Stationery Shop" />
+                </a>
+              </div>
+            </div>
+            <!-- /LOGO -->
+
+            <!-- SEARCH BAR -->
+            <div class="col-md-6">
+              <div class="header-search">
+                <form
+                  id="search-form"
+                  onsubmit="
+                    handleSearch();
+                    return false;
+                  "
+                >
+                  <select class="input-select" id="category-select">
+                    <option value="">Loại sản phẩm</option>
+                    <option value="1">Bút</option>
+                    <option value="2">Vở / Sổ</option>
+                    <option value="3">Giấy</option>
+                    <option value="4">Khác</option>
+                  </select>
+                  <input
+                    id="searchInput"
+                    class="input"
+                    placeholder="Tìm sản phẩm..."
+                  />
+                  <button class="search-btn" type="submit">Search</button>
+                </form>
+              </div>
+            </div>
+            <!-- /SEARCH BAR -->
+
+            <!-- ACCOUNT -->
+            <div class="col-md-3 clearfix">
+              <div class="header-ctn">
+                <!-- Wishlist -->
+                <div>
+                  <a href="#">
+                    <i class="fa fa-heart-o"></i>
+                    <span>Yêu thích</span>
+                    <div class="qty">2</div>
+                  </a>
+                </div>
+                <!-- /Wishlist -->
+
+                <!-- Cart -->
+                <div class="dropdown">
+                  <a
+                    class="dropdown-toggle"
+                    data-toggle="dropdown"
+                    aria-expanded="true"
+                  >
+                    <i class="fa fa-shopping-cart"></i>
+                    <span>Giỏ hàng</span>
+                    <div class="qty" id="cart-count">0</div>
+                  </a>
+                  <div class="cart-dropdown">
+                    <div class="cart-list" id="cart-list"></div>
+                    <div class="cart-summary">
+                      <small id="cart-count-small">0 Item(s)</small>
+                      <h5 id="cart-total">0 VND</h5>
+                    </div>
+                    <div class="cart-btns">
+                      <a href="cart.html">Xem giỏ hàng</a>
+                      <a href="checkout.html"
+                        >Thanh toán <i class="fa fa-arrow-circle-right"></i
+                      ></a>
+                    </div>
+                  </div>
+                </div>
+                <!-- /Cart -->
+
+                <!-- Menu Toogle -->
+                <div class="menu-toggle">
+                  <a href="#">
+                    <i class="fa fa-bars"></i>
+                    <span>Menu</span>
+                  </a>
+                </div>
+                <!-- /Menu Toogle -->
+              </div>
+            </div>
+            <!-- /ACCOUNT -->
+          </div>
+        </div>
+      </div>
+      <!-- /MAIN HEADER -->
+      <!-- NAVIGATION -->
+    <nav id="navigation">
+      <!-- container -->
+      <div class="container">
+        <!-- responsive-nav -->
+        <div id="responsive-nav">
+          
+        </div>
+        <!-- /responsive-nav -->
+      </div>
+      <!-- /container -->
+    </nav>
+    <!-- /NAVIGATION -->
+    </header>
+    <!-- /HEADER -->
+
+    <script>
+      // Hàm tìm kiếm chung
+      function handleSearch() {
+        const keyword = document.getElementById("searchInput").value.trim();
+        if (!keyword) return;
+
+        // Nếu đang ở index.html thì search trực tiếp
+        if (
+          window.location.pathname.includes("index.html") ||
+          window.location.pathname === "/" ||
+          window.location.pathname.endsWith("/")
+        ) {
+          if (typeof loadProducts === "function") {
+            loadProducts(keyword);
+          }
+        } else {
+          // Chuyển sang index.html và search
+          window.location.href = `index.html?search=${encodeURIComponent(keyword)}`;
+        }
+      }
+
+      // Load user sau khi header được chèn
+      document.addEventListener("DOMContentLoaded", function () {
+        updateUserHeader();
+        updateCartCount();
+        loadCartDropdown();
+      });
+    </script>
+  </body>
+</html>
