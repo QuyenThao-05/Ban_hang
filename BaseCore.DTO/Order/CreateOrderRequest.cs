@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BaseCore.DTO.Bill
+namespace BaseCore.DTO.Order
 {
-    public class CreateBillRequest
+    public class CreateOrderRequest
     {
         public int UserId { get; set; }
 
@@ -14,6 +14,6 @@ namespace BaseCore.DTO.Bill
 
         public string? PaymentMethod { get; set; }
 
-        public List<CreateBillDetailRequest> Items { get; set; } = new();
+        public List<CreateOrderDetailRequest> Items { get; set; } = new();
     }
 }

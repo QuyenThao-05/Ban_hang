@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BaseCore.DTO.Bill
+namespace BaseCore.DTO.Order
 {
-    public class BillDetailResponse
+    public class OrderDetailResponse
     {
         public int Id { get; set; }
 

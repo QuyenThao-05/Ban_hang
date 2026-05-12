@@ -1,4 +1,4 @@
-using BaseCore.Entities;
+﻿using BaseCore.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -26,19 +26,19 @@ namespace BaseCore.Repository.Authen
         {
             _context = context;
         }
-        //Login
+
         public async Task<User> GetByUsernameAsync(string username)
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.Username == username);
         }
-        //get user by id
+
         public async Task<User> GetByIdAsync(int id)
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
-        //get all
+
         public async Task<List<User>> GetAllAsync()
         {
             return await _context.Users
@@ -49,7 +49,6 @@ namespace BaseCore.Repository.Authen
         public async Task CreateAsync(User user)
         {
             user.CreatedAt = DateTime.Now;
-
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
         }
@@ -63,22 +62,34 @@ namespace BaseCore.Repository.Authen
         public async Task DeleteAsync(int id)
         {
             var user = await _context.Users.FindAsync(id);
-            if (user != null)
-            {
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
-            }
+            if (user == null) return;
+
+            // ✅ Xóa các bảng liên quan trước bằng raw SQL
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE FROM Reviews WHERE UserId = {0}", id);
+
+            // CartItems xóa qua Carts
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE ci FROM CartItems ci INNER JOIN Carts c ON ci.CartId = c.Id WHERE c.UserId = {0}", id);
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE FROM Carts WHERE UserId = {0}", id);
+
+            // Xóa OrderDetails của các Orders thuộc user này
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE od FROM OrderDetails od INNER JOIN Orders o ON od.OrderId = o.Id WHERE o.UserId = {0}", id);
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE FROM Orders WHERE UserId = {0}", id);
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
         }
-        // SEARCH + PAGINATION
-        // =====================================================
+
         public async Task<(List<User> Users, int TotalCount)> SearchAsync(
             string? keyword,
             int page,
             int pageSize)
         {
             var query = _context.Users.AsQueryable();
-
-            // 🔍 Search
             if (!string.IsNullOrEmpty(keyword))
             {
                 keyword = keyword.ToLower();
@@ -97,10 +108,8 @@ namespace BaseCore.Repository.Authen
                 );
             }
 
-            // 📊 Total count
             var totalCount = await query.CountAsync();
 
-            // 📄 Pagination
             var users = await query
                 .OrderByDescending(u => u.CreatedAt)
                 .Skip((page - 1) * pageSize)
@@ -111,4 +120,3 @@ namespace BaseCore.Repository.Authen
         }
     }
 }
-

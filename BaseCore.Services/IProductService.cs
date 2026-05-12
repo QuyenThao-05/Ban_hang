@@ -1,3 +1,4 @@
+using BaseCore.DTO.Product;
 using BaseCore.DTO.Product.BaseCore.DTO.Product;
 using BaseCore.Entities;
 using System.Collections.Generic;

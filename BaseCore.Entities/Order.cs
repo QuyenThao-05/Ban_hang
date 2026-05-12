@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BaseCore.DTO.Bill
+using System;
+using System.Collections.Generic;
+
+namespace BaseCore.Entities
 {
-    public class BillDashboardResponse
+    public class Order
     {
         public int Id { get; set; }
-
         public int UserId { get; set; }
-
-        public string CustomerName { get; set; } = "";
+        public User User { get; set; }
 
         public decimal TotalPrice { get; set; }
-
-        public string Status { get; set; } = "";
+        public string Status { get; set; } = "Pending";
 
         public string? ShippingAddress { get; set; }
 
         public string? PaymentMethod { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public List<OrderDetail> OrderDetails { get; set; } = new();
     }
 }

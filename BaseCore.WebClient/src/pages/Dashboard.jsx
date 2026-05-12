@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { productApi, userApi, productTypeApi, orderApi } from "../services/api";
+import { productApi, userApi, productTypeApi, orderApi, manufacturerApi } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 
 const Dashboard = () => {
@@ -11,6 +11,7 @@ const Dashboard = () => {
     orders: 0,
     users: 0,
     revenue: 0,
+    manufacturers: 0,
   });
 
   const [latestOrders, setLatestOrders] = useState([]);
@@ -28,32 +29,28 @@ const Dashboard = () => {
   // ===== LOAD DASHBOARD =====
   useEffect(() => {
     loadDashboard();
-  }, []); // ❌ KHÔNG phụ thuộc loading nữa
+  }, []);
 
   const loadDashboard = async () => {
     try {
       setLoading(true);
 
-      // ===== CALL API SONG SONG =====
-      const [productsRes, typesRes] = await Promise.all([
+      const [productsRes, typesRes, manufacturersRes] = await Promise.all([
         productApi.getAll(),
         productTypeApi.getAll(),
+        manufacturerApi.getAll(),
       ]);
 
       let orders = [];
+      let totalOrderCount = 0;
       let usersCount = 0;
 
       // ===== ADMIN ONLY =====
       if (isAdmin()) {
         // USERS
         try {
-          const usersRes = await userApi.getAll({
-            page: 1,
-            pageSize: 1000,
-          });
-
+          const usersRes = await userApi.getAll({ page: 1, pageSize: 1000 });
           const usersData = usersRes.data;
-
           usersCount =
             usersData.totalCount ??
             usersData.items?.length ??
@@ -62,10 +59,12 @@ const Dashboard = () => {
           console.log("Lỗi load users:", err);
         }
 
-        // ORDERS (có thể lỗi 401 → bỏ qua)
+        // ORDERS
         try {
-          const ordersRes = await orderApi.getAll();
-          orders = getData(ordersRes);
+          const ordersRes = await orderApi.getAll({ page: 1, pageSize: 5 });
+          orders = ordersRes.data?.items || [];
+          // ✅ dùng totalCount từ backend thay vì đếm array
+          totalOrderCount = ordersRes.data?.totalCount || 0;
         } catch (err) {
           console.log("Orders chưa có hoặc lỗi 401 → bỏ qua");
         }
@@ -75,8 +74,9 @@ const Dashboard = () => {
       const types = getData(typesRes);
 
       // ===== REVENUE =====
+      // ✅ field đúng là totalPrice, không phải totalAmount
       const totalRevenue = orders.reduce(
-        (sum, o) => sum + (o.totalAmount || 0),
+        (sum, o) => sum + (o.totalPrice || 0),
         0
       );
 
@@ -86,12 +86,16 @@ const Dashboard = () => {
       );
 
       // ===== SET STATE =====
+      const manufacturersData = manufacturersRes.data?.items || manufacturersRes.data || [];
+      const manufacturersCount = manufacturersRes.data?.totalCount || (Array.isArray(manufacturersData) ? manufacturersData.length : 0);
+
       setStats({
         products: products.length,
         types: types.length,
-        orders: orders.length,
+        orders: totalOrderCount,
         users: usersCount,
         revenue: totalRevenue,
+        manufacturers: manufacturersCount,
       });
 
       setLatestOrders(orders.slice(0, 5));
@@ -102,6 +106,8 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  const formatMoney = (v) => Number(v || 0).toLocaleString("vi-VN") + " đ";
 
   // ===== UI =====
   return (
@@ -125,11 +131,13 @@ const Dashboard = () => {
                 <Box title="Products" value={stats.products} color="info" icon="box" />
                 <Box title="Product Types" value={stats.types} color="success" icon="tags" />
                 <Box title="Orders" value={stats.orders} color="danger" icon="shopping-cart" />
-                <Box title="Revenue" value={stats.revenue + "đ"} color="primary" icon="money-bill" />
+                {/* ✅ format tiền đúng */}
+                <Box title="Revenue" value={formatMoney(stats.revenue)} color="primary" icon="money-bill" />
 
                 {isAdmin() && (
                   <Box title="Users" value={stats.users} color="warning" icon="users" />
                 )}
+                <Box title="Manufacturers" value={stats.manufacturers} color="secondary" icon="industry" />
               </div>
 
               {/* ===== ORDERS ===== */}
@@ -147,14 +155,19 @@ const Dashboard = () => {
                           <thead>
                             <tr>
                               <th>ID</th>
+                              <th>Khách hàng</th>
                               <th>Tổng tiền</th>
+                              <th>Trạng thái</th>
                             </tr>
                           </thead>
                           <tbody>
                             {latestOrders.map((o) => (
                               <tr key={o.id}>
                                 <td>{o.id}</td>
-                                <td>{o.totalAmount}đ</td>
+                                <td>{o.customerName || "N/A"}</td>
+                                {/* ✅ totalPrice thay vì totalAmount */}
+                                <td>{formatMoney(o.totalPrice)}</td>
+                                <td>{o.status}</td>
                               </tr>
                             ))}
                           </tbody>

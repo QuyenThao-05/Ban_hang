@@ -10,31 +10,19 @@ const Login = () => {
     remember: false,
   });
 
+  const [error, setError] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
+    // ✅ AuthContext.login() xử lý lưu token + navigate luôn
     const res = await login(form.username, form.password);
 
     if (!res.success) {
-      alert(res.message);
-      return;
+      setError(res.message || "Đăng nhập thất bại");
     }
-
-    // ✅ LƯU USER
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        username: res.data.username,
-        role: res.data.role,
-      }),
-    );
-
-    // ✅ CHUYỂN TRANG
-    if (res.data.role === "admin") {
-      window.location.href = "/dashboard";
-    } else {
-      window.location.href = "/electro-master/index.html";
-    }
+    // ✅ Không cần làm gì thêm — AuthContext đã lưu token và redirect
   };
 
   return (
@@ -47,6 +35,13 @@ const Login = () => {
 
         {/* TITLE */}
         <h3 className="login-title">Đăng nhập</h3>
+
+        {/* LỖI */}
+        {error && (
+          <div style={{ color: "red", marginBottom: 12, textAlign: "center" }}>
+            {error}
+          </div>
+        )}
 
         {/* FORM */}
         <form onSubmit={handleSubmit}>
@@ -113,14 +108,8 @@ const Login = () => {
         }
 
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         .logo {
@@ -146,6 +135,7 @@ const Login = () => {
           border-radius: 8px;
           border: 1px solid #ddd;
           transition: 0.3s;
+          box-sizing: border-box;
         }
 
         .input:focus {
@@ -163,6 +153,7 @@ const Login = () => {
           border: none;
           font-weight: 600;
           transition: 0.3s;
+          cursor: pointer;
         }
 
         .primary-btn:hover {

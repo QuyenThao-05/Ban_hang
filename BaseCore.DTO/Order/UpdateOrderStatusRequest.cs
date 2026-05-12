@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BaseCore.DTO.Bill
+namespace BaseCore.DTO.Order
 {
-    public class UpdateBillStatusRequest
+    public class UpdateOrderStatusRequest
     {
         public string Status { get; set; } = "";
     }

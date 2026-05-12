@@ -18,11 +18,12 @@ namespace BaseCore.Repository
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductDetail> ProductDetails { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
-        public DbSet<Bill> Bills { get; set; }
-        public DbSet<BillDetail> BillDetails { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Manufacturer> Manufacturers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -79,7 +80,7 @@ namespace BaseCore.Repository
             });
 
             // Configure Order entity
-            modelBuilder.Entity<Bill>(entity =>
+            modelBuilder.Entity<Order>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.TotalPrice).HasPrecision(18, 2);
@@ -87,19 +88,19 @@ namespace BaseCore.Repository
             });
 
             // Configure OrderDetail entity
-            modelBuilder.Entity<BillDetail>()
-        .HasOne(bd => bd.Bill)
-        .WithMany(b => b.BillDetails)
-        .HasForeignKey(bd => bd.BillId);
+            modelBuilder.Entity<OrderDetail>()
+        .HasOne(bd => bd.Order)
+        .WithMany(b => b.OrderDetails)
+        .HasForeignKey(bd => bd.OrderId);
 
-            modelBuilder.Entity<BillDetail>()
+            modelBuilder.Entity<OrderDetail>()
                 .HasOne(bd => bd.Product)
-                .WithMany(p => p.BillDetails)
+                .WithMany(p => p.OrderDetails)
                 .HasForeignKey(bd => bd.ProductId);
 
-            modelBuilder.Entity<BillDetail>()
+            modelBuilder.Entity<OrderDetail>()
                 .HasOne(bd => bd.ProductDetail)
-                .WithMany(pd => pd.BillDetails)
+                .WithMany(pd => pd.OrderDetails)
                 .HasForeignKey(bd => bd.ProductDetailId);
 
             // Seed initial data

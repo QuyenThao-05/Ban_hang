@@ -102,10 +102,10 @@ namespace BaseCore.APIService.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody] ProductCreateDto dto)
         {
-            // Validate category exists
-            var category = await _categoryRepository.GetByIdAsync(dto.ProductTypeId);
-            if (category == null)
-                return BadRequest(new { message = "Category not found" });
+            //// Validate category exists
+            //var category = await _categoryRepository.GetByIdAsync(dto.ProductTypeId);
+            //if (category == null)
+            //    return BadRequest(new { message = "Category not found" });
 
             var product = new Product
             {
@@ -114,7 +114,7 @@ namespace BaseCore.APIService.Controllers
                 Quantity = dto.Quantity,
                 ProductTypeId = dto.ProductTypeId,
                 Image = dto.Image ?? "",
-                ManufacturerId = dto.ManufacturerId,
+                ManufacturerId = dto.ManufacturerId == 0 ? null : dto.ManufacturerId,  // ✅
                 CreatedAt = DateTime.Now
             };
 
@@ -192,7 +192,7 @@ namespace BaseCore.APIService.Controllers
         public int Quantity { get; set; }
         public int ProductTypeId { get; set; }
         public string? Image { get; set; }
-        public int ManufacturerId { get; set; }
+        public int? ManufacturerId { get; set; }
     }
 
     public class ProductUpdateDto

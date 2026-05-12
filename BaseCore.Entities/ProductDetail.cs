@@ -36,6 +36,6 @@ using System.Threading.Tasks;
             // =====================================================
             // NAVIGATION
             // =====================================================
-            public List<BillDetail> BillDetails { get; set; } = new();
+            public List<OrderDetail> OrderDetails { get; set; } = new();
         }
     }

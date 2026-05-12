@@ -1,4 +1,4 @@
-using BaseCore.DTO.Bill;
+using BaseCore.DTO.Order;
 using BaseCore.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,30 +7,30 @@ namespace BaseCore.Repository.EFCore
     /// <summary>
     /// Order Repository using Entity Framework Core
     /// </summary>
-    public interface IBillRepositoryEF : IRepository<Bill>
+    public interface IOrderRepositoryEF : IRepository<Order>
     {
-        Task<(List<BillDashboardResponse> Items, int TotalCount)>
-            GetDashboardBillsAsync(
+        Task<(List<OrderDashboardResponse> Items, int TotalCount)>
+            GetDashboardOrdersAsync(
                 int page,
                 int pageSize,
                 string? search,
                 string? status);
 
-        Task<Bill?> GetDetailAsync(int billId);
+        Task<Order?> GetDetailAsync(int OrderId);
 
-        Task CreateBillAsync(Bill bill);
+        Task CreateOrderAsync(Order Order);
 
-        Task UpdateBillAsync(Bill bill);
+        Task UpdateOrderAsync(Order Order);
 
-        Task DeleteBillAsync(Bill bill);
+        Task DeleteOrderAsync(Order Order);
     }
 
-    public class BillRepositoryEF
-       : Repository<Bill>, IBillRepositoryEF
+    public class OrderRepositoryEF
+       : Repository<Order>, IOrderRepositoryEF
     {
         private readonly MySqlDbContext _context;
 
-        public BillRepositoryEF(MySqlDbContext context)
+        public OrderRepositoryEF(MySqlDbContext context)
             : base(context)
         {
             _context = context;
@@ -39,14 +39,14 @@ namespace BaseCore.Repository.EFCore
         // =====================================================
         // DASHBOARD SEARCH + FILTER + PAGINATION
         // =====================================================
-        public async Task<(List<BillDashboardResponse> Items, int TotalCount)>
-            GetDashboardBillsAsync(
+        public async Task<(List<OrderDashboardResponse> Items, int TotalCount)>
+            GetDashboardOrdersAsync(
                 int page,
                 int pageSize,
                 string? search,
                 string? status)
         {
-            var query = _context.Bills
+            var query = _context.Orders
                 .Include(b => b.User)
                 .AsQueryable();
 
@@ -78,7 +78,7 @@ namespace BaseCore.Repository.EFCore
                 .OrderByDescending(b => b.CreatedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(b => new BillDashboardResponse
+                .Select(b => new OrderDashboardResponse
                 {
                     Id = b.Id,
                     UserId = b.UserId,
@@ -97,24 +97,24 @@ namespace BaseCore.Repository.EFCore
         // =====================================================
         // GET BILL DETAIL
         // =====================================================
-        public async Task<Bill?> GetDetailAsync(int billId)
+        public async Task<Order?> GetDetailAsync(int OrderId)
         {
-            return await _context.Bills
+            return await _context.Orders
                 .Include(b => b.User)
-                .Include(b => b.BillDetails)
+                .Include(b => b.OrderDetails)
                     .ThenInclude(d => d.Product)
-                .Include(b => b.BillDetails)
+                .Include(b => b.OrderDetails)
                     .ThenInclude(d => d.ProductDetail)
                 .FirstOrDefaultAsync(b =>
-                    b.Id == billId);
+                    b.Id == OrderId);
         }
 
         // =====================================================
         // CREATE BILL
         // =====================================================
-        public async Task CreateBillAsync(Bill bill)
+        public async Task CreateOrderAsync(Order Order)
         {
-            _context.Bills.Add(bill);
+            _context.Orders.Add(Order);
 
             await _context.SaveChangesAsync();
         }
@@ -122,9 +122,9 @@ namespace BaseCore.Repository.EFCore
         // =====================================================
         // UPDATE BILL
         // =====================================================
-        public async Task UpdateBillAsync(Bill bill)
+        public async Task UpdateOrderAsync(Order Order)
         {
-            _context.Bills.Update(bill);
+            _context.Orders.Update(Order);
 
             await _context.SaveChangesAsync();
         }
@@ -132,9 +132,9 @@ namespace BaseCore.Repository.EFCore
         // =====================================================
         // DELETE BILL
         // =====================================================
-        public async Task DeleteBillAsync(Bill bill)
+        public async Task DeleteOrderAsync(Order Order)
         {
-            _context.Bills.Remove(bill);
+            _context.Orders.Remove(Order);
 
             await _context.SaveChangesAsync();
         }

@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
         setUser(parsedUser);
       } catch (err) {
         console.error("Parse user error:", err);
+        localStorage.clear();
         navigate("/login");
       }
     }
@@ -43,26 +44,28 @@ export const AuthProvider = ({ children }) => {
       const response = await authApi.login(username, password);
       const data = response.data;
 
+      // ✅ Lưu token
       localStorage.setItem("token", data.token);
 
       const userData = {
-        username: data.user?.username || username,
-        role: data.user?.role || data.role || "user",
+        username: data.username || username,
+        // ✅ Normalize role về chữ thường để so sánh nhất quán
+        role: (data.role || "user").toLowerCase(),
       };
 
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
 
-      // 🔥 PHÂN LUỒNG NGAY TẠI ĐÂY
+      // ✅ Phân luồng theo role
       if (userData.role === "admin") {
         navigate("/dashboard");
       } else {
-        navigate("/"); // web thường
+        navigate("/");
       }
 
       return { success: true };
     } catch (error) {
-      const message = error.response?.data?.message || "Login failed";
+      const message = error.response?.data?.message || error.response?.data || "Login failed";
       return { success: false, message };
     }
   };
@@ -70,11 +73,10 @@ export const AuthProvider = ({ children }) => {
   // LOGOUT
   const logout = () => {
     localStorage.clear();
-
     navigate("/login");
   };
 
-  // CHECK ADMIN
+  // ✅ isAdmin check chữ thường — khớp với role đã normalize
   const isAdmin = () => {
     return user?.role?.toLowerCase() === "admin";
   };
