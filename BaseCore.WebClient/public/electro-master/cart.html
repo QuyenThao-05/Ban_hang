@@ -208,18 +208,48 @@
       function updateUserHeader() {
         const user = JSON.parse(localStorage.getItem("user"));
         const accountArea = document.getElementById("account-area");
+
         if (user && user.username) {
           accountArea.innerHTML = `
-                    <a href="#" style="margin-right:12px;color:white">
-                        <i class="fa fa-user"></i> ${user.username}
-                    </a>
-                    <a href="#" id="logout-btn" style="color:white">
-                        <i class="fa fa-sign-out"></i> Logout
-                    </a>`;
+        
+        <li class="account-dropdown">
+
+          <a href="#" class="account-user">
+            <i class="fa fa-user"></i> ${user.username}
+          </a>
+
+          <div class="account-menu">
+
+            <a href="profile.html">
+              <i class="fa fa-user-circle"></i>
+              Tài khoản của tôi
+            </a>
+
+            <a href="orders.html">
+              <i class="fa fa-shopping-bag"></i>
+              Đơn mua
+            </a>
+
+            <a href="#" id="logout-btn">
+              <i class="fa fa-sign-out"></i>
+              Đăng xuất
+            </a>
+
+          </div>
+
+        </li>
+      `;
+
           document.getElementById("logout-btn").onclick = () => {
             localStorage.clear();
             window.location.href = "index.html";
           };
+        } else {
+          accountArea.innerHTML = `
+        <a href="login.html">
+          <i class="fa fa-user-o"></i> Đăng nhập
+        </a>
+      `;
         }
       }
 

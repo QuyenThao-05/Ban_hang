@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-    <title>Electro - HTML Ecommerce Template</title>
-
+    <title>Sản phẩm - Stationery Shop</title>
+<!--nháp-->
     <!-- Google font -->
     <link
       href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700"
@@ -92,22 +92,10 @@ fetch('header.html')
           <!-- Product main img -->
           <div class="col-md-5 col-md-push-2">
             <div id="product-main-img">
-              <div class="product-preview">
-                <img id="product-image" src="./img/product01.png" />
-              </div>
-
-              <div class="product-preview">
-                <img src="./img/product03.png" alt="" />
-              </div>
-
-              <div class="product-preview">
-                <img src="./img/product06.png" alt="" />
-              </div>
-
-              <div class="product-preview">
-                <img src="./img/product08.png" alt="" />
-              </div>
-            </div>
+  <div class="product-preview">
+    <img id="product-image" src="./img/product01.png" alt="">
+  </div>
+</div>
           </div>
           <!-- /Product main img -->
 
@@ -701,35 +689,41 @@ const products = data.data || data.items || data;
     </script>
     <script>
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelector(".add-to-cart-btn").onclick = () => {
-    const product = {
-      id: new URLSearchParams(window.location.search).get("id"),
-      name: document.getElementById("product-name").innerText,
-      price: parseInt(
-        document.getElementById("product-price").innerText.replace(/\D/g, "")
-      ),
-      image: document.getElementById("product-image").src,
-      quantity: 1
-    };
+    const addBtn = document.querySelector(".add-to-cart-btn");
+    if (addBtn) {
+        addBtn.onclick = () => {
+            const user = JSON.parse(localStorage.getItem("user"));
 
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            if (!user) {
+                alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!");
+                window.location.href = "login.html";
+                return;
+            }
 
-    const existing = cart.find(p => p.id == product.id);
+            // Nếu đã đăng nhập thì thêm vào giỏ
+            const product = {
+                id: new URLSearchParams(window.location.search).get("id"),
+                name: document.getElementById("product-name").innerText,
+                price: parseInt(document.getElementById("product-price").innerText.replace(/\D/g, "")),
+                image: document.getElementById("product-image").src,
+                quantity: 1
+            };
 
-    if (existing) {
-      existing.quantity++;
-    } else {
-      cart.push(product);
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const existing = cart.find(p => p.id == product.id);
+
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push(product);
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert("Đã thêm vào giỏ hàng!");
+            updateCartCount();
+            loadCartDropdown();
+        };
     }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-
-    updateCartCount();
-    loadCartDropdown();
-
-    alert("Đã thêm vào giỏ hàng!");
-    updateCartCount();
-  };
 });
 </script>
 <script>
@@ -807,29 +801,54 @@ function removeFromCart(id) {
 }
 </script>
 <script>
-function updateUserHeader() {
+  function updateUserHeader() {
     const user = JSON.parse(localStorage.getItem("user"));
     const accountArea = document.getElementById("account-area");
-    
-    if (user && user.username) {
-        accountArea.innerHTML = `
-            <a href="#" style="margin-right: 15px; color: white;">
-                <i class="fa fa-user"></i> ${user.username}
-            </a>
-            <a href="#" id="logout-btn" style="color: white;">
-                <i class="fa fa-sign-out"></i> Logout
-            </a>
-        `;
 
-        document.getElementById("logout-btn").onclick = () => {
-            localStorage.removeItem("user");
-            localStorage.removeItem("token");
-            window.location.href = "index.html";
-        };
+    if (user && user.username) {
+      accountArea.innerHTML = `
+        
+        <li class="account-dropdown">
+
+          <a href="#" class="account-user">
+            <i class="fa fa-user"></i> ${user.username}
+          </a>
+
+          <div class="account-menu">
+
+            <a href="profile.html">
+              <i class="fa fa-user-circle"></i>
+              Tài khoản của tôi
+            </a>
+
+            <a href="orders.html">
+              <i class="fa fa-shopping-bag"></i>
+              Đơn mua
+            </a>
+
+            <a href="#" id="logout-btn">
+              <i class="fa fa-sign-out"></i>
+              Đăng xuất
+            </a>
+
+          </div>
+
+        </li>
+      `;
+
+      document.getElementById("logout-btn").onclick = () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+      };
+
     } else {
-        accountArea.innerHTML = `<a href="login.html"><i class="fa fa-user-o"></i> Đăng nhập</a>`;
+      accountArea.innerHTML = `
+        <a href="login.html">
+          <i class="fa fa-user-o"></i> Đăng nhập
+        </a>
+      `;
     }
-}
+  }
 </script>
 <script>
 // Load Footer

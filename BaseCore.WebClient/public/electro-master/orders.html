@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đơn mua - Stationery Shop</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet" />
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" href="css/style.css" />
+
+    <style>
+        .order-tab {
+            border-bottom: 3px solid #d10024;
+            font-weight: 600;
+        }
+        .tab-active {
+            color: #d10024 !important;
+            border-bottom: 3px solid #d10024;
+        }
+        .order-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+        .order-status {
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div id="header-placeholder"></div>
+
+    <!-- BREADCRUMB -->
+    <div id="breadcrumb" class="section">
+      <!-- container -->
+      <div class="container">
+        <!-- row -->
+        <div class="row">
+          <div class="col-md-12">
+            <h3 class="breadcrumb-header">Đơn mua của tôi</h3>
+            <ul class="breadcrumb-tree">
+              <li><a href="index.html">Trang chủ</a></li>
+              <li class="active">Đơn mua</li>
+            </ul>
+          </div>
+        </div>
+        <!-- /row -->
+      </div>
+      <!-- /container -->
+    </div>
+    <!-- /BREADCRUMB -->
+
+    <!-- MAIN CONTENT -->
+    <div class="section">
+        <div class="container">
+
+            <!-- Tabs giống Shopee -->
+            <ul class="nav nav-tabs order-tab" style="margin-bottom: 30px;">
+                <li class="active"><a data-toggle="tab" href="#tab-all" class="tab-active">Tất cả</a></li>
+                <li><a data-toggle="tab" href="#tab-waitpay">Chờ thanh toán</a></li>
+                <li><a data-toggle="tab" href="#tab-shipping">Vận chuyển</a></li>
+                <li><a data-toggle="tab" href="#tab-delivering">Chờ giao hàng</a></li>
+                <li><a data-toggle="tab" href="#tab-done">Hoàn thành</a></li>
+                <li><a data-toggle="tab" href="#tab-cancel">Đã hủy</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="tab-all" class="tab-pane fade in active">
+                    <div id="order-list">
+                        <!-- JavaScript sẽ render đơn hàng vào đây -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script>
+        // Nhúng Header và Footer
+        fetch('header.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('header-placeholder').innerHTML = data);
+
+        fetch('footer.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+
+        // Dữ liệu đơn hàng mẫu
+        const orders = [
+            {
+                id: "#ORD20260507001",
+                status: "Chờ giao hàng",
+                color: "#d10024",
+                product: "Bút bi Thiên Long TL-027 - Hộp 20 cây",
+                qty: 2,
+                price: 85000,
+                image: "./img/product01.png"
+            },
+            {
+                id: "#ORD20260506008",
+                status: "Hoàn thành",
+                color: "#28a745",
+                product: "Vở ô ly Campus A4 200 trang",
+                qty: 5,
+                price: 225000,
+                image: "./img/product02.png"
+            }
+        ];
+
+        function renderOrders() {
+            const container = document.getElementById('order-list');
+            container.innerHTML = orders.map(o => `
+                <div class="order-item">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <img src="${o.image}" class="img-responsive" style="border-radius:6px;">
+                        </div>
+                        <div class="col-md-7">
+                            <h4>${o.product}</h4>
+                            <p>Số lượng: <strong>${o.qty}</strong> • Mã đơn: <strong>${o.id}</strong></p>
+                        </div>
+                        <div class="col-md-3 text-right">
+                            <span class="order-status" style="background:${o.color}20; color:${o.color}">
+                                ${o.status}
+                            </span>
+                            <h4 style="margin:12px 0 8px 0;">${o.price.toLocaleString('vi-VN')} đ</h4>
+                            <button class="btn btn-sm btn-default">Liên hệ</button>
+                            ${o.status === "Hoàn thành" ? `<button class="btn btn-sm btn-primary" style="margin-left:5px;">Đánh giá</button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Chạy khi trang load xong
+        window.onload = renderOrders;
+    </script>
+</body>
+</html>

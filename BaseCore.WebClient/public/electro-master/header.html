@@ -19,7 +19,9 @@
   </head>
   <body>
     <!-- HEADER -->
-    <header>
+    <header
+      style="position: sticky; top: 0; z-index: 1000; background: #15161d"
+    >
       <!-- TOP HEADER -->
       <div id="top-header">
         <div class="container">
@@ -37,122 +39,104 @@
             </li>
           </ul>
           <ul class="header-links pull-right">
+            <!-- Thông báo -->
+            <li>
+              <a href="#" style="position: relative">
+                <i class="fa fa-bell"></i>
+                <span style="display: inline-block; margin-left: 5px"
+                  >Thông báo</span
+                >
+              </a>
+            </li>
+
+            <!-- Hỗ trợ -->
+            <li>
+              <a href="#"><i class="fa fa-question-circle"></i> Hỗ trợ</a>
+            </li>
             <li id="account-area"></li>
           </ul>
         </div>
       </div>
-      <!-- /TOP HEADER -->
 
       <!-- MAIN HEADER -->
-      <div id="header">
+      <div id="header" style="padding: 16px 0">
         <div class="container">
-          <div class="row">
+          <div class="row align-items-center">
             <!-- LOGO -->
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="header-logo">
                 <a href="index.html" class="logo">
-                  <img src="./img/logo.png" alt="Stationery Shop" />
+                  <img
+                    src="./img/logo2.png"
+                    alt="Stationery Shop"
+                    style="max-height: 68px"
+                  />
                 </a>
               </div>
             </div>
-            <!-- /LOGO -->
 
             <!-- SEARCH BAR -->
-            <div class="col-md-6">
-              <div class="header-search">
+            <div class="col-md-9 d-flex justify-content-center">
+              <div class="header-search w-100">
                 <form
                   id="search-form"
                   onsubmit="
                     handleSearch();
                     return false;
                   "
+                  class="d-flex"
                 >
-                  <select class="input-select" id="category-select">
-                    <option value="">Loại sản phẩm</option>
-                    <option value="1">Bút</option>
-                    <option value="2">Vở / Sổ</option>
-                    <option value="3">Giấy</option>
-                    <option value="4">Khác</option>
-                  </select>
                   <input
                     id="searchInput"
-                    class="input"
+                    class="input flex-grow-1"
                     placeholder="Tìm sản phẩm..."
                   />
-                  <button class="search-btn" type="submit">Search</button>
+                  <button type="submit" class="search-btn">Search</button>
                 </form>
               </div>
             </div>
-            <!-- /SEARCH BAR -->
 
-            <!-- ACCOUNT -->
-            <div class="col-md-3 clearfix">
-              <div class="header-ctn">
-                <!-- Wishlist -->
-                <div>
-                  <a href="#">
-                    <i class="fa fa-heart-o"></i>
-                    <span>Yêu thích</span>
-                    <div class="qty">2</div>
-                  </a>
-                </div>
-                <!-- /Wishlist -->
-
-                <!-- Cart -->
-                <div class="dropdown">
-                  <a
-                    class="dropdown-toggle"
-                    data-toggle="dropdown"
-                    aria-expanded="true"
-                  >
-                    <i class="fa fa-shopping-cart"></i>
-                    <span>Giỏ hàng</span>
+            <!-- CART -->
+            <div class="col-md-1">
+              <div
+                class="header-ctn d-flex justify-content-end align-items-center"
+              >
+                <div class="dropdown text-center">
+                  <a class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-shopping-cart" style="font-size: 22px"></i>
+                    <span style="display: block; font-size: 13px"
+                      >Giỏ hàng</span
+                    >
                     <div class="qty" id="cart-count">0</div>
                   </a>
                   <div class="cart-dropdown">
                     <div class="cart-list" id="cart-list"></div>
                     <div class="cart-summary">
-                      <small id="cart-count-small">0 Item(s)</small>
                       <h5 id="cart-total">0 VND</h5>
                     </div>
                     <div class="cart-btns">
                       <a href="cart.html">Xem giỏ hàng</a>
-                      <a href="checkout.html"
-                        >Thanh toán <i class="fa fa-arrow-circle-right"></i
-                      ></a>
+                      <a href="checkout.html">Thanh toán</a>
                     </div>
                   </div>
                 </div>
-                <!-- /Cart -->
-
-                <!-- Menu Toogle -->
-                <div class="menu-toggle">
-                  <a href="#">
-                    <i class="fa fa-bars"></i>
-                    <span>Menu</span>
-                  </a>
-                </div>
-                <!-- /Menu Toogle -->
               </div>
             </div>
-            <!-- /ACCOUNT -->
           </div>
         </div>
       </div>
       <!-- /MAIN HEADER -->
       <!-- NAVIGATION -->
-    <nav id="navigation">
-      <!-- container -->
-      <div class="container">
-        <!-- responsive-nav -->
-        <div id="responsive-nav">
-          
+      <nav id="navigation">
+        <!-- container -->
+        <div class="container">
+          <!-- responsive-nav -->
+          <div id="responsive-nav"></div>
+          <!-- /responsive-nav -->
         </div>
-        <!-- /responsive-nav -->
-      </div>
-      <!-- /container -->
-    </nav>
-    <!-- /NAVIGATION -->
+        <!-- /container -->
+      </nav>
+      <!-- /NAVIGATION -->
     </header>
     <!-- /HEADER -->
 
