@@ -32,7 +32,7 @@ const Users = () => {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const res = await userApi.getAll({ keyword, page, pageSize });
+      const res = await userApi.getAll({ search:keyword, page, pageSize });
 
       const data = res.data;
 
@@ -227,14 +227,14 @@ const Users = () => {
                     className="btn btn-sm btn-info mr-2"
                     onClick={() => openModal(u)}
                   >
-                    ✏️
+                  <i className="fas fa-edit"></i>
                   </button>
 
                   <button
                     className="btn btn-sm btn-danger"
                     onClick={() => handleDelete(u)}
                   >
-                    🗑️
+                   <i className="fas fa-trash"></i>
                   </button>
                 </td>
               </tr>

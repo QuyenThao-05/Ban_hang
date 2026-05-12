@@ -1,4 +1,4 @@
-using BaseCore.DTO.Bill;
+using BaseCore.DTO.Order;
 using BaseCore.Entities;
 using BaseCore.Repository.EFCore;
 using BaseCore.Services;
@@ -15,14 +15,14 @@ namespace BaseCore.APIService.Controllers
     [Route("api/[controller]")]
     [ApiController]
     //[Authorize]
-    public class BillController : ControllerBase
+    public class OrderController : ControllerBase
     {
-        private readonly IBillService _billService;
+        private readonly IOrderService _OrderService;
 
-        public BillController(
-            IBillService billService)
+        public OrderController(
+            IOrderService OrderService)
         {
-            _billService = billService;
+            _OrderService = OrderService;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace BaseCore.APIService.Controllers
              int page = 1,
              int pageSize = 10)
         {
-            var result = await _billService.GetDashboardBills(
+            var result = await _OrderService.GetDashboardOrders(
                 page,
                 pageSize,
                 search,
@@ -54,14 +54,14 @@ namespace BaseCore.APIService.Controllers
         /// Get all bills (Admin only)
         /// </summary>
         [HttpGet("all")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAllBill(
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetAllOrder(
             [FromQuery] string? search,
             [FromQuery] string? status,
             int page = 1,
             int pageSize = 10)
         {
-            var result = await _billService.GetDashboardBills(
+            var result = await _OrderService.GetDashboardOrders(
                 page,
                 pageSize,
                 search,
@@ -81,9 +81,9 @@ namespace BaseCore.APIService.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var bill = await _billService.GetById(id);
+            var Order = await _OrderService.GetById(id);
 
-            if (bill == null)
+            if (Order == null)
                 return NotFound(new
                 {
                     message = "Không tìm thấy đơn hàng"
@@ -91,16 +91,16 @@ namespace BaseCore.APIService.Controllers
 
             var result = new
             {
-                bill.Id,
-                bill.UserId,
-                CustomerName = bill.User.FullName ?? bill.User.Username,
-                bill.TotalPrice,
-                bill.Status,
-                bill.ShippingAddress,
-                bill.PaymentMethod,
-                bill.CreatedAt,
+                Order.Id,
+                Order.UserId,
+                CustomerName = Order.User.FullName ?? Order.User.Username,
+                Order.TotalPrice,
+                Order.Status,
+                Order.ShippingAddress,
+                Order.PaymentMethod,
+                Order.CreatedAt,
 
-                Items = bill.BillDetails.Select(d => new
+                Items = Order.OrderDetails.Select(d => new
                 {
                     d.Id,
                     d.ProductId,
@@ -122,7 +122,7 @@ namespace BaseCore.APIService.Controllers
         /// </summary>
         [HttpPost]
         public async Task<IActionResult> Create(
-           [FromBody] CreateBillRequest request)
+           [FromBody] CreateOrderRequest request)
         {
             if (request == null || request.Items == null || !request.Items.Any())
             {
@@ -134,14 +134,14 @@ namespace BaseCore.APIService.Controllers
 
             try
             {
-                var bill = await _billService.CreateBill(request);
+                var Order = await _OrderService.CreateOrder(request);
 
                 return Ok(new
                 {
                     message = "Tạo đơn hàng thành công",
-                    billId = bill.Id,
-                    totalPrice = bill.TotalPrice,
-                    status = bill.Status
+                    OrderId = Order.Id,
+                    totalPrice = Order.TotalPrice,
+                    status = Order.Status
                 });
             }
             catch (Exception ex)
@@ -158,7 +158,7 @@ namespace BaseCore.APIService.Controllers
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(
            int id,
-           [FromBody] UpdateBillStatusRequest req)
+           [FromBody] UpdateOrderStatusRequest req)
         {
             if (req == null || string.IsNullOrEmpty(req.Status))
             {
@@ -170,7 +170,7 @@ namespace BaseCore.APIService.Controllers
 
             try
             {
-                await _billService.UpdateStatus(
+                await _OrderService.UpdateStatus(
                     id,
                     req.Status);
 
@@ -196,7 +196,7 @@ namespace BaseCore.APIService.Controllers
         {
             try
             {
-                await _billService.UpdateStatus(
+                await _OrderService.UpdateStatus(
                     id,
                     "Cancelled");
 
@@ -219,7 +219,7 @@ namespace BaseCore.APIService.Controllers
         {
             try
             {
-                await _billService.DeleteBill(id);
+                await _OrderService.DeleteOrder(id);
 
                 return Ok(new
                 {

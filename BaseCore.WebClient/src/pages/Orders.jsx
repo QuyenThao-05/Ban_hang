@@ -21,16 +21,19 @@ const Orders = () => {
   }, []);
 
   const loadOrders = async () => {
-    try {
-      setLoading(true);
-      const res = await orderApi.getAll();
-      setOrders(res.data || []);
-    } catch (err) {
-      console.log("Load orders failed", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const res = await orderApi.getAll();
+
+    console.log("DATA:", res.data); // debug
+
+    setOrders(res.data.items || []);
+  } catch (err) {
+    console.log("Load orders failed", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // PAGINATION
   const totalPages = Math.max(1, Math.ceil(orders.length / pageSize));
@@ -44,19 +47,17 @@ const Orders = () => {
   const formatMoney = (v) => Number(v || 0).toLocaleString("vi-VN") + " đ";
 
   const getStatus = (status) => {
-    switch (status) {
-      case 0:
-        return <span className="badge badge-secondary">Mới</span>;
-      case 1:
-        return <span className="badge badge-info">Đang xử lý</span>;
-      case 2:
-        return <span className="badge badge-success">Hoàn thành</span>;
-      case 3:
-        return <span className="badge badge-danger">Đã huỷ</span>;
-      default:
-        return <span className="badge badge-dark">Không rõ</span>;
-    }
-  };
+  switch (status) {
+    case "Pending":
+      return <span className="badge badge-warning">Pending</span>;
+    case "Completed":
+      return <span className="badge badge-success">Completed</span>;
+    case "Cancelled":
+      return <span className="badge badge-danger">Cancelled</span>;
+    default:
+      return <span className="badge badge-dark">Unknown</span>;
+  }
+};
 
   return (
     <div className="content-wrapper">
@@ -95,8 +96,8 @@ const Orders = () => {
                       paginatedData.map((o) => (
                         <tr key={o.id}>
                           <td>{o.id}</td>
-                          <td>{o.userName || "N/A"}</td>
-                          <td>{formatMoney(o.totalAmount)}</td>
+                          <td>{o.customerName || "N/A"}</td>
+                          <td>{formatMoney(o.totalPrice)}</td>
                           <td>{new Date(o.createdAt).toLocaleString()}</td>
                           <td>{getStatus(o.status)}</td>
 
@@ -109,7 +110,7 @@ const Orders = () => {
                             </button>
                             <button
                               className="btn btn-sm btn-primary"
-                              onClick={() => navigate(`/orders/${order.id}`)}
+                              onClick={() => navigate(`/orders/${o.id}`)}
                             >
                               👁
                             </button>
@@ -166,10 +167,10 @@ const Orders = () => {
 
                 <div className="modal-body">
                   <p>
-                    <b>Khách hàng:</b> {selectedOrder.userName}
+                    <b>Khách hàng:</b> {selectedOrder.customerName || "N/A"}
                   </p>
                   <p>
-                    <b>Tổng tiền:</b> {formatMoney(selectedOrder.totalAmount)}
+                    <b>Tổng tiền:</b> {formatMoney(selectedOrder.totalPrice)}
                   </p>
                   <p>
                     <b>Trạng thái:</b> {getStatus(selectedOrder.status)}

@@ -40,8 +40,8 @@ const Products = () => {
       const res = await productApi.getAll({
         page: currentPage,
         pageSize,
-        keyword,
-        typeId: filterType,
+        search: keyword,
+        productTypeId: filterType || undefined,
       });
 
       const data = res.data;

@@ -86,12 +86,14 @@ const MainLayout = ({ children }) => {
             <ul className="nav nav-pills nav-sidebar flex-column">
               {/* DASHBOARD */}
               <li className="nav-item">
-                <Link to="/" className={`nav-link ${isActive("/")}`}>
+              <Link
+                 to="/dashboard"
+                  className={`nav-link ${isActive("/dashboard")}`}
+                  >
                   <i className="nav-icon fas fa-tachometer-alt"></i>
-                  <p>Dashboard</p>
+                   <p>Dashboard</p>
                 </Link>
               </li>
-
               {/* ===== PRODUCT ===== */}
               <li className="nav-header">PRODUCT</li>
 
@@ -112,6 +114,15 @@ const MainLayout = ({ children }) => {
                 >
                   <i className="nav-icon fas fa-tags"></i>
                   <p>Product Types</p>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to="/manufacturers"
+                  className={`nav-link ${isActive("/manufacturers")}`}
+                >
+                  <i className="nav-icon fas fa-industry"></i>
+                  <p>Manufacturers</p>
                 </Link>
               </li>
 

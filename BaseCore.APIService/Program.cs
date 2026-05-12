@@ -81,11 +81,14 @@ builder.Services.AddScoped<IProductTypeRepositoryEF, ProductTypeRepositoryEF>();
 builder.Services.AddScoped<ProductTypeService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IBillRepositoryEF, BillRepositoryEF>();
-builder.Services.AddScoped<IBillService, BillService>();
+builder.Services.AddScoped<IOrderRepositoryEF, OrderRepositoryEF>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IReviewRepositoryEF, ReviewRepositoryEF>();
+builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
+builder.Services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
+
 // JWT Authentication
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:SecretKey"] ?? "YourSecretKeyForAuthenticationShouldBeLongEnough");
 builder.Services.AddAuthentication(x =>

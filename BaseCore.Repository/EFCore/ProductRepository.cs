@@ -18,9 +18,8 @@ namespace BaseCore.Repository.EFCore
         Task<(List<ProductDashboardResponse> Items, int TotalCount)> GetDashboardProductsAsync(
     int page,
     int pageSize,
-    string? search,
+    string? keyword,
     int? productTypeId);
-      
     }
 
     public class ProductRepositoryEF : Repository<Product>, IProductRepositoryEF
@@ -29,44 +28,56 @@ namespace BaseCore.Repository.EFCore
         {
         }
 
+        // ✅ Override DeleteAsync — xóa các bảng liên quan trước
+        public override async Task DeleteAsync(Product entity)
+        {
+            var id = entity.Id;
+
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE FROM Reviews WHERE ProductId = {0}", id);
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE FROM CartItems WHERE ProductId = {0}", id);
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE FROM OrderDetails WHERE ProductId = {0}", id);
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE FROM ProductDetails WHERE ProductId = {0}", id);
+
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
+
         public async Task<(List<Product> Products, int TotalCount)> SearchAsync(
         string? keyword,
         int? productTypeId,
         decimal? minPrice,
         decimal? maxPrice,
         int page,
-         int pageSize)
+        int pageSize)
         {
-            var query = _dbSet.AsQueryable();
+            var query = _dbSet
+                .Include(p => p.ProductType)
+                .AsQueryable();
 
-            // tìm theo tên
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.Trim().ToLower();
                 query = query.Where(p => p.Name.ToLower().Contains(keyword));
             }
 
-            //lọc theo loại
             if (productTypeId.HasValue && productTypeId > 0)
             {
                 query = query.Where(p => p.ProductTypeId == productTypeId.Value);
             }
 
-            // lọc theo giá
             if (minPrice.HasValue)
-            {
                 query = query.Where(p => p.Price >= minPrice.Value);
-            }
 
             if (maxPrice.HasValue)
-            {
                 query = query.Where(p => p.Price <= maxPrice.Value);
-            }
 
-            // tổng số bản ghi
             var totalCount = await query.CountAsync();
 
-            // phân trang
             var products = await query
                 .OrderByDescending(p => p.Id)
                 .Skip((page - 1) * pageSize)
@@ -75,6 +86,7 @@ namespace BaseCore.Repository.EFCore
 
             return (products, totalCount);
         }
+
         public async Task<Product?> GetFullDetailAsync(int id)
         {
             return await _dbSet
@@ -89,6 +101,7 @@ namespace BaseCore.Repository.EFCore
                 .Where(p => p.ProductTypeId == productTypeId)
                 .ToListAsync();
         }
+
         public async Task<(List<ProductDashboardResponse> Items, int TotalCount)> GetDashboardProductsAsync(
     int page,
     int pageSize,
@@ -99,26 +112,17 @@ namespace BaseCore.Repository.EFCore
                 .Include(p => p.ProductType)
                 .AsQueryable();
 
-            // 🔍 SEARCH
             if (!string.IsNullOrEmpty(search))
             {
                 search = search.ToLower();
-
-                query = query.Where(p =>
-                    p.Name.ToLower().Contains(search));
+                query = query.Where(p => p.Name.ToLower().Contains(search));
             }
 
-            // 🎯 FILTER
             if (productTypeId.HasValue && productTypeId > 0)
-            {
-                query = query.Where(p =>
-                    p.ProductTypeId == productTypeId.Value);
-            }
+                query = query.Where(p => p.ProductTypeId == productTypeId.Value);
 
-            // 📊 TOTAL COUNT
             var totalCount = await query.CountAsync();
 
-            // 📄 PAGINATION
             var items = await query
                 .OrderByDescending(p => p.Id)
                 .Skip((page - 1) * pageSize)

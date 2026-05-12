@@ -31,8 +31,8 @@ namespace BaseCore.APIService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll(
             [FromQuery] string? search,
-            int page = 1,
-            int pageSize = 10)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
             var result = await _userService.Search(
                 search,

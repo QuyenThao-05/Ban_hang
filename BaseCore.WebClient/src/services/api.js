@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const AUTH_API = 'http://localhost:5002/api';
-const MAIN_API = 'http://localhost:5000/api';
+const MAIN_API = 'http://localhost:5001/api';
+
 
 // Create axios instance
 const authApiInstance = axios.create({
@@ -72,10 +73,27 @@ export const productTypeApi = {
     update: (id, data) => mainApiInstance.put(`/ProductTypes/${id}`, data),
     delete: (id) => mainApiInstance.delete(`/ProductTypes/${id}`),
 };
-
-// Order API
+// Order API (Admin)
 export const orderApi = {
-    getAll: () => mainApiInstance.get('/orders'),
-    getById: (id) => mainApiInstance.get(`/orders/${id}`),
-    create: (data) => mainApiInstance.post('/orders', data),
+    getAll: (params) => mainApiInstance.get('/order/all', { params }),
+
+    getById: (id) => mainApiInstance.get(`/order/${id}`),
+
+    updateStatus: (id, status) =>
+        mainApiInstance.put(`/order/${id}/status`, {
+            Status: status
+        }),
+
+    delete: (id) =>
+        mainApiInstance.delete(`/order/${id}`)
+};
+//  manufacturer API
+// Manufacturer API
+// Manufacturer API
+export const manufacturerApi = {
+  getAll: (params) => mainApiInstance.get("/Manufacturers", { params }),
+  getById: (id) => mainApiInstance.get(`/Manufacturers/${id}`),
+  create: (data) => mainApiInstance.post("/Manufacturers", data),
+  update: (id, data) => mainApiInstance.put(`/Manufacturers/${id}`, data),
+  delete: (id) => mainApiInstance.delete(`/Manufacturers/${id}`),
 };

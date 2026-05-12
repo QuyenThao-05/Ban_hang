@@ -8,7 +8,6 @@ import {
 import React from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import MainLayout from "./components/MainLayout";
-
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Users from "./pages/Users";
@@ -16,10 +15,13 @@ import ProductTypes from "./pages/ProductTypes";
 import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
 import Login from "./pages/Login";
+import Manufacturer from "./pages/Manufacturers";
+
 
 // 🔥 ROUTE ADMIN
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
+   //console.log("AdminRoute:", user, loading);
 
   if (loading) return null;
 
@@ -135,6 +137,16 @@ function AppRoutes() {
         }
       />
 
+      <Route
+        path="/manufacturers"
+        element={
+          <AdminRoute>
+            <MainLayout>
+              <Manufacturer />
+            </MainLayout>
+          </AdminRoute>
+        }
+      />
       {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

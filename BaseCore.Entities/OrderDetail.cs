@@ -1,6 +1,6 @@
 namespace BaseCore.Entities
 {
-    public class BillDetail
+    public class OrderDetail
     {
         // =====================================================
         // PRIMARY KEY
@@ -10,9 +10,9 @@ namespace BaseCore.Entities
         // =====================================================
         // BILL FOREIGN KEY
         // =====================================================
-        public int BillId { get; set; }
+        public int OrderId { get; set; }
 
-        public Bill Bill { get; set; }
+        public Order Order { get; set; }
 
         // =====================================================
         // PRODUCT FOREIGN KEY

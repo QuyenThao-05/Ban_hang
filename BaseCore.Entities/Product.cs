@@ -23,9 +23,9 @@ namespace BaseCore.Entities
 
         public DateTime CreatedAt { get; set; }
 
-        public int ManufacturerId { get; set; }
+        public int? ManufacturerId { get; set; }
         public ProductType? ProductType { get; set; }
-        public List<BillDetail> BillDetails { get; set; } = new();
+        public List<OrderDetail> OrderDetails { get; set; } = new();
         public List<ProductDetail> ProductDetails { get; set; } = new();
 
     }

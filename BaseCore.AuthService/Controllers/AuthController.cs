@@ -3,6 +3,10 @@ using BaseCore.Repository.EFCore;
 using BaseCore.Services;
 using BaseCore.Services.Authen;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace BaseCore.AuthService.Controllers
@@ -12,12 +16,13 @@ namespace BaseCore.AuthService.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(IUserService userService)
+        public AuthController(IUserService userService, IConfiguration configuration)
         {
             _userService = userService;
+            _configuration = configuration;
         }
-
 
         // 🔥 LOGIN
         [HttpPost("login")]
@@ -31,9 +36,12 @@ namespace BaseCore.AuthService.Controllers
             if (user == null)
                 return Unauthorized("Sai tài khoản hoặc mật khẩu");
 
+            // ✅ Generate JWT thật
+            var token = GenerateJwtToken(user);
+
             return Ok(new
             {
-                token = "token_" + user.Username,
+                token = token,
                 role = user.Role,
                 username = user.Username
             });
@@ -58,7 +66,7 @@ namespace BaseCore.AuthService.Controllers
                 FullName = string.IsNullOrEmpty(request.FullName) ? request.Username : request.FullName,
                 Email = request.Email,
                 Phone = request.Phone,
-                Role = "user" // nên viết thường cho đồng nhất DB
+                Role = "user"
             };
 
             var createdUser = await _userService.Create(user, request.Password);
@@ -69,6 +77,29 @@ namespace BaseCore.AuthService.Controllers
                 userId = createdUser.Id,
                 username = createdUser.Username
             });
+        }
+
+        // ✅ Generate JWT Token
+        private string GenerateJwtToken(User user)
+        {
+            var secretKey = _configuration["Jwt:SecretKey"] ?? "YourSecretKeyForAuthenticationShouldBeLongEnough";
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role ?? "user"),
+            };
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(7),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 

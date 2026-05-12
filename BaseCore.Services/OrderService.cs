@@ -1,4 +1,4 @@
-using BaseCore.DTO.Bill;
+using BaseCore.DTO.Order;
 using BaseCore.Entities;
 using BaseCore.Repository;
 using BaseCore.Repository.EFCore;
@@ -10,50 +10,50 @@ using System.Threading.Tasks;
 
 namespace BaseCore.Services
 {
-    public interface IBillService
+    public interface IOrderService
     {
-        Task<(List<BillDashboardResponse> Items, int TotalCount)>
-            GetDashboardBills(
+        Task<(List<OrderDashboardResponse> Items, int TotalCount)>
+            GetDashboardOrders(
                 int page,
                 int pageSize,
                 string? search,
                 string? status);
 
-        Task<Bill?> GetById(int id);
+        Task<Order?> GetById(int id);
 
-        Task<Bill> CreateBill(CreateBillRequest request);
+        Task<Order> CreateOrder(CreateOrderRequest request);
 
         Task UpdateStatus(
-            int billId,
+            int OrderId,
             string status);
 
-        Task DeleteBill(int billId);
+        Task DeleteOrder(int OrderId);
     }
-    public class BillService : IBillService
+    public class OrderService : IOrderService
     {
-        private readonly IBillRepositoryEF _billRepository;
+        private readonly IOrderRepositoryEF _OrderRepository;
         private readonly MySqlDbContext _context;
 
-        public BillService(
-            IBillRepositoryEF billRepository,
+        public OrderService(
+            IOrderRepositoryEF OrderRepository,
             MySqlDbContext context)
         {
-            _billRepository = billRepository;
+            _OrderRepository = OrderRepository;
             _context = context;
         }
 
         // =====================================================
         // DASHBOARD
         // =====================================================
-        public async Task<(List<BillDashboardResponse> Items, int TotalCount)>
-            GetDashboardBills(
+        public async Task<(List<OrderDashboardResponse> Items, int TotalCount)>
+            GetDashboardOrders(
                 int page,
                 int pageSize,
                 string? search,
                 string? status)
         {
-            return await _billRepository
-                .GetDashboardBillsAsync(
+            return await _OrderRepository
+                .GetDashboardOrdersAsync(
                     page,
                     pageSize,
                     search,
@@ -63,9 +63,9 @@ namespace BaseCore.Services
         // =====================================================
         // GET DETAIL
         // =====================================================
-        public async Task<Bill?> GetById(int id)
+        public async Task<Order?> GetById(int id)
         {
-            return await _billRepository
+            return await _OrderRepository
                 .GetDetailAsync(id);
         }
 
@@ -73,8 +73,8 @@ namespace BaseCore.Services
         // CREATE BILL
         // BUY NOW / CHECKOUT
         // =====================================================
-        public async Task<Bill> CreateBill(
-            CreateBillRequest request)
+        public async Task<Order> CreateOrder(
+            CreateOrderRequest request)
         {
             if (request.Items == null ||
                 !request.Items.Any())
@@ -83,7 +83,7 @@ namespace BaseCore.Services
 
             decimal totalPrice = 0;
 
-            var billDetails = new List<BillDetail>();
+            var OrderDetails = new List<OrderDetail>();
 
             foreach (var item in request.Items)
             {
@@ -130,7 +130,7 @@ namespace BaseCore.Services
 
                 totalPrice += detailTotal;
 
-                billDetails.Add(new BillDetail
+                OrderDetails.Add(new OrderDetail
                 {
                     ProductId = item.ProductId,
                     ProductDetailId = item.ProductDetailId,
@@ -140,7 +140,7 @@ namespace BaseCore.Services
                 });
             }
 
-            var bill = new Bill
+            var Order = new Order
             {
                 UserId = request.UserId,
                 ShippingAddress = request.ShippingAddress,
@@ -148,53 +148,53 @@ namespace BaseCore.Services
                 Status = "Pending",
                 CreatedAt = DateTime.Now,
                 TotalPrice = totalPrice,
-                BillDetails = billDetails
+                OrderDetails = OrderDetails
             };
 
-            await _billRepository.CreateBillAsync(
-                bill);
+            await _OrderRepository.CreateOrderAsync(
+                Order);
 
             await _context.SaveChangesAsync();
 
-            return bill;
+            return Order;
         }
 
         // =====================================================
         // UPDATE STATUS
         // =====================================================
         public async Task UpdateStatus(
-            int billId,
+            int OrderId,
             string status)
         {
-            var bill =
-                await _billRepository.GetDetailAsync(
-                    billId);
+            var Order =
+                await _OrderRepository.GetDetailAsync(
+                    OrderId);
 
-            if (bill == null)
+            if (Order == null)
                 throw new Exception(
                     "Không tìm thấy đơn hàng");
 
-            bill.Status = status;
+            Order.Status = status;
 
-            await _billRepository.UpdateBillAsync(
-                bill);
+            await _OrderRepository.UpdateOrderAsync(
+                Order);
         }
 
         // =====================================================
         // DELETE BILL
         // =====================================================
-        public async Task DeleteBill(int billId)
+        public async Task DeleteOrder(int OrderId)
         {
-            var bill =
-                await _billRepository.GetDetailAsync(
-                    billId);
+            var Order =
+                await _OrderRepository.GetDetailAsync(
+                    OrderId);
 
-            if (bill == null)
+            if (Order == null)
                 throw new Exception(
                     "Không tìm thấy đơn hàng");
 
-            await _billRepository.DeleteBillAsync(
-                bill);
+            await _OrderRepository.DeleteOrderAsync(
+                Order);
         }
     }
 }
