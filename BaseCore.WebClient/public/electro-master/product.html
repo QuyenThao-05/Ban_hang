@@ -68,11 +68,8 @@ fetch('header.html')
         <div class="row">
           <div class="col-md-12">
             <ul class="breadcrumb-tree">
-              <li><a href="#">Home</a></li>
-              <li><a href="#">All Categories</a></li>
-              <li><a href="#">Accessories</a></li>
-              <li><a href="#">Headphones</a></li>
-              <li class="active">Product name goes here</li>
+              <li><a href="index.html">Trang chủ</a></li>
+              <li class="active">Chi tiết sản phẩm</li>
             </ul>
           </div>
         </div>
@@ -92,7 +89,12 @@ fetch('header.html')
           <div class="col-md-5 col-md-push-2">
             <div id="product-main-img">
   <div class="product-preview">
-    <img id="product-image" src="./img/product01.png" alt="">
+    <img
+      id="product-image"
+      src="./img/product01.png"
+      data-image="./img/product01.png"
+      alt=""
+    >
   </div>
 </div>
           </div>
@@ -115,16 +117,8 @@ fetch('header.html')
               <h3 id="product-price"></h3>
               <p id="product-description"></p>
               <div>
-                <div class="product-rating">
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star-o"></i>
-                </div>
-                <a class="review-link" href="#"
-                  >10 Review(s) | Add your review</a
-                >
+                <div class="product-rating"></div>
+                <a class="review-link" href="#"></a>
               </div>
               <div>
                 <h3 class="product-price" id="product-price"></h3>
@@ -133,37 +127,52 @@ fetch('header.html')
               <p id="product-description"></p>
 
               <div class="product-options">
-                <label>
-                  Size
-                  <select class="input-select">
-                    <option value="0">X</option>
-                  </select>
-                </label>
-                <label>
-                  Color
-                  <select class="input-select">
-                    <option value="0">Red</option>
-                  </select>
-                </label>
-              </div>
+
+  <!-- SIZE -->
+  <div class="option-group">
+    <label>Kích thước</label>
+
+    <div id="size-options" class="variant-container">
+    </div>
+  </div>
+
+  <!-- COLOR -->
+  <div class="option-group">
+    <label>Màu sắc</label>
+
+    <div id="color-options" class="variant-container">
+    </div>
+  </div>
+
+</div>
 
               <div class="add-to-cart">
-                <div class="qty-label">
-                  Qty
-                  <div class="input-number">
-                    <input type="number" />
-                    <span class="qty-up">+</span>
-                    <span class="qty-down">-</span>
-                  </div>
-                </div>
-                <button class="add-to-cart-btn">
-                  <i class="fa fa-shopping-cart"></i> add to cart
-                </button>
-              </div>
+
+  <div class="qty-label">
+    Số lượng
+
+    <div class="qty-wrapper">
+
+      <button id="qty-minus">-</button>
+
+      <input type="number" id="qty-input" value="1" min="1">
+
+      <button id="qty-plus">+</button>
+
+    </div>
+
+  </div>
+
+  <button class="add-to-cart-btn">
+    <i class="fa fa-shopping-cart"></i>
+    Thêm vào giỏ hàng
+  </button>
+
+</div>
 
               <ul class="product-btns">
                 <li>
-                  <a href="#"><i class="fa fa-heart-o"></i> add to wishlist</a>
+                  <a href="#"><i class="fa fa-heart-o"></i> Thêm vào yêu thích</a>
                 </li>
                 <li>
                   <a href="#"><i class="fa fa-exchange"></i> add to compare</a>
@@ -171,12 +180,12 @@ fetch('header.html')
               </ul>
 
               <ul class="product-links">
-                <li>Category:</li>
+                <li>Loại hàng:</li>
                 <li><a href="#" id="product-category">Loading...</a></li>
               </ul>
 
               <ul class="product-links">
-                <li>Share:</li>
+                <li>Chia sẻ:</li>
                 <li>
                   <a href="#"><i class="fa fa-facebook"></i></a>
                 </li>
@@ -203,7 +212,11 @@ fetch('header.html')
                   <a data-toggle="tab" href="#tab1">Description</a>
                 </li>
                 <li><a data-toggle="tab" href="#tab2">Details</a></li>
-                <li><a data-toggle="tab" href="#tab3">Reviews (3)</a></li>
+                <li>
+                  <a data-toggle="tab" href="#reviews" id="reviews-tab-link">
+                    Reviews
+                  </a>
+                </li>
               </ul>
               <!-- /product tab nav -->
 
@@ -214,15 +227,7 @@ fetch('header.html')
                   <div class="row">
                     <div class="col-md-12">
                       <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit, sed do eiusmod tempor incididunt ut labore et
-                        dolore magna aliqua. Ut enim ad minim veniam, quis
-                        nostrud exercitation ullamco laboris nisi ut aliquip ex
-                        ea commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu
-                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est laborum.
+                        
                       </p>
                     </div>
                   </div>
@@ -234,15 +239,7 @@ fetch('header.html')
                   <div class="row">
                     <div class="col-md-12">
                       <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit, sed do eiusmod tempor incididunt ut labore et
-                        dolore magna aliqua. Ut enim ad minim veniam, quis
-                        nostrud exercitation ullamco laboris nisi ut aliquip ex
-                        ea commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu
-                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est laborum.
+                        
                       </p>
                     </div>
                   </div>
@@ -250,89 +247,14 @@ fetch('header.html')
                 <!-- /tab2  -->
 
                 <!-- tab3  -->
-                <div id="tab3" class="tab-pane fade in">
+                <div id="reviews" class="tab-pane fade">
                   <div class="row">
                     <!-- Rating -->
                     <div class="col-md-3">
                       <div id="rating">
-                        <div class="rating-avg">
-                          <span>4.5</span>
-                          <div class="rating-stars">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star-o"></i>
-                          </div>
-                        </div>
-                        <ul class="rating">
-                          <li>
-                            <div class="rating-stars">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                            </div>
-                            <div class="rating-progress">
-                              <div style="width: 80%"></div>
-                            </div>
-                            <span class="sum">3</span>
-                          </li>
-                          <li>
-                            <div class="rating-stars">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star-o"></i>
-                            </div>
-                            <div class="rating-progress">
-                              <div style="width: 60%"></div>
-                            </div>
-                            <span class="sum">2</span>
-                          </li>
-                          <li>
-                            <div class="rating-stars">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star-o"></i>
-                              <i class="fa fa-star-o"></i>
-                            </div>
-                            <div class="rating-progress">
-                              <div></div>
-                            </div>
-                            <span class="sum">0</span>
-                          </li>
-                          <li>
-                            <div class="rating-stars">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star-o"></i>
-                              <i class="fa fa-star-o"></i>
-                              <i class="fa fa-star-o"></i>
-                            </div>
-                            <div class="rating-progress">
-                              <div></div>
-                            </div>
-                            <span class="sum">0</span>
-                          </li>
-                          <li>
-                            <div class="rating-stars">
-                              <i class="fa fa-star"></i>
-                              <i class="fa fa-star-o"></i>
-                              <i class="fa fa-star-o"></i>
-                              <i class="fa fa-star-o"></i>
-                              <i class="fa fa-star-o"></i>
-                            </div>
-                            <div class="rating-progress">
-                              <div></div>
-                            </div>
-                            <span class="sum">0</span>
-                          </li>
-                        </ul>
+                        <div id="review-summary">
                       </div>
+                    </div>
                     </div>
                     <!-- /Rating -->
 
@@ -354,9 +276,7 @@ fetch('header.html')
                             </div>
                             <div class="review-body">
                               <p>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipisicing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua
+                                
                               </p>
                             </div>
                           </li>
@@ -374,9 +294,7 @@ fetch('header.html')
                             </div>
                             <div class="review-body">
                               <p>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipisicing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua
+                               
                               </p>
                             </div>
                           </li>
@@ -394,9 +312,7 @@ fetch('header.html')
                             </div>
                             <div class="review-body">
                               <p>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipisicing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua
+                                
                               </p>
                             </div>
                           </li>
@@ -618,6 +534,8 @@ const products = data.data || data.items || data;
     console.error(err);
   }
 }
+let selectedVariant = null;
+let currentProduct = null;
       async function loadProductDetail() {
         const id = new URLSearchParams(window.location.search).get("id");
 
@@ -629,9 +547,156 @@ const products = data.data || data.items || data;
         try {
           const res = await fetch(`http://localhost:5001/api/products/${id}`);
           const p = await res.json();
+          currentProduct = p;
           loadRelatedProducts(p);
 
           console.log(p);
+
+// SIZE
+const sizeContainer = document.getElementById("size-options");
+sizeContainer.innerHTML = "";
+
+// COLOR
+const colorContainer = document.getElementById("color-options");
+colorContainer.innerHTML = "";
+
+// unique sizes
+const sizes = [...new Set(
+    (p.variants || [])
+    .map(v => v.size)
+    .filter(Boolean)
+)];
+
+sizes.forEach(size => {
+
+    const btn = document.createElement("button");
+
+    btn.className = "variant-btn";
+    btn.innerText = size;
+
+    btn.onclick = () => {
+
+        document
+            .querySelectorAll("#size-options .variant-btn")
+            .forEach(x => x.classList.remove("active"));
+
+        btn.classList.add("active");
+
+        const matched =
+            p.variants.find(v => v.size === size);
+
+        if (matched) {
+
+            selectedVariant = matched;
+
+            document.getElementById("product-price")
+                .innerText =
+                matched.price.toLocaleString() + " VND";
+
+            const mainImg =
+            document.getElementById("product-image");
+
+              mainImg.src =
+                matched.imageUrl || p.image;
+
+              mainImg.setAttribute(
+                "data-zoom-image",
+                matched.imageUrl || p.image
+              );
+const zoomImage =
+    matched.imageUrl || p.image;
+
+$('.product-preview').trigger('zoom.destroy');
+
+$('.product-preview').zoom({
+    url: zoomImage
+});
+            document.getElementById("product-thumb")
+                .src =
+                matched.imageUrl || p.image;
+        }
+    };
+
+    sizeContainer.appendChild(btn);
+});
+
+// ẨN SIZE NẾU KHÔNG CÓ
+if(sizes.length === 0){
+
+    document
+        .querySelector("#size-options")
+        .parentElement
+        .style.display = "none";
+}
+
+// unique colors
+const colors = [...new Set(
+    (p.variants || [])
+    .map(v => v.color)
+    .filter(Boolean)
+)];
+
+colors.forEach(color => {
+
+    const btn = document.createElement("button");
+
+    btn.className = "variant-btn";
+    btn.innerText = color;
+
+    btn.onclick = () => {
+
+        document
+            .querySelectorAll("#color-options .variant-btn")
+            .forEach(x => x.classList.remove("active"));
+
+        btn.classList.add("active");
+
+        const matched =
+            p.variants.find(v => v.color === color);
+
+        if (matched) {
+
+            selectedVariant = matched;
+
+            document.getElementById("product-price")
+                .innerText =
+                matched.price.toLocaleString() + " VND";
+
+            const mainImg =
+              document.getElementById("product-image");
+
+            mainImg.src =
+              matched.imageUrl || p.image;
+
+            mainImg.setAttribute(
+              "data-zoom-image",
+               matched.imageUrl || p.image
+            );
+const zoomImage =
+    matched.imageUrl || p.image;
+
+$('.product-preview').trigger('zoom.destroy');
+
+$('.product-preview').zoom({
+    url: zoomImage
+});
+            document.getElementById("product-thumb")
+              .src =
+                matched.imageUrl || p.image;
+               }
+            };
+
+    colorContainer.appendChild(btn);
+});
+
+// ẨN COLOR NẾU KHÔNG CÓ
+if(colors.length === 0){
+
+    document
+        .querySelector("#color-options")
+        .parentElement
+        .style.display = "none";
+}
 
           // NAME
           document.getElementById("product-name").innerText = p.name;
@@ -644,9 +709,276 @@ const products = data.data || data.items || data;
           document.getElementById("product-description").innerText =
             p.description || "Không có mô tả";
 
+          // TAB DESCRIPTION
+const tab1 = document.querySelector("#tab1 .col-md-12");
+
+tab1.innerHTML = `
+    <p>
+        ${p.description || "Không có mô tả"}
+    </p>
+`;
+
+
+// TAB DETAILS
+const tab2 = document.querySelector("#tab2 .col-md-12");
+
+tab2.innerHTML = `
+
+    <table class="table table-bordered">
+
+        <tbody>
+
+            <tr>
+                <th>Thương hiệu</th>
+                <td>${p.brand || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Màu sắc</th>
+                <td>${p.color || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Kích thước</th>
+                <td>${p.size || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Số lượng</th>
+                <td>${p.quantity || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Mô tả</th>
+                <td>${p.description || ""}</td>
+            </tr>
+
+            <tr>
+                <th>Chi tiết</th>
+                <td>${p.details || ""}</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+`;
+
+// REVIEW SUMMARY
+const reviewSummary =
+    document.getElementById("review-summary");
+
+const reviews = p.reviews || [];
+
+
+const totalReviews = reviews.length;
+
+document.getElementById("reviews-tab-link").innerHTML =
+    `Reviews (${totalReviews})`;
+
+const avgRating =
+    totalReviews > 0
+        ? (
+            reviews.reduce(
+                (sum, r) => sum + r.rating,
+                0
+            ) / totalReviews
+        ).toFixed(1)
+        : 0;
+// TOP PRODUCT RATING
+const topRating =
+    document.querySelector(".product-rating");
+
+const reviewLink =
+    document.querySelector(".review-link");
+
+let topStarsHtml = "";
+
+for(let i = 1; i <= 5; i++){
+
+    topStarsHtml +=
+        i <= Math.round(avgRating)
+        ? '<i class="fa fa-star"></i>'
+        : '<i class="fa fa-star-o"></i>';
+}
+
+topRating.innerHTML = topStarsHtml;
+
+reviewLink.innerHTML =
+    `
+    <a href="#reviews"
+       data-toggle="tab"
+       class="open-review-tab">
+
+       ${avgRating} ★ | Reviews (${totalReviews})
+
+    </a>
+    `;
+
+document
+    .querySelector(".open-review-tab")
+    .addEventListener("click", function (e) {
+
+        e.preventDefault();
+
+        // mở tab reviews
+        $('.tab-nav a[href="#reviews"]').tab('show');
+
+        // cuộn tới khu vực tabs
+        $('html, body').animate({
+
+            scrollTop:
+                $('#product-tab').offset().top - 100
+
+        }, 500);
+
+    });
+
+// đếm số lượng từng sao
+const ratingCounts = {
+    5: 0,
+    4: 0,
+    3: 0,
+    2: 0,
+    1: 0
+};
+
+reviews.forEach(r => {
+
+    if (ratingCounts[r.rating] !== undefined) {
+        ratingCounts[r.rating]++;
+    }
+
+});
+
+// render sao trung bình
+let avgStars = "";
+
+for(let i = 1; i <= 5; i++){
+
+    avgStars += i <= Math.round(avgRating)
+        ? '<i class="fa fa-star"></i>'
+        : '<i class="fa fa-star-o"></i>';
+}
+
+// render HTML
+reviewSummary.innerHTML = `
+
+<div class="rating-avg">
+
+    <span>${avgRating}</span>
+
+    <div class="rating-stars">
+        ${avgStars}
+    </div>
+
+</div>
+
+<ul class="rating">
+
+    ${
+        [5,4,3,2,1].map(star => {
+
+            const count =
+                ratingCounts[star];
+
+            const percent =
+                totalReviews > 0
+                ? (count / totalReviews) * 100
+                : 0;
+
+            let starsHtml = "";
+
+            for(let i = 1; i <= 5; i++){
+
+                starsHtml +=
+                    i <= star
+                    ? '<i class="fa fa-star"></i>'
+                    : '<i class="fa fa-star-o"></i>';
+            }
+
+            return `
+
+            <li>
+
+                <div class="rating-stars">
+                    ${starsHtml}
+                </div>
+
+                <div class="rating-progress">
+                    <div style="width:${percent}%"></div>
+                </div>
+
+                <span class="sum">
+                    ${count}
+                </span>
+
+            </li>
+
+            `;
+
+        }).join("")
+    }
+
+</ul>
+`;
+
+// TAB REVIEWS
+const reviewsList = document.querySelector("#reviews .reviews");
+
+if (p.reviews && p.reviews.length > 0) {
+
+    reviewsList.innerHTML =
+        p.reviews.map(r => `
+
+            <li>
+
+                <div class="review-heading">
+
+                    <h5 class="name">
+                        ${r.userName}
+                    </h5>
+
+                    <p class="date">
+                        ${new Date(r.createdAt)
+                            .toLocaleDateString("vi-VN")}
+                    </p>
+
+                    <div class="review-rating">
+                        ${'<i class="fa fa-star"></i>'.repeat(r.rating)}
+                    </div>
+
+                </div>
+
+                <div class="review-body">
+                    <p>${r.comment}</p>
+                </div>
+
+            </li>
+
+        `).join("");
+
+} else {
+
+    reviewsList.innerHTML =
+        "<p>Chưa có đánh giá nào</p>";
+}
+
           // IMAGE
-          document.getElementById("product-image").src =
-            p.image || "./img/product01.png";
+          const productImage =
+  document.getElementById("product-image");
+
+const imageUrl =
+  p.image || "./img/product01.png";
+
+productImage.src = imageUrl;
+
+// destroy zoom cũ
+$('.product-preview').trigger('zoom.destroy');
+
+// gắn ảnh zoom mới
+$('.product-preview').zoom({
+    url: imageUrl
+});
 
           document.getElementById("product-thumb").src =
     p.image || "./img/product01.png";
@@ -682,6 +1014,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const addBtn = document.querySelector(".add-to-cart-btn");
     if (addBtn) {
         addBtn.onclick = () => {
+          // BẮT BUỘC CHỌN PHÂN LOẠI
+if (
+    (currentProduct?.variants || []).length > 0 &&
+    !selectedVariant
+) {
+
+    // highlight đỏ
+    document
+        .querySelectorAll(".variant-container")
+        .forEach(x => {
+            x.style.border = "1px solid red";
+            x.style.padding = "10px";
+        });
+
+    alert("Vui lòng chọn phân loại sản phẩm!");
+
+    return;
+}
             const user = JSON.parse(localStorage.getItem("user"));
 
             if (!user) {
@@ -691,16 +1041,52 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // Nếu đã đăng nhập thì thêm vào giỏ
-            const product = {
-                id: new URLSearchParams(window.location.search).get("id"),
-                name: document.getElementById("product-name").innerText,
-                price: parseInt(document.getElementById("product-price").innerText.replace(/\D/g, "")),
-                image: document.getElementById("product-image").src,
-                quantity: 1
-            };
+            const qty =
+    parseInt(document.getElementById("qty-input").value || 1);
+
+
+const product = {
+
+    id:
+        selectedVariant
+        ? selectedVariant.id
+        : new URLSearchParams(window.location.search).get("id"),
+
+    productId:
+        new URLSearchParams(window.location.search).get("id"),
+
+    variantId:
+        selectedVariant?.id || null,
+
+    name:
+        document.getElementById("product-name").innerText +
+
+        (
+            selectedVariant?.size
+            ? " - " + selectedVariant.size
+            : ""
+        ),
+
+    price:
+        selectedVariant
+        ? selectedVariant.price
+        : parseInt(
+            document
+                .getElementById("product-price")
+                .innerText
+                .replace(/\D/g, "")
+        ),
+
+    image:
+        document.getElementById("product-image").src,
+
+    quantity: qty
+};
 
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            const existing = cart.find(p => p.id == product.id);
+            const existing = cart.find(
+    p => p.variantId == product.variantId
+);
 
             if (existing) {
                 existing.quantity++;
@@ -850,6 +1236,31 @@ fetch('footer.html')
         document.body.appendChild(temp.querySelector('footer'));
     })
     .catch(err => console.error('Load footer thất bại:', err));
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const input = document.getElementById("qty-input");
+
+    document.getElementById("qty-plus")
+        .onclick = () => {
+
+        input.value =
+            parseInt(input.value || 1) + 1;
+    };
+
+    document.getElementById("qty-minus")
+        .onclick = () => {
+
+        let current =
+            parseInt(input.value || 1);
+
+        if(current > 1){
+            input.value = current - 1;
+        }
+    };
+
+});
 </script>
   </body>
 </html>

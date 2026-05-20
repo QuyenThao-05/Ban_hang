@@ -1,5 +1,3 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BaseCore.Entities
@@ -27,6 +25,8 @@ namespace BaseCore.Entities
         public ProductType? ProductType { get; set; }
         public List<OrderDetail> OrderDetails { get; set; } = new();
         public List<ProductDetail> ProductDetails { get; set; } = new();
+        public ICollection<Review>? Reviews { get; set; }
+        public virtual ICollection<ProductVariant>? ProductVariants { get; set; }
 
     }
 }
