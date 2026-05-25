@@ -2306,3 +2306,23 @@ textarea.input {
 .table td{
     background: #fff;
 }
+
+/* ===== CART QTY CUSTOM ===== */
+
+.qty-control{
+  width:110px;
+  height:36px;
+}
+
+.qty-control button{
+  width:22px;
+  height:26px;
+
+  font-size:15px;
+}
+
+.qty-control input{
+  width:36px;
+  height:26px;
+  font-size:15px;
+}

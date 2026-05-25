@@ -174,14 +174,11 @@ fetch('header.html')
                 <li>
                   <a href="#"><i class="fa fa-heart-o"></i> Thêm vào yêu thích</a>
                 </li>
-                <li>
-                  <a href="#"><i class="fa fa-exchange"></i> add to compare</a>
-                </li>
               </ul>
 
               <ul class="product-links">
                 <li>Loại hàng:</li>
-                <li><a href="#" id="product-category">Loading...</a></li>
+                <li><a href="#" id="product-category"></a></li>
               </ul>
 
               <ul class="product-links">
@@ -994,10 +991,25 @@ $('.product-preview').zoom({
             status.style.color = "red";
           }
           // LOAD CATEGORY
-          const typeRes = await fetch("http://localhost:5001/api/producttypes");
-          const types = await typeRes.json();
+          const typeRes =
+    await fetch("http://localhost:5001/api/producttypes");
 
-          const type = types.find((t) => t.id === p.productTypeId);
+const typeData =
+    await typeRes.json();
+
+const types =
+    typeData.data ||
+    typeData.items ||
+    typeData;
+
+const type = types.find(
+    t => Number(t.id) === Number(p.productTypeId)
+);
+
+document.getElementById("product-category").innerText =
+    type
+    ? type.name
+    : "Không rõ";
 
           document.getElementById("product-category").innerText = type
             ? type.name
@@ -1015,23 +1027,28 @@ document.addEventListener("DOMContentLoaded", () => {
     if (addBtn) {
         addBtn.onclick = () => {
           // BẮT BUỘC CHỌN PHÂN LOẠI
-if (
-    (currentProduct?.variants || []).length > 0 &&
-    !selectedVariant
-) {
+const hasRealVariants =
+    (currentProduct?.variants || []).some(v =>
+        v.size || v.color
+    );
 
-    // highlight đỏ
+if (hasRealVariants && !selectedVariant) {
+
     document
         .querySelectorAll(".variant-container")
         .forEach(x => {
-            x.style.border = "1px solid red";
-            x.style.padding = "10px";
+
+            // chỉ highlight block đang hiển thị
+            if (x.offsetParent !== null) {
+                x.style.border = "1px solid red";
+                x.style.padding = "10px";
+            }
+
         });
 
     alert("Vui lòng chọn phân loại sản phẩm!");
-
     return;
-}
+} 
             const user = JSON.parse(localStorage.getItem("user"));
 
             if (!user) {

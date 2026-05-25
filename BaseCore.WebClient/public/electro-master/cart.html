@@ -157,12 +157,18 @@
                         <td><strong>${item.name}</strong></td>
                         <td>${item.price.toLocaleString()} VND</td>
                         <td>
-                            <div class="input-number">
-                                <button onclick="changeQty(${index}, -1)" class="qty-down">-</button>
-                                <input type="text" value="${item.quantity}" readonly>
-                                <button onclick="changeQty(${index}, 1)" class="qty-up">+</button>
-                            </div>
-                        </td>
+                          <div class="qty-control">
+                            <button onclick="changeQty(${index}, -1)">−</button>
+
+                              <input
+                                type="text"
+                                value="${item.quantity}"
+                                readonly
+                              >
+
+                          <button onclick="changeQty(${index}, 1)">+</button>
+    </div>
+</td>
                         <td><strong>${itemTotal.toLocaleString()} VND</strong></td>
                         <td>
                             <button onclick="removeItem(${index})" class="btn btn-danger btn-sm">
