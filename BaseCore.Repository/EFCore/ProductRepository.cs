@@ -10,6 +10,8 @@ namespace BaseCore.Repository.EFCore
     int? productTypeId,
     decimal? minPrice,
     decimal? maxPrice,
+    int? stockMin,
+    int? stockMax,
     int page,
     int pageSize);
         Task<Product?> GetFullDetailAsync(int id);
@@ -51,12 +53,16 @@ namespace BaseCore.Repository.EFCore
         int? productTypeId,
         decimal? minPrice,
         decimal? maxPrice,
+        int? stockMin,
+        int? stockMax,
         int page,
         int pageSize)
         {
             var query = _dbSet
                 .Include(p => p.ProductType)
+                .Include(p => p.Manufacturer)
                 .AsQueryable();
+            Console.WriteLine($"stockMin={stockMin}, stockMax={stockMax}");
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
@@ -74,6 +80,12 @@ namespace BaseCore.Repository.EFCore
 
             if (maxPrice.HasValue)
                 query = query.Where(p => p.Price <= maxPrice.Value);
+            // Filter theo khoảng tồn kho
+            if (stockMin.HasValue)
+                query = query.Where(p => p.Quantity >= stockMin.Value);
+
+            if (stockMax.HasValue)
+                query = query.Where(p => p.Quantity <= stockMax.Value);
 
             var totalCount = await query.CountAsync();
 

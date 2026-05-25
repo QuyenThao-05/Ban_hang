@@ -138,6 +138,12 @@ const MainLayout = ({ children }) => {
                   <p>Orders (Bill)</p>
                 </Link>
               </li>
+              <li className="nav-item">
+  <Link to="/coupons" className={`nav-link ${isActive("/coupons")}`}>
+    <i className="nav-icon fas fa-ticket-alt"></i>
+    <p>Mã khuyến mãi</p>
+  </Link>
+</li>
 
               {/* ===== SYSTEM ===== */}
               <li className="nav-header">SYSTEM</li>
