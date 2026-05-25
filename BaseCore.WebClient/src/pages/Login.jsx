@@ -79,7 +79,7 @@ const Login = () => {
         <div className="login-footer">
           <a href="#">Quên mật khẩu?</a>
           <br />
-          Chưa có tài khoản? <a href="#">Đăng ký</a>
+          Chưa có tài khoản? <a href="/public/electro-master/register.html">Đăng ký</a>
         </div>
       </div>
 

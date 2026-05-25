@@ -104,6 +104,16 @@ namespace BaseCore.Repository
                 .WithMany(pd => pd.OrderDetails)
                 .HasForeignKey(bd => bd.ProductDetailId);
 
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.ProductDetails)
+                .WithOne(pd => pd.Product)
+                .HasForeignKey(pd => pd.ProductId);
+
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.Reviews)
+                .WithOne(r => r.Product)
+                .HasForeignKey(r => r.ProductId);
+
             // Seed initial data
             SeedData(modelBuilder);
         }

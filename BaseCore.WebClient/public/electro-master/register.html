@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Đăng ký - Văn phòng phẩm</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <style>
+      body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        font-family: "Segoe UI", sans-serif;
+      }
+      .register-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .register-box {
+        width: 100%;
+        max-width: 460px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+      .register-header {
+        padding: 35px 20px 25px;
+        text-align: center;
+      }
+      .logo img {
+        width: 170px;
+        margin-bottom: 12px;
+      }
+      .register-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #d10024;
+        margin-bottom: 8px;
+      }
+      .register-subtitle {
+        color: #666;
+        font-size: 15px;
+      }
+
+      .social-btn {
+        width: 100%;
+        padding: 13px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 16px;
+      }
+      .btn-google {
+        background: #fff;
+        border: 2px solid #ddd;
+        color: #333;
+      }
+      .btn-facebook {
+        background: #1877f2;
+        color: white;
+        border: none;
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        margin: 25px 0;
+        color: #999;
+        font-size: 15px;
+      }
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #ddd;
+      }
+      .divider span {
+        padding: 0 20px;
+      }
+
+      .input-group {
+        position: relative;
+        margin-bottom: 16px;
+      }
+      .input {
+        width: 100%;
+        padding: 14px 16px 14px 45px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        font-size: 16px;
+      }
+      .input:focus {
+        border-color: #d10024;
+        box-shadow: 0 0 0 3px rgba(209, 0, 36, 0.1);
+        outline: none;
+      }
+      .input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777;
+        font-size: 18px;
+      }
+
+      .primary-btn {
+        width: 100%;
+        padding: 14px;
+        background: #d10024;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      .support-link {
+        color: #d10024;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .input-group {
+        width: 100%;
+      }
+
+      .input {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block;
+        padding: 14px 16px 14px 45px;
+        border-radius: 12px;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="register-container">
+      <div class="register-box">
+        <div class="register-header">
+          <div class="logo">
+            <img src="img/logo1.png" alt="Stationery Shop" />
+          </div>
+          <h2 class="register-title">Tạo tài khoản mới</h2>
+          <p class="register-subtitle">Tham gia ngay để nhận ưu đãi hấp dẫn</p>
+        </div>
+
+        <div style="padding: 0 35px 40px">
+          <!-- Social Login -->
+          <button class="social-btn btn-google" onclick="loginWithGoogle()">
+            <i class="fab fa-google"></i> Tiếp tục với Google
+          </button>
+          <button class="social-btn btn-facebook" onclick="loginWithFacebook()">
+            <i class="fab fa-facebook-f"></i> Tiếp tục với Facebook
+          </button>
+
+          <div class="divider">
+            <span>hoặc</span>
+          </div>
+
+          <!-- Form với icon -->
+          <form id="registerForm">
+            <div class="input-group">
+              <i class="fas fa-user input-icon"></i>
+              <input
+                type="text"
+                id="fullName"
+                placeholder="Họ và tên đầy đủ"
+                class="input"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <i class="fas fa-phone input-icon"></i>
+              <input
+                type="tel"
+                id="phone"
+                placeholder="Số điện thoại"
+                class="input"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <i class="fas fa-envelope input-icon"></i>
+              <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                class="input"
+              />
+            </div>
+
+            <div class="input-group">
+              <i class="fas fa-lock input-icon"></i>
+              <input
+                type="password"
+                id="password"
+                placeholder="Mật khẩu"
+                class="input"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <i class="fas fa-lock input-icon"></i>
+              <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Nhập lại mật khẩu"
+                class="input"
+                required
+              />
+            </div>
+
+            <button type="submit" class="primary-btn">Đăng ký</button>
+          </form>
+
+          <p style="text-align: center; margin-top: 25px; font-size: 15px">
+            Đã có tài khoản?
+            <a href="login.html" style="color: #d10024; font-weight: 600"
+              >Đăng nhập ngay</a
+            >
+          </p>
+
+          <!-- Hỗ trợ -->
+          <div style="text-align: center; margin-top: 20px; font-size: 14px">
+            Cần hỗ trợ?
+            <a href="#" onclick="showSupport()" class="support-link"
+              >Liên hệ ngay 💬</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          alert(
+            "🎉 Đăng ký tài khoản thành công!\nChào mừng bạn đến với Stationery Shop!",
+          );
+          window.location.href = "index.html";
+        });
+
+      function loginWithGoogle() {
+        alert("🔄 Đang chuyển hướng đến Google...");
+      }
+      function loginWithFacebook() {
+        alert("🔄 Đang chuyển hướng đến Facebook...");
+      }
+      function showSupport() {
+        alert(
+          "🛎️ HỖ TRỢ KHÁCH HÀNG\n\n📞 Hotline: 0123 456 789\n💬 Zalo: 0123 456 789\n✉️ Email: support@vanphongpham.vn",
+        );
+      }
+    </script>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 using BaseCore.DTO.Product;
-using BaseCore.DTO.Product.BaseCore.DTO.Product;
+using BaseCore.DTO.Review;
 using BaseCore.Entities;
 using BaseCore.Repository;
 using BaseCore.Repository.EFCore;
@@ -113,20 +113,49 @@ namespace BaseCore.Services
                 Description = product.Description,
                 Detail = product.Detail,
                 ProductTypeId = product.ProductTypeId,
-                ProductTypeName = product.ProductType.Name,
+                ProductTypeName = product.ProductType?.Name ?? "",
 
-                Variants = product.ProductDetails
+                Brand = product.ProductDetails
+                    .FirstOrDefault()?.Brand,
+
+                Color = product.ProductDetails
+                    .FirstOrDefault()?.Color,
+
+                Size = product.ProductDetails
+                    .FirstOrDefault()?.Size,
+
+                Details = product.ProductDetails
+                    .FirstOrDefault()?.Detail,
+
+                Reviews = product.Reviews?
+    .Select(r => new ReviewResponse
+    {
+        Id = r.Id,
+        ProductId = r.ProductId,
+        UserId = r.UserId,
+        UserName = r.User != null
+            ? r.User.Username
+            : "Unknown",
+        Rating = r.Rating,
+        Comment = r.Comment,
+        CreatedAt = r.CreatedAt
+    })
+    .ToList() ?? new List<ReviewResponse>(),
+
+                Variants = product.ProductVariants?
                     .Select(v => new ProductVariantResponse
                     {
                         Id = v.Id,
-                        Brand = v.Brand,
+                        VariantName = v.VariantName,
                         Color = v.Color,
                         Size = v.Size,
-                        Quantity = v.Quantity
+                        Price = v.Price,
+                        Stock = v.Stock,
+                        ImageUrl = v.ImageUrl,
+                        SKU = v.SKU
                     })
-                    .ToList()
+                    .ToList() ?? new List<ProductVariantResponse>()
             };
         }
-
     }
 }

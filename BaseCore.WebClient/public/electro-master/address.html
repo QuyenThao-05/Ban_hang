@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Địa chỉ của tôi - Stationery Shop</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+
+    <style>
+      body {
+        background: #f5f5f5;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .account-page {
+        padding: 40px 0;
+      }
+
+      /* Sidebar giữ nguyên như profile */
+      .account-sidebar {
+        background: white;
+        border-radius: 12px;
+        padding: 25px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 0 25px 20px;
+        border-bottom: 1px solid #f1f1f1;
+        margin-bottom: 20px;
+      }
+
+      .user-avatar {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #999;
+      }
+
+      .sidebar-menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 25px;
+        color: #333;
+        text-decoration: none;
+        transition: 0.2s;
+      }
+
+      .sidebar-menu li a:hover,
+      .sidebar-menu li a.active {
+        background: #fafafa;
+        color: #d10024;
+        font-weight: 600;
+      }
+
+      /* Content - Địa chỉ Shopee style */
+      .account-content {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .address-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .add-address-btn {
+        background: #d10024;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: 600;
+      }
+
+      .address-item {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .address-item.default {
+        border-color: #d10024;
+      }
+
+      .default-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #d10024;
+        color: white;
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 4px;
+      }
+
+      .address-name {
+        font-weight: 700;
+        font-size: 16px;
+      }
+
+      .address-phone {
+        color: #666;
+        margin-left: 10px;
+      }
+
+      .address-text {
+        margin: 12px 0;
+        line-height: 1.6;
+        color: #444;
+      }
+
+      .address-actions {
+        margin-top: 15px;
+      }
+
+      .btn-action {
+        border: none;
+        background: none;
+        color: #0066cc;
+        margin-right: 15px;
+        font-size: 14px;
+      }
+
+      .btn-action:hover {
+        text-decoration: underline;
+      }
+
+      .btn-delete {
+        color: #d10024;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container account-page">
+      <div class="row">
+        <!-- SIDEBAR -->
+        <div class="col-lg-3">
+          <div class="account-sidebar">
+            <div class="user-info">
+              <div class="user-avatar">
+                <i class="fa fa-user"></i>
+              </div>
+              <div>
+                <div class="user-name" id="sidebar-name">User</div>
+                <div class="edit-profile">
+                  <i class="fa fa-pencil"></i> Sửa hồ sơ
+                </div>
+              </div>
+            </div>
+
+            <ul class="sidebar-menu">
+              <li>
+                <a href="profile.html"><i class="fa fa-user-o"></i> Hồ sơ</a>
+              </li>
+              <li>
+                <a href="orders.html"
+                  ><i class="fa fa-shopping-bag"></i> Đơn mua</a
+                >
+              </li>
+              <li>
+                <a href="voucher.html"
+                  ><i class="fa fa-ticket"></i> Kho Voucher</a
+                >
+              </li>
+              <li>
+                <a href="address.html" class="active"
+                  ><i class="fa fa-map-marker"></i> Địa chỉ</a
+                >
+              </li>
+              <li>
+                <a href="#"><i class="fa fa-lock"></i> Đổi mật khẩu</a>
+              </li>
+              <li>
+                <a href="#"><i class="fa fa-bell-o"></i> Thông báo</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- MAIN CONTENT - ĐỊA CHỈ -->
+        <div class="col-lg-9">
+          <div class="account-content">
+            <!-- Notification -->
+            <div
+              class="alert alert-info"
+              style="background: #fff9e6; border-color: #ffe58f; color: #d48806"
+            >
+              <i class="fa fa-info-circle"></i>
+              Địa chỉ đã được cập nhật theo thông tin hành chính mới.
+            </div>
+
+            <div class="address-header">
+              <h3 class="title" style="margin: 0">Địa chỉ của tôi</h3>
+              <button class="add-address-btn" onclick="addNewAddress()">
+                <i class="fa fa-plus"></i> Thêm địa chỉ
+              </button>
+            </div>
+
+            <!-- Address List -->
+            <div id="address-list">
+              <!-- Được render bằng JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Dữ liệu mẫu (có thể lấy từ localStorage sau)
+      let addresses = [
+        {
+          id: 1,
+          name: "Thảo Quyên",
+          phone: "(+84) 869 437 552",
+          address: "Cổng Bể Bơi, Học Viện Kĩ Thuật Kĩ Thuật Quân Sự, Số 234",
+          ward: "Phường Nghĩa Đô",
+          district: "Thành phố Hà Nội",
+          isDefault: true,
+        },
+        {
+          id: 2,
+          name: "Thu trà",
+          phone: "(+84) 976 692 678",
+          address: "Số 7a, Ngách 9 Ngõ 28 Võ Chí Công",
+          ward: "Phường Tây Hồ",
+          district: "Thành phố Hà Nội",
+          isDefault: false,
+        },
+      ];
+
+      function renderAddresses() {
+        const container = document.getElementById("address-list");
+        container.innerHTML = addresses
+          .map(
+            (addr) => `
+                <div class="address-item ${addr.isDefault ? "default" : ""}">
+                    ${addr.isDefault ? `<div class="default-badge">Mặc định</div>` : ""}
+                    
+                    <div class="address-name">
+                        ${addr.name} <span class="address-phone">${addr.phone}</span>
+                    </div>
+                    
+                    <div class="address-text">
+                        ${addr.address}<br>
+                        ${addr.ward}, ${addr.district}
+                    </div>
+
+                    <div class="address-actions">
+                        <button class="btn-action" onclick="editAddress(${addr.id})">Cập nhật</button>
+                        ${!addr.isDefault ? `<button class="btn-action" onclick="setDefault(${addr.id})">Thiết lập mặc định</button>` : ""}
+                        <button class="btn-action btn-delete" onclick="deleteAddress(${addr.id})">Xóa</button>
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // Các hàm xử lý
+      function addNewAddress() {
+        alert("Chức năng thêm địa chỉ mới đang được phát triển...");
+        // Có thể mở modal form sau
+      }
+
+      function editAddress(id) {
+        alert("Chức năng chỉnh sửa địa chỉ #" + id);
+      }
+
+      function setDefault(id) {
+        addresses.forEach((a) => (a.isDefault = a.id === id));
+        renderAddresses();
+        alert("Đã thiết lập địa chỉ mặc định!");
+      }
+
+      function deleteAddress(id) {
+        if (confirm("Bạn có chắc muốn xóa địa chỉ này?")) {
+          addresses = addresses.filter((a) => a.id !== id);
+          renderAddresses();
+        }
+      }
+
+      // Khởi tạo
+      document.addEventListener("DOMContentLoaded", () => {
+        renderAddresses();
+
+        // Hiển thị tên user từ localStorage
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user && user.username) {
+          document.getElementById("sidebar-name").textContent = user.username;
+        }
+      });
+    </script>
+  </body>
+</html>

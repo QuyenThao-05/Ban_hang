@@ -1,5 +1,4 @@
 using BaseCore.DTO.Product;
-using BaseCore.DTO.Product.BaseCore.DTO.Product;
 using BaseCore.Entities;
 using Microsoft.EntityFrameworkCore;
 namespace BaseCore.Repository.EFCore
@@ -101,9 +100,17 @@ namespace BaseCore.Repository.EFCore
 
         public async Task<Product?> GetFullDetailAsync(int id)
         {
-            return await _dbSet
+            return await _context.Products
+
                 .Include(p => p.ProductType)
+
+                .Include(p => p.ProductVariants)
+
+                .Include(p => p.Reviews)
+                    .ThenInclude(r => r.User)
+
                 .Include(p => p.ProductDetails)
+
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 

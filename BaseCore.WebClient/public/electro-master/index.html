@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-    <title>Electro - HTML Ecommerce Template</title>
+    <title>Trang chủ - Stationery Shop</title>
 
     <!-- Google font -->
     <link
@@ -62,65 +62,69 @@
     </nav>
     <!-- /NAVIGATION -->
 
-    <!-- SECTION -->
+    <!-- CATEGORY SHOP -->
     <div class="section">
-      <!-- container -->
       <div class="container">
-        <!-- row -->
         <div class="row">
-          <!-- shop -->
+          <!-- Bút -->
           <div class="col-md-4 col-xs-6">
             <div class="shop">
               <div class="shop-img">
-                <img src="./img/shop01.png" alt="" />
+                <img
+                  src="./img/shop01.png"
+                  alt=""
+                  style="height: 230px; object-fit: cover"
+                />
               </div>
               <div class="shop-body">
                 <h3>Bút</h3>
                 <a href="#" class="cta-btn"
-                  >Shop now <i class="fa fa-arrow-circle-right"></i
+                  >SHOP NOW <i class="fa fa-arrow-circle-right"></i
                 ></a>
               </div>
             </div>
           </div>
-          <!-- /shop -->
 
-          <!-- shop -->
+          <!-- Vở / Sổ -->
           <div class="col-md-4 col-xs-6">
             <div class="shop">
               <div class="shop-img">
-                <img src="./img/shop03.png" alt="" />
+                <img
+                  src="./img/shop03.png"
+                  alt=""
+                  style="height: 230px; object-fit: cover"
+                />
               </div>
               <div class="shop-body">
                 <h3>Vở / Sổ</h3>
                 <a href="#" class="cta-btn"
-                  >Shop now <i class="fa fa-arrow-circle-right"></i
+                  >SHOP NOW <i class="fa fa-arrow-circle-right"></i
                 ></a>
               </div>
             </div>
           </div>
-          <!-- /shop -->
 
-          <!-- shop -->
+          <!-- Khác -->
           <div class="col-md-4 col-xs-6">
             <div class="shop">
               <div class="shop-img">
-                <img src="./img/shop02.png" alt="" />
+                <img
+                  src="./img/shop02.png"
+                  alt=""
+                  style="height: 230px; object-fit: cover"
+                />
               </div>
               <div class="shop-body">
                 <h3>Khác</h3>
                 <a href="#" class="cta-btn"
-                  >Shop now <i class="fa fa-arrow-circle-right"></i
+                  >SHOP NOW <i class="fa fa-arrow-circle-right"></i
                 ></a>
               </div>
             </div>
           </div>
-          <!-- /shop -->
         </div>
-        <!-- /row -->
       </div>
-      <!-- /container -->
     </div>
-    <!-- /SECTION -->
 
     <!-- SECTION -->
     <div class="section">
@@ -136,16 +140,6 @@
               <select id="filterType" style="margin-bottom: 20px; width: 200px">
                 <option value="">Tất cả</option>
               </select>
-              <div class="section-nav">
-                <ul class="section-tab-nav tab-nav">
-                  <li class="active">
-                    <a data-toggle="tab" href="#tab1">Bút</a>
-                  </li>
-                  <li><a data-toggle="tab" href="#tab1">Vở / Sổ</a></li>
-                  <li><a data-toggle="tab" href="#tab1">Giấy</a></li>
-                  <li><a data-toggle="tab" href="#tab1">Khác</a></li>
-                </ul>
-              </div>
             </div>
           </div>
           <!-- /section title -->
@@ -1282,20 +1276,45 @@
 
         if (user && user.username) {
           accountArea.innerHTML = `
-            <a href="#" style="margin-right:12px; color:white;">
-                <i class="fa fa-user"></i> ${user.username}
+        
+        <li class="account-dropdown">
+
+          <a href="#" class="account-user">
+            <i class="fa fa-user"></i> ${user.username}
+          </a>
+
+          <div class="account-menu">
+
+            <a href="profile.html">
+              <i class="fa fa-user-circle"></i>
+              Tài khoản của tôi
             </a>
-            <a href="#" id="logout-btn" style="color:white;">
-                <i class="fa fa-sign-out"></i> Đăng xuất
+
+            <a href="orders.html">
+              <i class="fa fa-shopping-bag"></i>
+              Đơn mua
             </a>
-        `;
+
+            <a href="#" id="logout-btn">
+              <i class="fa fa-sign-out"></i>
+              Đăng xuất
+            </a>
+
+          </div>
+
+        </li>
+      `;
 
           document.getElementById("logout-btn").onclick = () => {
             localStorage.clear();
             window.location.href = "index.html";
           };
         } else {
-          accountArea.innerHTML = `<a href="login.html"><i class="fa fa-user-o"></i> Đăng nhập</a>`;
+          accountArea.innerHTML = `
+        <a href="login.html">
+          <i class="fa fa-user-o"></i> Đăng nhập
+        </a>
+      `;
         }
       }
     </script>
