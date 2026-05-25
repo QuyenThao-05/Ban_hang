@@ -38,6 +38,8 @@ namespace BaseCore.APIService.Controllers
     [FromQuery] int? productTypeId,
     [FromQuery] decimal? minPrice,
     [FromQuery] decimal? maxPrice,
+    [FromQuery] int? stockMin,
+    [FromQuery] int? stockMax,
     [FromQuery] int page = 1,
     [FromQuery] int pageSize = 10)
         {
@@ -49,6 +51,8 @@ namespace BaseCore.APIService.Controllers
                 productTypeId,
                 minPrice,
                 maxPrice,
+                stockMin,
+                stockMax,
                 page,
                 pageSize);
 
