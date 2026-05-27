@@ -142,6 +142,44 @@ const Coupons = () => {
         <h1 className="ml-3">Quản lý mã khuyến mãi</h1>
       </div>
 
+      <style>{`
+        .coupons-table {
+          min-width: 1390px;
+          table-layout: fixed;
+        }
+
+        .coupons-table th,
+        .coupons-table td {
+          vertical-align: middle !important;
+        }
+
+        .coupons-table th {
+          font-weight: 700;
+          white-space: nowrap;
+        }
+
+        .coupons-table td {
+          padding: 0.85rem 0.75rem;
+        }
+
+        .coupons-table .coupon-description {
+          white-space: normal;
+          line-height: 1.45;
+        }
+
+        .coupons-table .badge {
+          white-space: nowrap;
+        }
+
+        .coupon-action-btn {
+          width: 34px;
+          height: 34px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+      `}</style>
+
       <section className="content">
         <div className="container-fluid">
 
@@ -179,64 +217,119 @@ const Coupons = () => {
                   <div className="spinner-border text-primary"></div>
                 </div>
               ) : (
-                <table className="table table-bordered table-striped mb-0">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Mã</th>
-                      <th>Mô tả</th>
-                      <th>Loại giảm</th>
-                      <th>Giá trị</th>
-                      <th>Đơn tối thiểu</th>
-                      <th>Lượt dùng</th>
-                      <th>Hạn dùng</th>
-                      <th>Trạng thái</th>
-                      {isAdmin() && <th>Thao tác</th>}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {coupons.length === 0 ? (
+                <div className="table-responsive">
+                  <table className="table table-bordered table-striped table-hover mb-0 coupons-table">
+                    <colgroup>
+                      <col style={{ width: "55px" }} />
+                      <col style={{ width: "135px" }} />
+                      <col style={{ width: "260px" }} />
+                      <col style={{ width: "105px" }} />
+                      <col style={{ width: "105px" }} />
+                      <col style={{ width: "130px" }} />
+                      <col style={{ width: "105px" }} />
+                      <col style={{ width: "125px" }} />
+                      <col style={{ width: "125px" }} />
+                      <col style={{ width: "145px" }} />
+                      {isAdmin() && <col style={{ width: "95px" }} />}
+                    </colgroup>
+
+                    <thead className="thead-light">
                       <tr>
-                        <td colSpan="10" className="text-center py-4">Không có dữ liệu</td>
+                        <th className="text-center align-middle">ID</th>
+                        <th className="text-center align-middle">Mã</th>
+                        <th className="align-middle">Mô tả</th>
+                        <th className="text-center align-middle">Loại giảm</th>
+                        <th className="text-center align-middle">Giá trị</th>
+                        <th className="text-center align-middle">Đơn tối thiểu</th>
+                        <th className="text-center align-middle">Lượt dùng</th>
+                        <th className="text-center align-middle">Ngày bắt đầu</th>
+                        <th className="text-center align-middle">Ngày kết thúc</th>
+                        <th className="text-center align-middle">Trạng thái</th>
+                        {isAdmin() && <th className="text-center align-middle">Thao tác</th>}
                       </tr>
-                    ) : (
-                      coupons.map((c) => (
-                        <tr key={c.id}>
-                          <td>{c.id}</td>
-                          <td><strong className="text-primary">{c.code}</strong></td>
-                          <td>{c.description || "—"}</td>
-                          <td>{c.discountType === "Percent" ? "Phần trăm" : "Cố định"}</td>
-                          <td>
-                            {c.discountType === "Percent"
-                              ? `${c.discountValue}%`
-                              : formatMoney(c.discountValue)}
+                    </thead>
+
+                    <tbody>
+                      {coupons.length === 0 ? (
+                        <tr>
+                          <td colSpan={isAdmin() ? 11 : 10} className="text-center py-4">
+                            Không có dữ liệu
                           </td>
-                          <td>{formatMoney(c.minOrderValue)}</td>
-                          <td>
-                            {c.maxUses === 0
-                              ? `${c.usedCount} / ∞`
-                              : `${c.usedCount} / ${c.maxUses}`}
-                          </td>
-                          <td>
-                            {c.startDate ? formatDate(c.startDate) : "—"}
-                            {c.endDate ? ` → ${formatDate(c.endDate)}` : ""}
-                          </td>
-                          <td>{statusBadge(c)}</td>
-                          {isAdmin() && (
-                            <td>
-                              <button className="btn btn-sm btn-info mr-1" onClick={() => openModal(c)}>
-                                <i className="fas fa-edit"></i>
-                              </button>
-                              <button className="btn btn-sm btn-danger" onClick={() => handleDelete(c.id)}>
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            </td>
-                          )}
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                      ) : (
+                        coupons.map((c) => (
+                          <tr key={c.id}>
+                            <td className="text-center align-middle">{c.id}</td>
+
+                            <td className="align-middle text-nowrap">
+                              <strong className="text-primary">{c.code}</strong>
+                            </td>
+
+                            <td className="align-middle coupon-description">
+                              {c.description || "—"}
+                            </td>
+
+                            <td className="text-center align-middle">
+                              {c.discountType === "Percent" ? "Phần trăm" : "Cố định"}
+                            </td>
+
+                            <td className="text-center align-middle text-nowrap">
+                              {c.discountType === "Percent"
+                                ? `${c.discountValue}%`
+                                : formatMoney(c.discountValue)}
+                            </td>
+
+                            <td className="text-right align-middle text-nowrap">
+                              {formatMoney(c.minOrderValue)}
+                            </td>
+
+                            <td className="text-center align-middle text-nowrap">
+                              {c.maxUses === 0
+                                ? `${c.usedCount} / ∞`
+                                : `${c.usedCount} / ${c.maxUses}`}
+                            </td>
+
+                            <td className="text-center align-middle text-nowrap">
+                              {c.startDate ? formatDate(c.startDate) : "—"}
+                            </td>
+
+                            <td className="text-center align-middle text-nowrap">
+                              {c.endDate ? formatDate(c.endDate) : "—"}
+                            </td>
+
+                            <td className="text-center align-middle">
+                              {statusBadge(c)}
+                            </td>
+
+                            {isAdmin() && (
+                              <td className="text-center align-middle">
+                                <div
+                                  className="d-flex justify-content-center align-items-center"
+                                  style={{ gap: 6 }}
+                                >
+                                  <button
+                                    className="btn btn-sm btn-info coupon-action-btn"
+                                    onClick={() => openModal(c)}
+                                    title="Sửa"
+                                  >
+                                    <i className="fas fa-edit"></i>
+                                  </button>
+                                  <button
+                                    className="btn btn-sm btn-danger coupon-action-btn"
+                                    onClick={() => handleDelete(c.id)}
+                                    title="Xoá"
+                                  >
+                                    <i className="fas fa-trash"></i>
+                                  </button>
+                                </div>
+                              </td>
+                            )}
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           </div>

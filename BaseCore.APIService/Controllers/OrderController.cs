@@ -1,71 +1,44 @@
 using BaseCore.DTO.Order;
-using BaseCore.Entities;
-using BaseCore.Repository.EFCore;
 using BaseCore.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace BaseCore.APIService.Controllers
 {
     /// <summary>
     /// Order API Controller
-    /// Teaching: RESTful API, Business Logic, Authentication (Bài 10, 11)
+    /// Nâng cấp phục vụ trang quản lý đơn hàng admin.
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     //[Authorize]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderService _OrderService;
+        private readonly IOrderService _orderService;
 
-        public OrderController(
-            IOrderService OrderService)
+        public OrderController(IOrderService orderService)
         {
-            _OrderService = OrderService;
+            _orderService = orderService;
         }
 
-        /// <summary>
-        /// Get orders for current user
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll(
-             [FromQuery] string? search,
-             [FromQuery] string? status,
-             int page = 1,
-             int pageSize = 10)
-        {
-            var result = await _OrderService.GetDashboardOrders(
-                page,
-                pageSize,
-                search,
-                status);
-
-            return Ok(new
-            {
-                items = result.Items,
-                totalCount = result.TotalCount,
-                page,
-                pageSize
-            });
-        }
-
-        /// <summary>
-        /// Get all bills (Admin only)
-        /// </summary>
-        [HttpGet("all")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> GetAllOrder(
             [FromQuery] string? search,
             [FromQuery] string? status,
+            [FromQuery] string? paymentStatus,
+            [FromQuery] DateTime? fromDate,
+            [FromQuery] DateTime? toDate,
             int page = 1,
             int pageSize = 10)
         {
-            var result = await _OrderService.GetDashboardOrders(
+            var result = await _orderService.GetDashboardOrders(
                 page,
                 pageSize,
                 search,
-                status);
+                status,
+                paymentStatus,
+                fromDate,
+                toDate);
 
             return Ok(new
             {
@@ -75,41 +48,89 @@ namespace BaseCore.APIService.Controllers
                 pageSize
             });
         }
-        /// <summary>
-        /// Get order by ID
-        /// </summary>
+
+        [HttpGet("all")]
+        [Authorize]
+        public async Task<IActionResult> GetAllOrder(
+            [FromQuery] string? search,
+            [FromQuery] string? status,
+            [FromQuery] string? paymentStatus,
+            [FromQuery] DateTime? fromDate,
+            [FromQuery] DateTime? toDate,
+            int page = 1,
+            int pageSize = 10)
+        {
+            var result = await _orderService.GetDashboardOrders(
+                page,
+                pageSize,
+                search,
+                status,
+                paymentStatus,
+                fromDate,
+                toDate);
+
+            return Ok(new
+            {
+                items = result.Items,
+                totalCount = result.TotalCount,
+                page,
+                pageSize
+            });
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var Order = await _OrderService.GetById(id);
+            var order = await _orderService.GetById(id);
 
-            if (Order == null)
+            if (order == null)
+            {
                 return NotFound(new
                 {
                     message = "Không tìm thấy đơn hàng"
                 });
+            }
 
             var result = new
             {
-                Order.Id,
-                Order.UserId,
-                CustomerName = Order.User.FullName ?? Order.User.Username,
-                Order.TotalPrice,
-                Order.Status,
-                Order.ShippingAddress,
-                Order.PaymentMethod,
-                Order.CreatedAt,
+                order.Id,
+                order.UserId,
+                CustomerName = order.User != null
+                    ? (order.User.FullName ?? order.User.Username)
+                    : "N/A",
 
-                Items = Order.OrderDetails.Select(d => new
+                CustomerPhone = order.CustomerPhone,
+                CustomerEmail = order.CustomerEmail,
+
+                order.TotalPrice,
+                order.DiscountAmount,
+                order.ShippingFee,
+                FinalAmount = order.FinalAmount > 0 ? order.FinalAmount : order.TotalPrice,
+
+                order.Status,
+                order.PaymentStatus,
+                order.PaymentMethod,
+
+                order.ShippingAddress,
+                order.Note,
+                order.CancelReason,
+
+                order.CreatedAt,
+                order.UpdatedAt,
+                order.ConfirmedAt,
+                order.CompletedAt,
+                order.CancelledAt,
+
+                Items = order.OrderDetails.Select(d => new
                 {
                     d.Id,
                     d.ProductId,
-                    ProductName = d.Product.Name,
+                    ProductName = d.Product != null ? d.Product.Name : "Sản phẩm",
                     Brand = d.ProductDetail != null ? d.ProductDetail.Brand : null,
                     Color = d.ProductDetail != null ? d.ProductDetail.Color : null,
                     Size = d.ProductDetail != null ? d.ProductDetail.Size : null,
                     d.Quantity,
-                    d.Price,
+                    UnitPrice = d.Price,
                     d.TotalPrice
                 })
             };
@@ -117,12 +138,8 @@ namespace BaseCore.APIService.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Create new order
-        /// </summary>
         [HttpPost]
-        public async Task<IActionResult> Create(
-           [FromBody] CreateOrderRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateOrderRequest request)
         {
             if (request == null || request.Items == null || !request.Items.Any())
             {
@@ -134,14 +151,15 @@ namespace BaseCore.APIService.Controllers
 
             try
             {
-                var Order = await _OrderService.CreateOrder(request);
+                var order = await _orderService.CreateOrder(request);
 
                 return Ok(new
                 {
                     message = "Tạo đơn hàng thành công",
-                    OrderId = Order.Id,
-                    totalPrice = Order.TotalPrice,
-                    status = Order.Status
+                    orderId = order.Id,
+                    totalPrice = order.TotalPrice,
+                    status = order.Status,
+                    paymentStatus = order.PaymentStatus
                 });
             }
             catch (Exception ex)
@@ -152,15 +170,13 @@ namespace BaseCore.APIService.Controllers
                 });
             }
         }
-        /// <summary>
-        /// Update order status
-        /// </summary>
+
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(
-           int id,
-           [FromBody] UpdateOrderStatusRequest req)
+            int id,
+            [FromBody] UpdateOrderStatusRequest req)
         {
-            if (req == null || string.IsNullOrEmpty(req.Status))
+            if (req == null || string.IsNullOrWhiteSpace(req.Status))
             {
                 return BadRequest(new
                 {
@@ -170,9 +186,7 @@ namespace BaseCore.APIService.Controllers
 
             try
             {
-                await _OrderService.UpdateStatus(
-                    id,
-                    req.Status);
+                await _orderService.UpdateStatus(id, req.Status);
 
                 return Ok(new
                 {
@@ -188,17 +202,53 @@ namespace BaseCore.APIService.Controllers
             }
         }
 
-        /// <summary>
-        /// Cancel order
-        /// </summary>
-        [HttpPut("{id}/cancel")]
-        public async Task<IActionResult> Cancel(int id)
+        [HttpPut("{id}/payment")]
+        public async Task<IActionResult> UpdatePayment(
+            int id,
+            [FromBody] UpdateOrderPaymentRequest req)
         {
+            if (req == null || string.IsNullOrWhiteSpace(req.PaymentStatus))
+            {
+                return BadRequest(new
+                {
+                    message = "PaymentStatus không hợp lệ"
+                });
+            }
+
             try
             {
-                await _OrderService.UpdateStatus(
-                    id,
-                    "Cancelled");
+                await _orderService.UpdatePaymentStatus(id, req.PaymentStatus);
+
+                return Ok(new
+                {
+                    message = "Cập nhật thanh toán thành công"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("{id}/cancel")]
+        public async Task<IActionResult> Cancel(
+            int id,
+            [FromBody] CancelOrderRequest req)
+        {
+            if (req == null || string.IsNullOrWhiteSpace(req.Reason))
+            {
+                return BadRequest(new
+                {
+                    message = "Vui lòng nhập lý do hủy đơn"
+                });
+            }
+
+            try
+            {
+                await _orderService.CancelOrder(id, req.Reason);
 
                 return Ok(new
                 {
@@ -213,13 +263,13 @@ namespace BaseCore.APIService.Controllers
                 });
             }
         }
-        //delele bill
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await _OrderService.DeleteOrder(id);
+                await _orderService.DeleteOrder(id);
 
                 return Ok(new
                 {

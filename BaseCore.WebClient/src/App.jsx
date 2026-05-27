@@ -16,7 +16,8 @@ import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
 import Login from "./pages/Login";
 import Manufacturer from "./pages/Manufacturers";
-
+import Coupons from "./pages/Coupons";
+// trong AppRoutes:
 
 // 🔥 ROUTE ADMIN
 const AdminRoute = ({ children }) => {
@@ -147,6 +148,16 @@ function AppRoutes() {
           </AdminRoute>
         }
       />
+      <Route path="/coupons" 
+      element={
+        <AdminRoute>
+          <MainLayout>
+            <Coupons />
+            </MainLayout>
+            </AdminRoute>
+          }
+           />
+
       {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

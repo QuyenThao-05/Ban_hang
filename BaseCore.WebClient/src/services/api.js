@@ -76,19 +76,15 @@ export const productTypeApi = {
 // Order API (Admin)
 export const orderApi = {
     getAll: (params) => mainApiInstance.get('/order/all', { params }),
-
     getById: (id) => mainApiInstance.get(`/order/${id}`),
-
     updateStatus: (id, status) =>
-        mainApiInstance.put(`/order/${id}/status`, {
-            Status: status
-        }),
-
-    delete: (id) =>
-        mainApiInstance.delete(`/order/${id}`)
+        mainApiInstance.put(`/order/${id}/status`, { status }),
+    updatePayment: (id, paymentStatus) =>
+        mainApiInstance.put(`/order/${id}/payment`, { paymentStatus }),
+    cancel: (id, reason) =>
+        mainApiInstance.post(`/order/${id}/cancel`, { reason }),
+    delete: (id) => mainApiInstance.delete(`/order/${id}`),
 };
-//  manufacturer API
-// Manufacturer API
 // Manufacturer API
 export const manufacturerApi = {
   getAll: (params) => mainApiInstance.get("/Manufacturers", { params }),
@@ -96,4 +92,12 @@ export const manufacturerApi = {
   create: (data) => mainApiInstance.post("/Manufacturers", data),
   update: (id, data) => mainApiInstance.put(`/Manufacturers/${id}`, data),
   delete: (id) => mainApiInstance.delete(`/Manufacturers/${id}`),
+};
+export const couponApi = {
+    getAll: (params) => mainApiInstance.get('/coupons', { params }),
+    getById: (id) => mainApiInstance.get(`/coupons/${id}`),
+    checkCode: (code) => mainApiInstance.get(`/coupons/check/${code}`),
+    create: (data) => mainApiInstance.post('/coupons', data),
+    update: (id, data) => mainApiInstance.put(`/coupons/${id}`, data),
+    delete: (id) => mainApiInstance.delete(`/coupons/${id}`),
 };

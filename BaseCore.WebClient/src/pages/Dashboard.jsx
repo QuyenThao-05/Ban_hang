@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { productApi, userApi, productTypeApi, orderApi, manufacturerApi } from "../services/api";
+import { productApi, userApi, productTypeApi, orderApi, manufacturerApi, couponApi } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 
 const Dashboard = () => {
@@ -12,6 +12,7 @@ const Dashboard = () => {
     users: 0,
     revenue: 0,
     manufacturers: 0,
+    coupons: 0,
   });
 
   const [latestOrders, setLatestOrders] = useState([]);
@@ -26,6 +27,14 @@ const Dashboard = () => {
     return [];
   };
 
+  const getCount = (res) => {
+    if (!res || !res.data) return 0;
+    if (res.data.totalCount !== undefined) return res.data.totalCount;
+    if (Array.isArray(res.data.items)) return res.data.items.length;
+    if (Array.isArray(res.data)) return res.data.length;
+    return 0;
+  };
+
   // ===== LOAD DASHBOARD =====
   useEffect(() => {
     loadDashboard();
@@ -35,10 +44,11 @@ const Dashboard = () => {
     try {
       setLoading(true);
 
-      const [productsRes, typesRes, manufacturersRes] = await Promise.all([
+      const [productsRes, typesRes, manufacturersRes, couponsRes] = await Promise.all([
         productApi.getAll(),
         productTypeApi.getAll(),
         manufacturerApi.getAll(),
+        couponApi.getAll(),
       ]);
 
       let orders = [];
@@ -86,8 +96,8 @@ const Dashboard = () => {
       );
 
       // ===== SET STATE =====
-      const manufacturersData = manufacturersRes.data?.items || manufacturersRes.data || [];
-      const manufacturersCount = manufacturersRes.data?.totalCount || (Array.isArray(manufacturersData) ? manufacturersData.length : 0);
+      const manufacturersCount = getCount(manufacturersRes);
+      const couponsCount = getCount(couponsRes);
 
       setStats({
         products: products.length,
@@ -96,6 +106,7 @@ const Dashboard = () => {
         users: usersCount,
         revenue: totalRevenue,
         manufacturers: manufacturersCount,
+        coupons: couponsCount,
       });
 
       setLatestOrders(orders.slice(0, 5));
@@ -138,6 +149,8 @@ const Dashboard = () => {
                   <Box title="Users" value={stats.users} color="warning" icon="users" />
                 )}
                 <Box title="Manufacturers" value={stats.manufacturers} color="secondary" icon="industry" />
+                <Box title="Coupons" value={stats.coupons} color="purple" icon="ticket-alt" />
+            
               </div>
 
               {/* ===== ORDERS ===== */}

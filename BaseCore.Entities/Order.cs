@@ -20,5 +20,21 @@ namespace BaseCore.Entities
         public DateTime CreatedAt { get; set; }
 
         public List<OrderDetail> OrderDetails { get; set; } = new();
+        public string? CustomerPhone { get; set; }
+        public string? CustomerEmail { get; set; }
+
+        public decimal DiscountAmount { get; set; } = 0;
+        public decimal ShippingFee { get; set; } = 0;
+        public decimal FinalAmount { get; set; } = 0;
+
+        public string PaymentStatus { get; set; } = "Unpaid";
+
+        public string? Note { get; set; }
+        public string? CancelReason { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? ConfirmedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+        public DateTime? CancelledAt { get; set; }
     }
 }
