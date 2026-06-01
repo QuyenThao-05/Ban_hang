@@ -25,6 +25,7 @@ namespace BaseCore.Repository
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

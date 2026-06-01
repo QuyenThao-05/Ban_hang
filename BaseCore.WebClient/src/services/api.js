@@ -101,3 +101,15 @@ export const couponApi = {
     update: (id, data) => mainApiInstance.put(`/coupons/${id}`, data),
     delete: (id) => mainApiInstance.delete(`/coupons/${id}`),
 };
+// Feedback API
+export const feedbackApi = {
+    getAll: (params) => mainApiInstance.get('/feedbacks', { params }),
+    getById: (id) => mainApiInstance.get(`/feedbacks/${id}`),
+    create: (data) => mainApiInstance.post('/feedbacks', data),
+    update: (id, data) => mainApiInstance.put(`/feedbacks/${id}`, data),
+    updateStatus: (id, status) =>
+        mainApiInstance.put(`/feedbacks/${id}/status`, { status }),
+    reply: (id, adminReply) =>
+        mainApiInstance.put(`/feedbacks/${id}/reply`, { adminReply }),
+    delete: (id) => mainApiInstance.delete(`/feedbacks/${id}`),
+};
