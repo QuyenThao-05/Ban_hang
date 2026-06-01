@@ -1217,31 +1217,7 @@
         window.location.href = "checkout.html";
       }
     </script>
-    <script>
-      const user = JSON.parse(localStorage.getItem("user"));
-      const accountArea = document.getElementById("account-area");
 
-      if (user) {
-        accountArea.innerHTML = `
-      <a href="#"><i class="fa fa-user"></i> ${user.username}</a>
-      <a href="#" id="logout-btn" style="margin-left:10px;">
-        Logout
-      </a>
-    `;
-
-        document.getElementById("logout-btn").onclick = () => {
-          localStorage.removeItem("user");
-          localStorage.removeItem("token");
-          location.reload();
-        };
-      } else {
-        accountArea.innerHTML = `
-      <a href="/login">
-        <i class="fa fa-user-o"></i> My Account
-      </a>
-    `;
-      }
-    </script>
     <script>
       // Load Header
       async function loadHeader() {
@@ -1254,14 +1230,31 @@
           tempDiv.innerHTML = text;
 
           const headerContent = tempDiv.querySelector("header");
+
           if (headerContent) {
             document.body.insertBefore(headerContent, document.body.firstChild);
-          }
 
-          // Load user sau khi header đã load
-          updateUserHeader();
-          updateCartCount();
-          loadCartDropdown();
+            const scripts = tempDiv.querySelectorAll("script");
+
+            scripts.forEach((oldScript) => {
+              const newScript = document.createElement("script");
+
+              if (oldScript.src) {
+                newScript.src = oldScript.src;
+              } else {
+                newScript.textContent = oldScript.textContent;
+              }
+
+              document.body.appendChild(newScript);
+            });
+
+            if (typeof updateUserHeader === "function") {
+              updateUserHeader();
+            }
+
+            updateCartCount();
+            loadCartDropdown();
+          }
         } catch (e) {
           console.error("Không load được header", e);
         }
@@ -1269,69 +1262,7 @@
 
       document.addEventListener("DOMContentLoaded", loadHeader);
     </script>
-    <script>
-      function updateUserHeader() {
-        const user = JSON.parse(localStorage.getItem("user"));
-        const accountArea = document.getElementById("account-area");
 
-        if (user && user.username) {
-          accountArea.innerHTML = `
-        
-        <li class="account-dropdown">
-
-          <a href="#" class="account-user">
-            <i class="fa fa-user"></i> ${user.username}
-          </a>
-
-          <div class="account-menu">
-
-            <a href="profile.html">
-              <i class="fa fa-user-circle"></i>
-              Tài khoản của tôi
-            </a>
-
-            <a href="orders.html">
-              <i class="fa fa-shopping-bag"></i>
-              Đơn mua
-            </a>
-
-            <a href="#" id="logout-btn">
-              <i class="fa fa-sign-out"></i>
-              Đăng xuất
-            </a>
-
-          </div>
-
-        </li>
-      `;
-
-          document.getElementById("logout-btn").onclick = () => {
-            localStorage.clear();
-            window.location.href = "index.html";
-          };
-        } else {
-          accountArea.innerHTML = `
-        <a href="login.html">
-          <i class="fa fa-user-o"></i> Đăng nhập
-        </a>
-      `;
-        }
-      }
-    </script>
-    <script>
-      // Load Header
-      fetch("header.html")
-        .then((res) => res.text())
-        .then((data) => {
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = data;
-          document.body.insertBefore(
-            tempDiv.firstElementChild,
-            document.body.firstChild,
-          );
-        })
-        .catch((err) => console.error(err));
-    </script>
     <script>
       // Load Footer
       fetch("footer.html")

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Tài khoản của tôi</title>
+    <title>Tài khoản của tôi - Stationery Shop</title>
 
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/font-awesome.min.css" />
@@ -17,7 +17,7 @@
       }
 
       .account-page {
-        padding: 40px 0;
+        padding: 0 40px;
       }
 
       /* SIDEBAR */
@@ -207,6 +207,63 @@
   </head>
 
   <body>
+    <div id="header-placeholder"></div>
+    <script>
+      fetch("header.html")
+        .then((res) => res.text())
+        .then((data) => {
+          document.getElementById("header-placeholder").innerHTML = data;
+
+          // chạy script trong header
+          const scripts = document
+            .getElementById("header-placeholder")
+            .querySelectorAll("script");
+
+          scripts.forEach((oldScript) => {
+            const newScript = document.createElement("script");
+
+            if (oldScript.src) {
+              newScript.src = oldScript.src;
+            } else {
+              newScript.textContent = oldScript.textContent;
+            }
+
+            document.body.appendChild(newScript);
+          });
+
+          // update lại cart + wishlist
+          if (typeof updateCartCount === "function") {
+            updateCartCount();
+          }
+
+          if (typeof loadCartDropdown === "function") {
+            loadCartDropdown();
+          }
+
+          if (typeof updateWishlistCount === "function") {
+            updateWishlistCount();
+          }
+
+          if (typeof updateUserHeader === "function") {
+            updateUserHeader();
+          }
+        });
+    </script>
+
+    <!-- BREADCRUMB -->
+    <div id="breadcrumb" class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="breadcrumb-tree">
+              <li><a href="index.html">Trang chủ</a></li>
+              <li class="active">Thông tin tài khoản</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="container account-page">
       <div class="row">
         <!-- SIDEBAR -->
@@ -292,7 +349,7 @@
                     type="text"
                     class="profile-input"
                     id="username"
-                    value="user1"
+                    value=""
                   />
                 </div>
 
@@ -303,7 +360,7 @@
                     type="text"
                     class="profile-input"
                     id="fullname"
-                    value="Thảo Quyên"
+                    value=""
                   />
                 </div>
 
@@ -314,7 +371,7 @@
                     type="email"
                     class="profile-input"
                     id="email"
-                    value="user@gmail.com"
+                    value=""
                   />
                 </div>
 
@@ -325,7 +382,7 @@
                     type="text"
                     class="profile-input"
                     id="phone"
-                    value="0123456789"
+                    value=""
                   />
                 </div>
 
@@ -376,42 +433,86 @@
         </div>
       </div>
     </div>
-
     <script>
-      // LOAD USER
-      const user = JSON.parse(localStorage.getItem("user"));
+      async function loadProfile() {
+        try {
+          const token = localStorage.getItem("token");
 
-      if (user) {
-        document.getElementById("username").value = user.username || "";
+          const response = await fetch(
+            "http://localhost:5002/api/Auth/profile",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
 
-        document.getElementById("fullname").value = user.fullName || "";
+          if (!response.ok) {
+            throw new Error("Không load được profile");
+          }
 
-        document.getElementById("email").value = user.email || "";
+          const user = await response.json();
 
-        document.getElementById("phone").value = user.phone || "";
+          document.getElementById("username").value = user.username || "";
+          document.getElementById("fullname").value = user.fullName || "";
+          document.getElementById("email").value = user.email || "";
+          document.getElementById("phone").value = user.phone || "";
 
-        document.getElementById("sidebar-name").innerText =
-          user.username || "User";
+          document.getElementById("sidebar-name").innerText =
+            user.username || "User";
+        } catch (err) {
+          console.error(err);
+        }
       }
 
-      // SAVE
-      function saveProfile() {
-        const updatedUser = {
-          ...user,
+      async function saveProfile() {
+        try {
+          const token = localStorage.getItem("token");
 
-          username: document.getElementById("username").value,
+          const data = {
+            username: document.getElementById("username").value,
+            fullName: document.getElementById("fullname").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+          };
 
-          fullName: document.getElementById("fullname").value,
+          const response = await fetch(
+            "http://localhost:5002/api/Auth/update-profile",
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(data),
+            },
+          );
 
-          email: document.getElementById("email").value,
+          const result = await response.json();
 
-          phone: document.getElementById("phone").value,
-        };
+          if (!response.ok) {
+            alert(result.message || "Cập nhật thất bại");
+            return;
+          }
 
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+          alert("Cập nhật hồ sơ thành công");
 
-        alert("Cập nhật thông tin thành công!");
+          // update tên sidebar
+          document.getElementById("sidebar-name").innerText = data.username;
+
+          // update header nếu có
+          if (typeof updateUserHeader === "function") {
+            updateUserHeader();
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Có lỗi xảy ra");
+        }
       }
+
+      loadProfile();
     </script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
   </body>
 </html>

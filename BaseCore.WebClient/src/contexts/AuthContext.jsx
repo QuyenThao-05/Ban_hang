@@ -30,7 +30,9 @@ export const AuthProvider = ({ children }) => {
         setUser(parsedUser);
       } catch (err) {
         console.error("Parse user error:", err);
-        localStorage.clear();
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("userId");
         navigate("/login");
       }
     }
@@ -44,8 +46,11 @@ export const AuthProvider = ({ children }) => {
       const response = await authApi.login(username, password);
       const data = response.data;
 
+      console.log(data);
+
       // ✅ Lưu token
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.userId);
 
       const userData = {
         username: data.username || username,
@@ -65,15 +70,19 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (error) {
-      const message = error.response?.data?.message || error.response?.data || "Login failed";
+      const message =
+        error.response?.data?.message || error.response?.data || "Login failed";
       return { success: false, message };
     }
   };
 
   // LOGOUT
   const logout = () => {
-    localStorage.clear();
-    navigate("/login");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("userId");
+
+    navigate("/");
   };
 
   // ✅ isAdmin check chữ thường — khớp với role đã normalize

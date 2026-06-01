@@ -2192,8 +2192,17 @@ textarea.input {
 }
 
 /*dropdown*/
-.account-dropdown {
-  position: relative;
+.account-dropdown{
+  position:relative;
+  display:inline-block;
+}
+
+#account-area{
+  position:relative;
+}
+
+#account-area .account-menu{
+  display:block;
 }
 
 .account-dropdown > a {

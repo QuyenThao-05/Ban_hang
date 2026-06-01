@@ -20,8 +20,7 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 
   if (!isAuthenticated) {
     // quay về login HTML của bạn
-    window.location.href =
-      "http://127.0.0.1:5500/BaseCore.WebClient/electro-master/login.html";
+    window.location.href = "http://localhost:3000/login";
     return null;
   }
 

@@ -1,8 +1,12 @@
+using BaseCore.DTO.User;
 using BaseCore.Entities;
+using BaseCore.Repository;
 using BaseCore.Repository.EFCore;
 using BaseCore.Services;
 using BaseCore.Services.Authen;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,11 +21,16 @@ namespace BaseCore.AuthService.Controllers
     {
         private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
+        private readonly MySqlDbContext _context;
 
-        public AuthController(IUserService userService, IConfiguration configuration)
+        public AuthController(
+            IUserService userService,
+            IConfiguration configuration,
+            MySqlDbContext context)
         {
             _userService = userService;
             _configuration = configuration;
+            _context = context;
         }
 
         // 🔥 LOGIN
@@ -43,7 +52,62 @@ namespace BaseCore.AuthService.Controllers
             {
                 token = token,
                 role = user.Role,
+                userId = user.Id,
                 username = user.Username
+            });
+        }
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id.ToString() == userId);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(new
+            {
+                id = user.Id,
+                username = user.Username,
+                fullName = user.FullName,
+                email = user.Email,
+                phone = user.Phone,
+                role = user.Role
+            });
+        }
+
+        [Authorize]
+        [HttpPut("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id.ToString() == userId);
+
+            if (user == null)
+                return NotFound();
+
+            user.Username = dto.Username;
+            user.FullName = dto.FullName;
+            user.Email = dto.Email;
+            user.Phone = dto.Phone;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Cập nhật thành công"
             });
         }
 

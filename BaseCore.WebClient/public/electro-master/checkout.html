@@ -610,7 +610,7 @@
 
         if (!user) {
           alert("Bạn cần đăng nhập để thanh toán!");
-          window.location.href = "login.html";
+          window.location.href = "http://localhost:3000/login";
           return false;
         }
         return true;
@@ -658,12 +658,12 @@
       `;
 
           document.getElementById("logout-btn").onclick = () => {
-            localStorage.clear();
+            localStorage.removeItem("user");
             window.location.href = "index.html";
           };
         } else {
           accountArea.innerHTML = `
-        <a href="login.html">
+        <a href="http://localhost:3000/login">
           <i class="fa fa-user-o"></i> Đăng nhập
         </a>
       `;

@@ -1022,6 +1022,17 @@ document.getElementById("product-category").innerText =
       loadProductDetail();
     </script>
     <script>
+function getCartKey() {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!user) {
+    return "cart_guest";
+  }
+
+  return `cart_${user.username}`;
+}
+</script>
+    <script>
 document.addEventListener("DOMContentLoaded", () => {
     const addBtn = document.querySelector(".add-to-cart-btn");
     if (addBtn) {
@@ -1053,7 +1064,7 @@ if (hasRealVariants && !selectedVariant) {
 
             if (!user) {
                 alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!");
-                window.location.href = "login.html";
+                window.location.href = "http://localhost:3000/login";
                 return;
             }
 
@@ -1100,7 +1111,8 @@ const product = {
     quantity: qty
 };
 
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let cart =
+  JSON.parse(localStorage.getItem(getCartKey())) || [];
             const existing = cart.find(
     p => p.variantId == product.variantId
 );
@@ -1111,7 +1123,7 @@ const product = {
                 cart.push(product);
             }
 
-            localStorage.setItem("cart", JSON.stringify(cart));
+            localStorage.setItem(getCartKey(), JSON.stringify(cart));
             alert("Đã thêm vào giỏ hàng!");
             updateCartCount();
             loadCartDropdown();
@@ -1121,7 +1133,8 @@ const product = {
 </script>
 <script>
 function updateCartCount() {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const cart =
+  JSON.parse(localStorage.getItem(getCartKey())) || [];
 
   let totalQty = 0;
 
@@ -1137,7 +1150,8 @@ updateCartCount();
 </script>
 <script>
 function loadCartDropdown() {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const cart =
+  JSON.parse(localStorage.getItem(getCartKey())) || [];
 
   const list = document.getElementById("cart-list");
   const totalEl = document.getElementById("cart-total");
@@ -1177,11 +1191,12 @@ function loadCartDropdown() {
 loadCartDropdown();
 
 function removeFromCart(id) {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let cart =
+  JSON.parse(localStorage.getItem(getCartKey())) || [];
 
   cart = cart.filter(p => p.id != id);
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem(getCartKey(), JSON.stringify(cart));
 
   // update lại UI
   updateCartCount();
@@ -1230,13 +1245,13 @@ function removeFromCart(id) {
       `;
 
       document.getElementById("logout-btn").onclick = () => {
-        localStorage.clear();
+        localStorage.removeItem("user");
         window.location.href = "index.html";
       };
 
     } else {
       accountArea.innerHTML = `
-        <a href="login.html">
+        <a href="http://localhost:3000/login">
           <i class="fa fa-user-o"></i> Đăng nhập
         </a>
       `;

@@ -140,59 +140,135 @@
             (document.getElementById("footer-placeholder").innerHTML = data),
         );
 
-      // Dữ liệu đơn hàng mẫu
-      const orders = [
-        {
-          id: "#ORD20260507001",
-          status: "Chờ giao hàng",
-          color: "#d10024",
-          product: "Bút bi Thiên Long TL-027 - Hộp 20 cây",
-          qty: 2,
-          price: 85000,
-          image: "./img/product01.png",
-        },
-        {
-          id: "#ORD20260506008",
-          status: "Hoàn thành",
-          color: "#28a745",
-          product: "Vở ô ly Campus A4 200 trang",
-          qty: 5,
-          price: 225000,
-          image: "./img/product02.png",
-        },
-      ];
+      async function loadOrders() {
+        try {
+          // nếu có token đăng nhập
+          const token = localStorage.getItem("token");
 
-      function renderOrders() {
+          const response = await fetch("http://localhost:5001/api/order", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Không thể tải đơn hàng");
+          }
+
+          const result = await response.json();
+
+          const userId = localStorage.getItem("userId");
+
+          const orders = result.items.filter(
+            o => o.userId == userId
+          );
+
+          renderOrders(orders);
+        } catch (error) {
+          console.error(error);
+
+          document.getElementById("order-list").innerHTML = `
+        <div class="alert alert-danger">
+          Không tải được đơn hàng
+        </div>
+      `;
+        }
+      }
+
+      function renderOrders(orders) {
         const container = document.getElementById("order-list");
+
+        if (!orders || orders.length === 0) {
+          container.innerHTML = `
+        <div class="text-center" style="padding:40px">
+          <h4>Chưa có đơn hàng</h4>
+        </div>
+      `;
+          return;
+        }
+
         container.innerHTML = orders
           .map(
             (o) => `
-                <div class="order-item">
-                    <div class="row">
-                        <div class="col-md-2">
-                            <img src="${o.image}" class="img-responsive" style="border-radius:6px;">
-                        </div>
-                        <div class="col-md-7">
-                            <h4>${o.product}</h4>
-                            <p>Số lượng: <strong>${o.qty}</strong> • Mã đơn: <strong>${o.id}</strong></p>
-                        </div>
-                        <div class="col-md-3 text-right">
-                            <span class="order-status" style="background:${o.color}20; color:${o.color}">
-                                ${o.status}
-                            </span>
-                            <h4 style="margin:12px 0 8px 0;">${o.price.toLocaleString("vi-VN")} đ</h4>
-                            <button class="btn btn-sm btn-default">Liên hệ</button>
-                            ${o.status === "Hoàn thành" ? `<button class="btn btn-sm btn-primary" style="margin-left:5px;">Đánh giá</button>` : ""}
-                        </div>
-                    </div>
-                </div>
-            `,
+  <div class="order-item">
+
+    <div class="row">
+
+      <div class="col-md-9">
+
+        <h4>Đơn hàng #${o.id}</h4>
+
+        <p>
+          Người nhận:
+          <strong>${o.customerName}</strong>
+        </p>
+
+        <p>
+          SĐT:
+          <strong>${o.customerPhone}</strong>
+        </p>
+
+        <p>
+          Địa chỉ:
+          <strong>${o.shippingAddress}</strong>
+        </p>
+
+        <p>
+          Thanh toán:
+          <strong>${o.paymentMethod}</strong>
+        </p>
+
+      </div>
+
+      <div class="col-md-3 text-right">
+
+        <span 
+          class="order-status"
+          style="
+            background:${getStatusColor(o.status)}20;
+            color:${getStatusColor(o.status)}
+          "
+        >
+          ${o.status}
+        </span>
+
+        <h4 style="margin-top:15px">
+          ${Number(o.finalAmount).toLocaleString("vi-VN")} đ
+        </h4>
+
+      </div>
+
+    </div>
+
+  </div>
+`,
           )
           .join("");
       }
 
-      // Chạy khi trang load xong
-      window.onload = renderOrders;
+      function getStatusColor(status) {
+        switch (status) {
+          case "Hoàn thành":
+            return "#28a745";
+
+          case "Chờ giao hàng":
+            return "#d10024";
+
+          case "Đã hủy":
+            return "#6c757d";
+
+          case "Vận chuyển":
+            return "#007bff";
+
+          default:
+            return "#ff9900";
+        }
+      }
+
+      // load dữ liệu khi mở trang
+      window.onload = loadOrders;
     </script>
   </body>
 </html>

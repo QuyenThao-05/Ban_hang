@@ -25,7 +25,7 @@ async function login() {
 // ===== LOGOUT =====
 function logout() {
   localStorage.removeItem("token");
-  window.location.href = "login.html";
+  window.location.href = "http://localhost:3000/login";
 }
 
 // ===== CHECK LOGIN =====
@@ -33,6 +33,6 @@ function checkLogin() {
   const token = localStorage.getItem("token");
   if (!token) {
     alert("Bạn chưa đăng nhập!");
-    window.location.href = "login.html";
+    window.location.href = "http://localhost:3000/login";
   }
 }

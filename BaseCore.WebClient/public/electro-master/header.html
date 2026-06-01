@@ -185,9 +185,19 @@
         loadCartDropdown();
       });
     </script>
+
     <script>
+      function getCartKey() {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (!user) {
+          return "cart_guest";
+        }
+
+        return `cart_${user.username}`;
+      }
       function updateCartCount() {
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cart = JSON.parse(localStorage.getItem(getCartKey())) || [];
 
         let totalQty = 0;
 
@@ -213,7 +223,7 @@
       }
 
       function loadCartDropdown() {
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cart = JSON.parse(localStorage.getItem(getCartKey())) || [];
 
         const cartList = document.getElementById("cart-list");
 
@@ -262,12 +272,56 @@
           cartTotal.innerText = total.toLocaleString("vi-VN") + " VND";
         }
       }
+    </script>
+    <script>
+      function updateUserHeader() {
+        const accountArea = document.getElementById("account-area");
 
-      document.addEventListener("DOMContentLoaded", function () {
-        updateCartCount();
-        updateWishlistCount();
-        loadCartDropdown();
-      });
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        // Chưa đăng nhập
+        if (!user) {
+          accountArea.innerHTML = `
+        <a href="http://localhost:3000/login">
+          <i class="fa fa-user-o"></i>
+          Đăng nhập
+        </a>
+      `;
+          return;
+        }
+
+        // Đã đăng nhập
+        accountArea.innerHTML = `
+      <div class="account-dropdown">
+        <a href="#">
+          <i class="fa fa-user-o"></i>
+          ${user.username}
+        </a>
+
+        <div class="account-menu">
+          <a href="profile.html">
+            <i class="fa fa-user"></i>
+            Thông tin tài khoản
+          </a>
+
+          <a href="orders.html">
+            <i class="fa fa-shopping-bag"></i>
+            Đơn mua
+          </a>
+
+          <a href="#" onclick="logout()">
+            <i class="fa fa-sign-out"></i>
+            Đăng xuất
+          </a>
+        </div>
+      </div>
+    `;
+      }
+
+      function logout() {
+        localStorage.removeItem("user");
+        window.location.href = "index.html";
+      }
     </script>
   </body>
 </html>
