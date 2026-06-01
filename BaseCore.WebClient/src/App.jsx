@@ -17,6 +17,7 @@ import OrderDetail from "./pages/OrderDetail";
 import Login from "./pages/Login";
 import Manufacturer from "./pages/Manufacturers";
 import Coupons from "./pages/Coupons";
+import Feedbacks from "./pages/Feedbacks";
 // trong AppRoutes:
 
 // 🔥 ROUTE ADMIN
@@ -157,6 +158,15 @@ function AppRoutes() {
             </AdminRoute>
           }
            />
+      <Route path="/feedbacks"
+      element={
+        <AdminRoute>    
+          <MainLayout>
+            <Feedbacks />
+          </MainLayout>
+         </AdminRoute>
+      }
+      />
 
       {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/" replace />} />
