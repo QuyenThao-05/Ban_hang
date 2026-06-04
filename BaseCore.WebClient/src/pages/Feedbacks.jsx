@@ -133,12 +133,10 @@ const Feedbacks = () => {
       status: feedback.status || "Pending",
       adminReply: feedback.adminReply || "",
     });
-
     try {
       setEditLoading(true);
       const res = await feedbackApi.getById(feedback.id);
       const detail = res.data;
-
       setEditingFeedback(detail);
       setEditForm({
         status: detail.status || "Pending",
@@ -150,7 +148,6 @@ const Feedbacks = () => {
       setEditLoading(false);
     }
   };
-
   const closeEdit = () => {
     setEditingFeedback(null);
     setEditForm({
