@@ -67,13 +67,36 @@
         <!-- Tabs giống Shopee -->
         <ul class="nav nav-tabs order-tab" style="margin-bottom: 30px">
           <li class="active">
-            <a data-toggle="tab" href="#tab-all" class="tab-active">Tất cả</a>
+            <a href="#" onclick="filterOrders('all')"> Tất cả </a>
           </li>
-          <li><a data-toggle="tab" href="#tab-waitpay">Chờ thanh toán</a></li>
-          <li><a data-toggle="tab" href="#tab-shipping">Vận chuyển</a></li>
-          <li><a data-toggle="tab" href="#tab-delivering">Chờ giao hàng</a></li>
-          <li><a data-toggle="tab" href="#tab-done">Hoàn thành</a></li>
-          <li><a data-toggle="tab" href="#tab-cancel">Đã hủy</a></li>
+
+          <li>
+            <a href="#" onclick="filterOrders('Pending')"> Chờ xác nhận </a>
+          </li>
+
+          <li>
+            <a href="#" onclick="filterOrders('Confirmed')"> Đã xác nhận </a>
+          </li>
+
+          <li>
+            <a href="#" onclick="filterOrders('Packing')"> Đóng gói </a>
+          </li>
+
+          <li>
+            <a href="#" onclick="filterOrders('Shipping')"> Đang giao hàng </a>
+          </li>
+
+          <li>
+            <a href="#" onclick="filterOrders('Completed')"> Hoàn thành </a>
+          </li>
+
+          <li>
+            <a href="#" onclick="filterOrders('Cancelled')"> Đã hủy </a>
+          </li>
+
+          <li>
+            <a href="#" onclick="filterOrders('Returned')"> Trả hàng </a>
+          </li>
         </ul>
 
         <div class="tab-content">
@@ -140,6 +163,8 @@
             (document.getElementById("footer-placeholder").innerHTML = data),
         );
 
+      let allOrders = [];
+
       async function loadOrders() {
         try {
           // nếu có token đăng nhập
@@ -161,11 +186,11 @@
 
           const userId = localStorage.getItem("userId");
 
-          const orders = result.items.filter(
-            o => o.userId == userId
-          );
+          allOrders = result.items.filter((o) => o.userId == userId);
 
-          renderOrders(orders);
+          console.log(allOrders);
+
+          renderOrders(allOrders);
         } catch (error) {
           console.error(error);
 
@@ -182,70 +207,93 @@
 
         if (!orders || orders.length === 0) {
           container.innerHTML = `
-        <div class="text-center" style="padding:40px">
-          <h4>Chưa có đơn hàng</h4>
-        </div>
-      `;
+      <div class="text-center" style="padding:40px">
+        <h4>Chưa có đơn hàng</h4>
+      </div>
+    `;
           return;
         }
 
         container.innerHTML = orders
           .map(
             (o) => `
-  <div class="order-item">
+    
+    <div class="order-item">
 
-    <div class="row">
-
-      <div class="col-md-9">
-
-        <h4>Đơn hàng #${o.id}</h4>
-
-        <p>
-          Người nhận:
-          <strong>${o.customerName}</strong>
-        </p>
-
-        <p>
-          SĐT:
-          <strong>${o.customerPhone}</strong>
-        </p>
-
-        <p>
-          Địa chỉ:
-          <strong>${o.shippingAddress}</strong>
-        </p>
-
-        <p>
-          Thanh toán:
-          <strong>${o.paymentMethod}</strong>
-        </p>
-
+      <div class="order-header">
+        <div>
+          <strong>Đơn hàng #${o.id}</strong>
+        </div>
+        <div>
+          ${getStatusText(o.status)}
+        </div>
       </div>
 
-      <div class="col-md-3 text-right">
+      ${(o.orderDetails || [])
+        .map(
+          (item) => `
 
-        <span 
-          class="order-status"
-          style="
-            background:${getStatusColor(o.status)}20;
-            color:${getStatusColor(o.status)}
-          "
-        >
-          ${o.status}
-        </span>
+        <div class="order-product">
 
-        <h4 style="margin-top:15px">
+          <img
+            src="${item.productImage}"
+            alt="${item.productName}"
+            class="order-product-image"
+          >
+
+          <div class="order-product-info">
+
+            <div class="product-name">
+              ${item.productName}
+            </div>
+
+            <div class="product-variant">
+              ${item.color || ""} ${item.size || ""}
+            </div>
+
+            <div class="product-qty">
+              x${item.quantity}
+            </div>
+
+          </div>
+
+          <div class="product-price">
+            ${Number(item.price).toLocaleString("vi-VN")} đ
+          </div>
+
+        </div>
+
+      `,
+        )
+        .join("")}
+
+      <div class="order-footer">
+
+        <strong>
+          Thành tiền:
           ${Number(o.finalAmount).toLocaleString("vi-VN")} đ
-        </h4>
+        </strong>
+
+         ${renderOrderActions(o)}
 
       </div>
 
     </div>
 
-  </div>
-`,
+  `,
           )
           .join("");
+      }
+
+      function filterOrders(status) {
+        if (status === "all") {
+          renderOrders(allOrders);
+          return;
+        }
+
+        const filtered = allOrders.filter((x) => x.status === status);
+
+        renderOrders(filtered);
       }
 
       function getStatusColor(status) {
@@ -265,6 +313,122 @@
           default:
             return "#ff9900";
         }
+      }
+
+      function getStatusText(status) {
+        switch (status) {
+          case "Pending":
+            return `
+        <span style="color:#ff9900;font-weight:600">
+          CHỜ XÁC NHẬN
+        </span>
+      `;
+
+          case "Confirmed":
+            return `
+        <span style="color:#17a2b8;font-weight:600">
+          ĐÃ XÁC NHẬN
+        </span>
+      `;
+
+          case "Packing":
+            return `
+        <span style="color:#6f42c1;font-weight:600">
+          ĐANG ĐÓNG GÓI
+        </span>
+      `;
+
+          case "Shipping":
+            return `
+        <span style="color:#007bff;font-weight:600">
+          ĐANG GIAO HÀNG
+        </span>
+      `;
+
+          case "Completed":
+            return `
+        <span style="color:#26aa99;font-weight:600">
+          GIAO HÀNG THÀNH CÔNG
+        </span>
+
+        <span style="
+          margin-left:12px;
+          color:#d10024;
+          font-weight:600;
+        ">
+          HOÀN THÀNH
+        </span>
+      `;
+
+          case "Cancelled":
+            return `
+        <span style="color:#d10024;font-weight:600">
+          ĐÃ HỦY
+        </span>
+      `;
+
+          case "Returned":
+            return `
+        <span style="color:#dc3545;font-weight:600">
+          TRẢ HÀNG / HOÀN TIỀN
+        </span>
+      `;
+
+          default:
+            return status;
+        }
+      }
+
+      function renderOrderActions(order) {
+        if (order.status === "Completed") {
+          return `
+      <button
+        class="btn btn-danger"
+        onclick="reviewOrder(${order.id})"
+      >
+        Đánh giá
+      </button>
+
+      <button
+        class="btn btn-default"
+        onclick="buyAgain(${order.id})"
+      >
+        Mua lại
+      </button>
+    `;
+        }
+
+        if (order.status === "Cancelled") {
+          return `
+      <button
+        class="btn btn-default"
+        onclick="viewCancelReason(${order.id})"
+      >
+        Xem chi tiết hủy đơn
+      </button>
+
+      <button
+        class="btn btn-danger"
+        onclick="buyAgain(${order.id})"
+      >
+        Mua lại
+      </button>
+    `;
+        }
+
+        return "";
+      }
+
+      function reviewOrder(id) {
+        alert("Đánh giá đơn #" + id);
+      }
+
+      function buyAgain(id) {
+        alert("Mua lại đơn #" + id);
+      }
+
+      function viewCancelReason(id) {
+        alert("Xem lý do hủy đơn #" + id);
       }
 
       // load dữ liệu khi mở trang

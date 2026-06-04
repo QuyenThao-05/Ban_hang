@@ -64,6 +64,10 @@ namespace BaseCore.Services
 
             var query = _context.Orders
                 .Include(o => o.User)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(x => x.Product)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(x => x.ProductDetail)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -122,6 +126,31 @@ namespace BaseCore.Services
                     ShippingAddress = o.ShippingAddress,
                     Note = o.Note,
                     CancelReason = o.CancelReason,
+
+                    OrderDetails = o.OrderDetails.Select(d => new OrderDetailResponse
+                    {
+                        Id = d.Id,
+                        ProductId = d.ProductId,
+
+                        ProductName = d.Product.Name,
+
+                        ProductImage = d.Product.Image,
+
+                        Quantity = d.Quantity,
+
+                        Price = d.Price,
+
+                        TotalPrice = d.TotalPrice,
+
+                        Color = d.ProductDetail != null
+                            ? d.ProductDetail.Color
+                            : "",
+
+                        Size = d.ProductDetail != null
+                            ? d.ProductDetail.Size
+                            : ""
+                    }).ToList(),
+
                     CreatedAt = o.CreatedAt,
                     UpdatedAt = o.UpdatedAt,
                     ConfirmedAt = o.ConfirmedAt,

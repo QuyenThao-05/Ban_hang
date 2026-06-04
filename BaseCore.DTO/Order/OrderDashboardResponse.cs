@@ -24,5 +24,6 @@ namespace BaseCore.DTO.Order
         public DateTime? ConfirmedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
         public DateTime? CancelledAt { get; set; }
+        public List<OrderDetailResponse> OrderDetails { get; set; } = new();
     }
 }

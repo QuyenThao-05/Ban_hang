@@ -2335,3 +2335,103 @@ textarea.input {
   height:26px;
   font-size:15px;
 }
+
+.order-header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:15px;
+  border-bottom:1px solid #eee;
+  padding-bottom:10px;
+}
+
+.order-product{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  padding:15px 0;
+  border-bottom:1px solid #f3f3f3;
+}
+
+.order-product-image{
+  width:90px;
+  height:90px;
+  object-fit:cover;
+  border:1px solid #ddd;
+}
+
+.order-product-info{
+  flex:1;
+}
+
+.product-name{
+  font-weight:600;
+  font-size:16px;
+}
+
+.product-variant{
+  color:#888;
+  margin-top:5px;
+}
+
+.product-qty{
+  color:#666;
+  margin-top:5px;
+}
+
+.product-price{
+  font-weight:bold;
+  color:#d10024;
+}
+
+.order-footer{
+  text-align:right;
+  margin-top:15px;
+  font-size:18px;
+}
+
+.voucher-page{
+    max-width:1200px;
+    margin:auto;
+    background:#f5f5f5;
+    padding:20px;
+}
+
+.voucher-card{
+    display:flex;
+    background:white;
+    margin-bottom:15px;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+
+.voucher-left{
+    width:220px;
+    background:#ee4d2d;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    font-size:24px;
+}
+
+.voucher-right{
+    flex:1;
+    padding:20px;
+}
+
+.voucher-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:15px;
+}
+
+.voucher-footer button{
+    border:1px solid #ee4d2d;
+    background:white;
+    color:#ee4d2d;
+    padding:8px 20px;
+    cursor:pointer;
+}
