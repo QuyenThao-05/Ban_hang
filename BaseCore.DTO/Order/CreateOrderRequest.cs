@@ -14,6 +14,12 @@ namespace BaseCore.DTO.Order
 
         public string? PaymentMethod { get; set; }
 
+        public decimal TotalPrice { get; set; }
+
+        public decimal DiscountAmount { get; set; }
+
+        public decimal FinalAmount { get; set; }
+
         public List<CreateOrderDetailRequest> Items { get; set; } = new();
     }
 }

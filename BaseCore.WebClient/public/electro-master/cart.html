@@ -112,7 +112,8 @@
               </div>
 
               <a
-                href="checkout.html"
+                href="#"
+                onclick="goCheckout()"
                 class="primary-btn order-submit"
                 style="width: 100%; margin-top: 20px; padding: 12px"
               >
@@ -268,6 +269,21 @@
         localStorage.setItem(getCartKey(), JSON.stringify(cart));
 
         loadCart();
+      }
+
+      function goCheckout() {
+        const cart = JSON.parse(localStorage.getItem(getCartKey())) || [];
+
+        const selectedItems = cart.filter((x) => x.selected);
+
+        if (selectedItems.length === 0) {
+          alert("Vui lòng chọn sản phẩm");
+          return;
+        }
+
+        localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
+
+        window.location.href = "checkout.html";
       }
 
       // Khởi chạy

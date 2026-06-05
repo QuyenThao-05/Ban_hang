@@ -230,11 +230,19 @@ namespace BaseCore.Services
                 UserId = request.UserId,
                 ShippingAddress = request.ShippingAddress,
                 PaymentMethod = request.PaymentMethod,
+
                 Status = "Pending",
                 PaymentStatus = "Unpaid",
+
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
+
                 TotalPrice = totalPrice,
+
+                DiscountAmount = request.DiscountAmount,
+
+                FinalAmount = totalPrice - request.DiscountAmount,
+
                 OrderDetails = orderDetails
             };
 

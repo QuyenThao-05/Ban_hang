@@ -53,8 +53,12 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("userId", data.userId);
 
       const userData = {
+        id: data.userId,
         username: data.username || username,
-        // ✅ Normalize role về chữ thường để so sánh nhất quán
+        fullName: data.fullName || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        address: data.address || "",
         role: (data.role || "user").toLowerCase(),
       };
 
