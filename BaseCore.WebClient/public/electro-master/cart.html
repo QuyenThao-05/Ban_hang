@@ -67,6 +67,10 @@
               <table class="table table-bordered">
                 <thead>
                   <tr>
+                    <th style="width: 50px; text-align: center">
+                      <input type="checkbox" id="select-all" checked />
+                    </th>
+
                     <th style="width: 100px">Ảnh</th>
                     <th>Sản phẩm</th>
                     <th>Giá</th>
@@ -99,10 +103,11 @@
                 <div><strong>Tổng thanh toán</strong></div>
                 <div>
                   <strong
-                    id="cart-total"
+                    id="checkout-total"
                     style="color: #d10024; font-size: 20px"
-                    >0 VND</strong
                   >
+                    0 VND
+                  </strong>
                 </div>
               </div>
 
@@ -144,6 +149,14 @@
 
         let subtotal = 0;
 
+        cart.forEach((item) => {
+          if (item.selected === undefined) {
+            item.selected = true;
+          }
+        });
+
+        localStorage.setItem(getCartKey(), JSON.stringify(cart));
+
         if (cart.length === 0) {
           tbody.innerHTML = `
                     <tr>
@@ -158,42 +171,63 @@
 
         cart.forEach((item, index) => {
           const itemTotal = item.price * item.quantity;
-          subtotal += itemTotal;
+          if (item.selected) {
+            subtotal += itemTotal;
+          }
 
           tbody.innerHTML += `
-                    <tr>
-                        <td><img src="${item.image}" width="70" alt=""></td>
-                        <td><strong>${item.name}</strong></td>
-                        <td>${item.price.toLocaleString()} VND</td>
-                        <td>
-                          <div class="qty-control">
-                            <button onclick="changeQty(${index}, -1)">−</button>
-
-                              <input
-                                type="text"
-                                value="${item.quantity}"
-                                readonly
-                              >
-
-                          <button onclick="changeQty(${index}, 1)">+</button>
-    </div>
-</td>
-                        <td><strong>${itemTotal.toLocaleString()} VND</strong></td>
-                        <td>
-                            <button onclick="removeItem(${index})" class="btn btn-danger btn-sm">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>`;
+          <tr>
+            <td style="text-align:center;">
+              <input
+                type="checkbox"
+                ${item.selected ? "checked" : ""}
+                onchange="toggleItem(${index})"
+              >
+            </td>
+            <td><img src="${item.image}" width="70" alt=""></td>
+            <td><strong>${item.name}</strong></td>
+            <td>${item.price.toLocaleString()} VND</td>
+            <td>
+              <div class="qty-control">
+                <button onclick="changeQty(${index}, -1)">−</button>
+                  <input
+                    type="text"
+                    value="${item.quantity}"
+                    readonly
+                  >
+                <button onclick="changeQty(${index}, 1)">+</button>
+              </div>
+            </td>
+            <td><strong>${itemTotal.toLocaleString()} VND</strong></td>
+            <td>
+              <button onclick="removeItem(${index})" class="btn btn-danger btn-sm">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>`;
         });
 
         updateTotal(subtotal);
+
+        const selectAll = document.getElementById("select-all");
+
+        if (selectAll) {
+          const allChecked =
+            cart.length > 0 && cart.every((item) => item.selected);
+
+          selectAll.checked = allChecked;
+
+          selectAll.onchange = function () {
+            toggleAll(this.checked);
+          };
+        }
       }
 
       function updateTotal(subtotal) {
         document.getElementById("cart-subtotal").innerText =
           subtotal.toLocaleString() + " VND";
-        document.getElementById("cart-total").innerText =
+
+        document.getElementById("checkout-total").innerText =
           subtotal.toLocaleString() + " VND";
       }
 
@@ -212,6 +246,28 @@
         localStorage.setItem(getCartKey(), JSON.stringify(cart));
         loadCart();
         updateCartCount();
+      }
+
+      function toggleItem(index) {
+        let cart = JSON.parse(localStorage.getItem(getCartKey())) || [];
+
+        cart[index].selected = !cart[index].selected;
+
+        localStorage.setItem(getCartKey(), JSON.stringify(cart));
+
+        loadCart();
+      }
+
+      function toggleAll(checked) {
+        let cart = JSON.parse(localStorage.getItem(getCartKey())) || [];
+
+        cart.forEach((item) => {
+          item.selected = checked;
+        });
+
+        localStorage.setItem(getCartKey(), JSON.stringify(cart));
+
+        loadCart();
       }
 
       // Khởi chạy

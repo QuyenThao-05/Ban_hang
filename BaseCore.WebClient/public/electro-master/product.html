@@ -102,11 +102,7 @@ fetch('header.html')
 
           <!-- Product thumb imgs -->
           <div class="col-md-2 col-md-pull-5">
-            <div id="product-imgs">
-  <div class="product-preview">
-    <img id="product-thumb" src="./img/product01.png" alt="">
-  </div>
-</div>
+            <div id="product-imgs"></div>
           </div>
           <!-- /Product thumb imgs -->
 
@@ -608,7 +604,7 @@ $('.product-preview').trigger('zoom.destroy');
 $('.product-preview').zoom({
     url: zoomImage
 });
-            document.getElementById("product-thumb")
+            document.getElementById("product-image")
                 .src =
                 matched.imageUrl || p.image;
         }
@@ -677,7 +673,7 @@ $('.product-preview').trigger('zoom.destroy');
 $('.product-preview').zoom({
     url: zoomImage
 });
-            document.getElementById("product-thumb")
+            document.getElementById("product-image")
               .src =
                 matched.imageUrl || p.image;
                }
@@ -977,8 +973,70 @@ $('.product-preview').zoom({
     url: imageUrl
 });
 
-          document.getElementById("product-thumb").src =
-    p.image || "./img/product01.png";
+          const thumbsContainer =
+    document.getElementById("product-imgs");
+
+thumbsContainer.innerHTML = "";
+
+// ảnh chính
+const allImages = [p.image];
+
+// ảnh variant
+(p.variants || []).forEach(v => {
+
+    if (
+        v.imageUrl &&
+        !allImages.includes(v.imageUrl)
+    ) {
+        allImages.push(v.imageUrl);
+    }
+
+});
+
+// render thumbnail
+allImages.forEach((img, index) => {
+
+    thumbsContainer.innerHTML += `
+        <div class="product-preview">
+            <img
+                src="${img}"
+                class="thumb-image"
+                data-image="${img}">
+        </div>
+    `;
+
+});
+
+document
+    .querySelectorAll(".thumb-image")
+    .forEach(img => {
+
+        img.onclick = function () {
+
+            const image =
+                this.dataset.image;
+
+            const main =
+                document.getElementById("product-image");
+
+            main.src = image;
+
+            main.setAttribute(
+                "data-zoom-image",
+                image
+            );
+
+            $('.product-preview')
+                .trigger('zoom.destroy');
+
+            $('.product-preview')
+                .zoom({
+                    url: image
+                });
+
+        };
+
+    });
 
           // QUAN TRỌNG: TRẠNG THÁI
           const status = document.querySelector(".product-available");
@@ -1113,9 +1171,19 @@ const product = {
 
             let cart =
   JSON.parse(localStorage.getItem(getCartKey())) || [];
-            const existing = cart.find(
-    p => p.variantId == product.variantId
-);
+            const existing = cart.find(p => {
+
+    // sản phẩm có variant
+    if (product.variantId) {
+        return p.variantId === product.variantId;
+    }
+
+    // sản phẩm không có variant
+    return (
+        !p.variantId &&
+        p.productId == product.productId
+    );
+});
 
             if (existing) {
                 existing.quantity++;
