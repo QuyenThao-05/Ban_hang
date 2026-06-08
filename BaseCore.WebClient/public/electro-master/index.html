@@ -1099,7 +1099,11 @@
       <div class="col-md-3 col-xs-6">
         <div class="product">
           <div class="product-img">
-            <img src="${p.image || "./img/product01.png"}">
+           <img
+              src="${ p.image? `http://localhost:5001${p.image}`: './img/product01.png'}"
+              alt="${p.name}"
+              class="product-image"
+            >
           </div>
           <div class="product-body">
             <h3 class="product-name">
@@ -1172,7 +1176,10 @@
           list.innerHTML += `
         <div class="product-widget">
           <div class="product-img">
-            <img src="${p.image}" alt="">
+            <img
+              src="http://localhost:5001${p.image}"
+              alt="${p.name}"
+            >
           </div>
           <div class="product-body">
             <h3 class="product-name">${p.name}</h3>

@@ -133,6 +133,7 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseStaticFiles();
 
 Console.WriteLine("BaseCore API Service running on port 5001");
 Console.WriteLine("Endpoints: /api/products, /api/categories, /api/orders");

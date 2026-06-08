@@ -34,14 +34,14 @@ namespace BaseCore.APIService.Controllers
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll(
-    [FromQuery] string? search,
-    [FromQuery] int? productTypeId,
-    [FromQuery] decimal? minPrice,
-    [FromQuery] decimal? maxPrice,
-    [FromQuery] int? stockMin,
-    [FromQuery] int? stockMax,
-    [FromQuery] int page = 1,
-    [FromQuery] int pageSize = 10)
+        [FromQuery] string? search,
+        [FromQuery] int? productTypeId,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice,
+        [FromQuery] int? stockMin,
+        [FromQuery] int? stockMax,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
         {
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 10;
@@ -106,18 +106,14 @@ namespace BaseCore.APIService.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody] ProductCreateDto dto)
         {
-            //// Validate category exists
-            //var category = await _categoryRepository.GetByIdAsync(dto.ProductTypeId);
-            //if (category == null)
-            //    return BadRequest(new { message = "Category not found" });
-
             var product = new Product
             {
                 Name = dto.Name,
                 Price = dto.Price,
                 Quantity = dto.Quantity,
                 ProductTypeId = dto.ProductTypeId,
-                Image = dto.Image ?? "",
+                Image = dto.Image,
+                Description = dto.Description,
                 ManufacturerId = dto.ManufacturerId == 0 ? null : dto.ManufacturerId,  // ✅
                 CreatedAt = DateTime.Now
             };
@@ -142,6 +138,7 @@ namespace BaseCore.APIService.Controllers
             product.Quantity = dto.Quantity ?? product.Quantity;
             product.ProductTypeId = dto.ProductTypeId ?? product.ProductTypeId;
             product.Image = dto.Image ?? product.Image;
+            product.Description = dto.Description ?? product.Description;
             product.ManufacturerId = dto.ManufacturerId ?? product.ManufacturerId;
 
             await _productRepository.UpdateAsync(product);
@@ -195,8 +192,12 @@ namespace BaseCore.APIService.Controllers
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public int ProductTypeId { get; set; }
+
         public string? Image { get; set; }
+
         public int? ManufacturerId { get; set; }
+
+        public string? Description { get; set; }
     }
 
     public class ProductUpdateDto
@@ -205,7 +206,11 @@ namespace BaseCore.APIService.Controllers
         public decimal? Price { get; set; }
         public int? Quantity { get; set; }
         public int? ProductTypeId { get; set; }
+
         public string? Image { get; set; }
+
         public int? ManufacturerId { get; set; }
+
+        public string? Description { get; set; }
     }
 }

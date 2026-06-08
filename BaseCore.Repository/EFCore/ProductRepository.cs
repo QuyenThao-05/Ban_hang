@@ -6,22 +6,22 @@ namespace BaseCore.Repository.EFCore
     public interface IProductRepositoryEF : IRepository<Product>
     {
         Task<(List<Product> Products, int TotalCount)> SearchAsync(
-    string? keyword,
-    int? productTypeId,
-    decimal? minPrice,
-    decimal? maxPrice,
-    int? stockMin,
-    int? stockMax,
-    int page,
-    int pageSize);
+        string? keyword,
+        int? productTypeId,
+        decimal? minPrice,
+        decimal? maxPrice,
+        int? stockMin,
+        int? stockMax,
+        int page,
+        int pageSize);
         Task<Product?> GetFullDetailAsync(int id);
         Task<List<Product>> GetByProductTypeAsync(int productTypeId);
         Task<(List<ProductDashboardResponse> Items, int TotalCount)> GetDashboardProductsAsync(
-    int page,
-    int pageSize,
-    string? keyword,
-    int? productTypeId);
-    }
+        int page,
+        int pageSize,
+        string? keyword,
+        int? productTypeId);
+        }
 
     public class ProductRepositoryEF : Repository<Product>, IProductRepositoryEF
     {
@@ -49,15 +49,15 @@ namespace BaseCore.Repository.EFCore
 
 
         public async Task<(List<Product> Products, int TotalCount)> SearchAsync(
-        string? keyword,
-        int? productTypeId,
-        decimal? minPrice,
-        decimal? maxPrice,
-        int? stockMin,
-        int? stockMax,
-        int page,
-        int pageSize)
-        {
+            string? keyword,
+            int? productTypeId,
+            decimal? minPrice,
+            decimal? maxPrice,
+            int? stockMin,
+            int? stockMax,
+            int page,
+            int pageSize)
+            {
             var query = _dbSet
                 .Include(p => p.ProductType)
                 .Include(p => p.Manufacturer)

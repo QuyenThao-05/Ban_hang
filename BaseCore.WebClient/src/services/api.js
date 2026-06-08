@@ -113,3 +113,20 @@ export const feedbackApi = {
         mainApiInstance.put(`/feedbacks/${id}/reply`, { adminReply }),
     delete: (id) => mainApiInstance.delete(`/feedbacks/${id}`),
 };
+export const uploadApi = {
+  uploadProductImage: (file) => {
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    return mainApiInstance.post(
+      "/upload/product-image",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+  },
+};

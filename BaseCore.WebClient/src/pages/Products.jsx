@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { productApi, productTypeApi, manufacturerApi } from "../services/api";
+import { productApi, productTypeApi, manufacturerApi,feedbackApi,uploadApi } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 
 const Products = () => {
@@ -36,6 +36,7 @@ const Products = () => {
       productTypeId:  "",
       manufacturerId: "",
       description:    "",
+      image:          "",
     };
   }
 
@@ -106,10 +107,25 @@ const Products = () => {
     setStockMax("");
     setCurrentPage(1);
   };
+  const handleImageUpload = async (e) => {
+
+  const file = e.target.files[0];
+
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const res = await uploadApi.uploadProductImage(formData);
+
+  setForm({
+    ...form,
+    image: res.data.imageUrl
+  });
+};
 
   // ── modal ─────────────────────────────────────────────────────────────
   const openModal = (p = null) => {
-    if (p) {
+    if (p) {   
       setEditing(p);
       setForm({
         name:           p.name           || "",
@@ -137,6 +153,7 @@ const Products = () => {
     try {
       const payload = {
         ...form,
+        image:          form.image,
         price:          Number(form.price),
         quantity:       Number(form.quantity),
         productTypeId:  Number(form.productTypeId),
@@ -293,7 +310,8 @@ const Products = () => {
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>Tên</th>
+                      <th>Ảnh</th>
+                      <th>Tên sản phẩm</th>
                       <th>Loại</th>
                       <th>Nhà sản xuất</th>
                       <th>Giá</th>
@@ -305,7 +323,7 @@ const Products = () => {
                   <tbody>
                     {products.length === 0 ? (
                       <tr>
-                        <td colSpan="8" className="text-center py-4">
+                        <td colSpan="9" className="text-center py-4">
                           Không có dữ liệu
                         </td>
                       </tr>
@@ -313,6 +331,19 @@ const Products = () => {
                       products.map((p) => (
                         <tr key={p.id}>
                           <td>{p.id}</td>
+                          <td>
+                            {p.image ? (
+                              <img
+                                src={`http://localhost:5001${p.image}`}
+                                alt={p.name}
+                                width="60"
+                                height="60"
+                                style={{ objectFit: "cover" }}
+                              />
+                            ) : (
+                              "Không có ảnh"
+                            )}
+                          </td>
                           <td><strong>{p.name}</strong></td>
                           <td>{getTypeName(p.productTypeId)}</td>
                           <td>{getMfName(p.manufacturerId)}</td>
@@ -389,6 +420,28 @@ const Products = () => {
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                             required
                           />
+                        </div>
+                      </div>
+                      <div className="col-12">
+                      <div className="form-group">
+                          <label>Ảnh sản phẩm</label>
+                          <input
+                            type="file"
+                            className="form-control"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                          />
+                          {form.image && (
+                            <img
+                              src={'http://localhost:5001${form.image}'}
+                              alt=""
+                              style={{
+                                width:"120px",
+                                marginTop:"10px",
+                                border:"1px solid #ddd"
+                              }}
+                            />
+                            )}     
                         </div>
                       </div>
                       <div className="col-md-6">

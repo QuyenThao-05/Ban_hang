@@ -198,17 +198,41 @@ async function loadProducts() {
 	list.innerHTML = "";
 
 	data.items.forEach(p => {
-		list.innerHTML += `
-      <div class="col-md-3 col-xs-6">
-        <div class="product">
-          <div class="product-body">
-            <h3 class="product-name">${p.name}</h3>
-            <h4 class="product-price">${p.price.toLocaleString()} đ</h4>
-          </div>
+
+    const imageUrl = p.image
+        ? `http://localhost:5001${p.image}`
+        : "img/no-image.png";
+
+    list.innerHTML += `
+        <div class="col-md-3 col-xs-6">
+            <div class="product">
+
+                <div class="product-img">
+                    <img
+                        src="${imageUrl}"
+                        alt="${p.name}"
+                        style="
+                            width:100%;
+                            height:220px;
+                            object-fit:cover;
+                        "
+                    >
+                </div>
+
+                <div class="product-body">
+                    <h3 class="product-name">
+                        ${p.name}
+                    </h3>
+
+                    <h4 class="product-price">
+                        ${Number(p.price).toLocaleString()} VND
+                    </h4>
+                </div>
+
+            </div>
         </div>
-      </div>
     `;
-	});
+});
 }
 
 // ================= INIT =================

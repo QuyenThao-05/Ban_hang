@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   productApi,
   userApi,
@@ -28,6 +29,7 @@ const Dashboard = () => {
   const [latestFeedbacks, setLatestFeedbacks] = useState([]);
   const [lowStock, setLowStock] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // ===== HELPER =====
   const getData = (res) => {
@@ -122,7 +124,7 @@ const Dashboard = () => {
 
         // ORDERS
         try {
-          const ordersRes = await orderApi.getAll({ page: 1, pageSize: 5 });
+          const ordersRes = await orderApi.getAll({ page: 1, pageSize: 1000 });
 
           orders = ordersRes.data?.items || [];
           totalOrderCount = ordersRes.data?.totalCount || orders.length;
@@ -132,6 +134,9 @@ const Dashboard = () => {
       }
 
       const products = getData(productsRes);
+      const totalProducts =
+      productsRes.data?.totalCount ??
+      products.length;
       const types = getData(typesRes);
       const manufacturersCount = getCount(manufacturersRes);
       const couponsCount = getCount(couponsRes);
@@ -153,7 +158,7 @@ const Dashboard = () => {
 
       // ===== SET STATE =====
       setStats({
-        products: products.length,
+        products: totalProducts,
         types: types.length,
         orders: totalOrderCount,
         users: usersCount,
@@ -216,18 +221,18 @@ const Dashboard = () => {
             <>
               {/* ===== TOP STATS ===== */}
               <div className="row">
-                <Box title="Products" value={stats.products} color="info" icon="box" />
-                <Box title="Product Types" value={stats.types} color="success" icon="tags" />
-                <Box title="Orders" value={stats.orders} color="danger" icon="shopping-cart" />
-                <Box title="Revenue" value={formatMoney(stats.revenue)} color="primary" icon="money-bill" />
+                <Box title="Products" value={stats.products} color="info" icon="box" onClick={()=>navigate("/products")} />
+                <Box title="Product Types" value={stats.types} color="success" icon="tags" onClick={()=>navigate("/product-types")} />
+                <Box title="Orders" value={stats.orders} color="danger" icon="shopping-cart" onClick={()=>navigate("/orders")} />
+                <Box title="Revenue" value={formatMoney(stats.revenue)} color="primary" icon="money-bill"  />
 
                 {isAdmin() && (
-                  <Box title="Users" value={stats.users} color="warning" icon="users" />
+                  <Box title="Users" value={stats.users} color="warning" icon="users" onClick={()=>navigate("/users")} />
                 )}
 
-                <Box title="Manufacturers" value={stats.manufacturers} color="secondary" icon="industry" />
-                <Box title="Coupons" value={stats.coupons} color="purple" icon="ticket-alt" />
-                <Box title="Feedbacks" value={stats.feedbacks} color="info" icon="comments" />
+                <Box title="Manufacturers" value={stats.manufacturers} color="secondary" icon="industry" onClick={()=>navigate("/manufacturers")} />
+                <Box title="Coupons" value={stats.coupons} color="purple" icon="ticket-alt" onClick={()=>navigate("/coupons")} />
+                <Box title="Feedbacks" value={stats.feedbacks} color="info" icon="comments" onClick={()=>navigate("/feedbacks")} />
               </div>
 
               <div className="row mt-3">
@@ -353,9 +358,12 @@ const Dashboard = () => {
 };
 
 // ===== BOX =====
-const Box = ({ title, value, color, icon }) => (
+const Box = ({ title, value, color, icon,onClick }) => (
   <div className="col-lg-3 col-6">
-    <div className={`small-box bg-${color}`}>
+    <div
+        className={`small-box bg-${color}`} style={{ cursor: "pointer"}}
+        onClick={onClick}
+      >
       <div className="inner">
         <h3>{value}</h3>
         <p>{title}</p>

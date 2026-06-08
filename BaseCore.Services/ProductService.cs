@@ -128,34 +128,34 @@ namespace BaseCore.Services
                     .FirstOrDefault()?.Detail,
 
                 Reviews = product.Reviews?
-    .Select(r => new ReviewResponse
-    {
-        Id = r.Id,
-        ProductId = r.ProductId,
-        UserId = r.UserId,
-        UserName = r.User != null
-            ? r.User.Username
-            : "Unknown",
-        Rating = r.Rating,
-        Comment = r.Comment,
-        CreatedAt = r.CreatedAt
-    })
-    .ToList() ?? new List<ReviewResponse>(),
+                .Select(r => new ReviewResponse
+                {
+                    Id = r.Id,
+                    ProductId = r.ProductId,
+                    UserId = r.UserId,
+                    UserName = r.User != null
+                        ? r.User.Username
+                        : "Unknown",
+                    Rating = r.Rating,
+                    Comment = r.Comment,
+                    CreatedAt = r.CreatedAt
+                })
+                .ToList() ?? new List<ReviewResponse>(),
 
-                Variants = product.ProductVariants?
-                    .Select(v => new ProductVariantResponse
-                    {
-                        Id = v.Id,
-                        VariantName = v.VariantName,
-                        Color = v.Color,
-                        Size = v.Size,
-                        Price = v.Price,
-                        Stock = v.Stock,
-                        ImageUrl = v.ImageUrl,
-                        SKU = v.SKU
-                    })
-                    .ToList() ?? new List<ProductVariantResponse>()
-            };
-        }
+                            Variants = product.ProductVariants?
+                                .Select(v => new ProductVariantResponse
+                                {
+                                    Id = v.Id,
+                                    VariantName = v.VariantName,
+                                    Color = v.Color,
+                                    Size = v.Size,
+                                    Price = v.Price,
+                                    Stock = v.Stock,
+                                    ImageUrl = v.ImageUrl,
+                                    SKU = v.SKU
+                                })
+                                .ToList() ?? new List<ProductVariantResponse>()
+                        };
+                    }
     }
 }
