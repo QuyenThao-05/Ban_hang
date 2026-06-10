@@ -645,7 +645,7 @@ const Orders = () => {
         }
 
         .orders-filter-payment {
-          width: 200px !important;
+          width: 200px   !important;
           flex: 0 0 200px;
         }
 
@@ -754,7 +754,7 @@ const Orders = () => {
       </div>
 
       <section className="content">
-        <div className="container-fluid">
+        <div className="card-body p-0">
           <div className="card p-3 mb-3">
             <div className="orders-filter">
       <input

@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
       const response = await authApi.login(username, password);
       const data = response.data;
 
-      console.log(data);
+      console.log( data);
 
       // ✅ Lưu token
       localStorage.setItem("token", data.token);

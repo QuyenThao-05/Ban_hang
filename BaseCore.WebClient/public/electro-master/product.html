@@ -91,11 +91,13 @@ fetch('header.html')
   <div class="product-preview">
     <img
       id="product-image"
-      src="./img/product01.png"
+      src="http://localhost:5001${p.image}"
       data-image="./img/product01.png"
       alt=""
+      
     >
   </div>
+
 </div>
           </div>
           <!-- /Product main img -->
@@ -508,7 +510,7 @@ const products = data.data || data.items || data;
         <div class="col-md-3 col-xs-6">
           <div class="product">
             <div class="product-img">
-              <img src="${p.image || './img/product01.png'}">
+              <img src="http://localhost:5001${p.image}">
             </div>
             <div class="product-body">
               <h3 class="product-name">
@@ -999,7 +1001,7 @@ allImages.forEach((img, index) => {
     thumbsContainer.innerHTML += `
         <div class="product-preview">
             <img
-                src="${img}"
+                src="http://localhost:5001${p.image}"
                 class="thumb-image"
                 data-image="${img}">
         </div>
@@ -1235,7 +1237,7 @@ function loadCartDropdown() {
     list.innerHTML += `
   <div class="product-widget">
     <div class="product-img">
-      <img src="${p.image}" alt="">
+      <img src="http://localhost:5001${p.image}" alt="${p.name}">
     </div>
     <div class="product-body">
       <h3 class="product-name">${p.name}</h3>

@@ -1171,30 +1171,30 @@
         let total = 0;
 
         cart.forEach((p) => {
-          total += p.price * p.quantity;
+  total += p.price * p.quantity;
 
-          list.innerHTML += `
-        <div class="product-widget">
-          <div class="product-img">
-            <img
-              src="http://localhost:5001${p.image}"
-              alt="${p.name}"
-            >
-          </div>
-          <div class="product-body">
-            <h3 class="product-name">${p.name}</h3>
-            <h4 class="product-price">
-              <span class="qty">${p.quantity}x</span>
-              ${p.price.toLocaleString()} VND
-            </h4>
-          </div>
-          <button class="delete" onclick="removeFromCart('${p.id}')">
-            <i class="fa fa-close"></i>
-          </button>
-        </div>
-      `;
-        });
+  const imageUrl = p.image
+    ? `http://localhost:5001${p.image}`
+    : "./img/product01.png";
 
+  list.innerHTML += `
+    <div class="product-widget">
+      <div class="product-img">
+        <img src="${imageUrl}" alt="">
+      </div>
+      <div class="product-body">
+        <h3 class="product-name">${p.name}</h3>
+        <h4 class="product-price">
+          <span class="qty">${p.quantity}x</span>
+          ${p.price.toLocaleString()} VND
+        </h4>
+      </div>
+      <button class="delete" onclick="removeFromCart('${p.id}')">
+        <i class="fa fa-close"></i>
+      </button>
+    </div>
+  `;
+});
         if (totalEl) {
           totalEl.innerText = "Tổng: " + total.toLocaleString() + " VND";
         }

@@ -38,13 +38,17 @@ namespace BaseCore.Services
     {
         private readonly IOrderRepositoryEF _OrderRepository;
         private readonly MySqlDbContext _context;
+        private readonly ICouponService _couponService;
+
 
         public OrderService(
             IOrderRepositoryEF OrderRepository,
-            MySqlDbContext context)
+            MySqlDbContext context,
+            ICouponService couponService)
         {
             _OrderRepository = OrderRepository;
             _context = context;
+            _couponService = couponService;
         }
 
         // =====================================================
@@ -191,6 +195,12 @@ namespace BaseCore.Services
 
                 var product = await _context.Products
                     .FirstOrDefaultAsync(p => p.Id == item.ProductId);
+                if (product.Quantity < item.Quantity)
+                {
+                    throw new Exception(
+                        $"Sản phẩm {product.Name} chỉ còn {product.Quantity} sản phẩm"
+                    );
+                }
 
                 if (product == null)
                     throw new Exception($"Không tìm thấy sản phẩm ID {item.ProductId}");
@@ -208,23 +218,42 @@ namespace BaseCore.Services
                     if (productDetail.Quantity < item.Quantity)
                         throw new Exception($"Không đủ tồn kho cho sản phẩm {product.Name}");
 
-                    // Hiện tại hệ thống đang trừ kho ngay khi tạo đơn.
-                    productDetail.Quantity -= item.Quantity;
                 }
+                product.Quantity -= item.Quantity;
 
-                var detailTotal = item.Quantity * item.Price;
+                var unitPrice = product.Price;
+
+                var detailTotal = item.Quantity * unitPrice;
                 totalPrice += detailTotal;
-
                 orderDetails.Add(new OrderDetail
                 {
                     ProductId = item.ProductId,
                     ProductDetailId = item.ProductDetailId,
                     Quantity = item.Quantity,
-                    Price = item.Price,
+                    Price = unitPrice,
                     TotalPrice = detailTotal
                 });
             }
+            decimal discountAmount = 0;
 
+            if (!string.IsNullOrWhiteSpace(request.CouponCode))
+            {
+                var coupon =
+                    await _couponService.ValidateCoupon(request.CouponCode);
+
+                if (coupon.DiscountType == "Percent")
+                {
+                    discountAmount =
+                        totalPrice * coupon.DiscountValue / 100;
+                }
+                else
+                {
+                    discountAmount =
+                        coupon.DiscountValue;
+                }
+
+                await _couponService.IncreaseUsedCount(request.CouponCode);
+            }
             var order = new Order
             {
                 UserId = request.UserId,
@@ -238,10 +267,9 @@ namespace BaseCore.Services
                 UpdatedAt = DateTime.Now,
 
                 TotalPrice = totalPrice,
+                DiscountAmount = discountAmount,
 
-                DiscountAmount = request.DiscountAmount,
-
-                FinalAmount = totalPrice - request.DiscountAmount,
+                FinalAmount = totalPrice - discountAmount,
 
                 OrderDetails = orderDetails
             };
@@ -344,6 +372,7 @@ namespace BaseCore.Services
         {
             var order = await _context.Orders
                 .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.Product)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
@@ -359,7 +388,13 @@ namespace BaseCore.Services
             order.CancelReason = reason;
             order.CancelledAt = DateTime.Now;
             order.UpdatedAt = DateTime.Now;
-
+            foreach (var item in order.OrderDetails)
+            {
+                if (item.Product != null)
+                {
+                    item.Product.Quantity += item.Quantity;
+                }
+            }
             await _context.SaveChangesAsync();
         }
 

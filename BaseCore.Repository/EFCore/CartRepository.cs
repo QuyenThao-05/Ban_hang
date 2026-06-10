@@ -49,9 +49,25 @@ namespace BaseCore.Repository.EFCore
 
         public async Task AddToCartAsync(int userId, int productId, int quantity)
         {
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == productId);
+
+            if (product == null)
+                throw new Exception("Không tìm thấy sản phẩm");
+
             var cart = await GetCartByUserIdAsync(userId);
 
-            var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
+            var item = cart.Items
+                .FirstOrDefault(i => i.ProductId == productId);
+
+            int currentQty = item?.Quantity ?? 0;
+
+            if (currentQty + quantity > product.Quantity)
+            {
+                throw new Exception(
+                    $"Sản phẩm {product.Name} chỉ còn {product.Quantity} sản phẩm trong kho"
+                );
+            }
 
             if (item == null)
             {
@@ -116,10 +132,26 @@ namespace BaseCore.Repository.EFCore
         {
             var cart = await GetCartByUserIdAsync(userId);
 
-            var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
-            if (item == null) return;
+            var item = cart.Items
+                .FirstOrDefault(i => i.ProductId == productId);
 
-            item.Quantity += 1;
+            if (item == null)
+                return;
+
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == productId);
+
+            if (product == null)
+                return;
+
+            if (item.Quantity + 1 > product.Quantity)
+            {
+                throw new Exception(
+                    $"Sản phẩm {product.Name} chỉ còn {product.Quantity} sản phẩm"
+                );
+            }
+
+            item.Quantity++;
 
             await _context.SaveChangesAsync();
         }

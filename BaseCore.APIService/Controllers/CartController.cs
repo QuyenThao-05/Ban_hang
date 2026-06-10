@@ -43,10 +43,30 @@ namespace BaseCore.APIService.Controllers
 
         // 👉 Thêm vào giỏ
         [HttpPost("add")]
-        public async Task<IActionResult> AddToCart(int userId, int productId, int quantity = 1)
+        public async Task<IActionResult> AddToCart(
+        int userId,
+        int productId,
+        int quantity = 1)
         {
-            await _cartRepository.AddToCartAsync(userId, productId, quantity);
-            return Ok(new { message = "Added to cart" });
+            try
+            {
+                await _cartRepository.AddToCartAsync(
+                    userId,
+                    productId,
+                    quantity);
+
+                return Ok(new
+                {
+                    message = "Added to cart"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         // 👉 Xóa khỏi giỏ
@@ -141,18 +161,25 @@ namespace BaseCore.APIService.Controllers
         }
         //Tang sp
         [HttpPost("increase")]
-        public async Task<IActionResult> Increase(int userId, int productId)
-        {
-            var cart = await _cartRepository.GetCartByUserIdAsync(userId);
+        public async Task<IActionResult> Increase(
+        int userId,
+        int productId)
+            {
+            try
+            {
+                await _cartRepository.IncreaseAsync(
+                    userId,
+                    productId);
 
-            var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
-            if (item == null) return NotFound();
-
-            item.Quantity += 1;
-
-            await _context.SaveChangesAsync();
-
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
     }

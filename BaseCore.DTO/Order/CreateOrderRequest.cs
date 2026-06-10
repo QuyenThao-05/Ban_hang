@@ -14,6 +14,8 @@ namespace BaseCore.DTO.Order
 
         public string? PaymentMethod { get; set; }
 
+        public string? CouponCode { get; set; }
+
         public decimal TotalPrice { get; set; }
 
         public decimal DiscountAmount { get; set; }

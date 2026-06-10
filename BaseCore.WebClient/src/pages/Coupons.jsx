@@ -226,7 +226,8 @@ const Coupons = () => {
                       <col style={{ width: "105px" }} />
                       <col style={{ width: "105px" }} />
                       <col style={{ width: "130px" }} />
-                      <col style={{ width: "105px" }} />
+                      <col style={{ width: "90px" }} />
+                      <col style={{ width: "140px" }} />
                       <col style={{ width: "125px" }} />
                       <col style={{ width: "125px" }} />
                       <col style={{ width: "145px" }} />
@@ -241,7 +242,8 @@ const Coupons = () => {
                         <th className="text-center align-middle">Loại giảm</th>
                         <th className="text-center align-middle">Giá trị</th>
                         <th className="text-center align-middle">Đơn tối thiểu</th>
-                        <th className="text-center align-middle">Lượt dùng</th>
+                        <th className="text-center align-middle">Đã dùng</th>
+                        <th className="text-center align-middle">Tổng lượt dùng</th>
                         <th className="text-center align-middle">Ngày bắt đầu</th>
                         <th className="text-center align-middle">Ngày kết thúc</th>
                         <th className="text-center align-middle">Trạng thái</th>
@@ -283,10 +285,12 @@ const Coupons = () => {
                               {formatMoney(c.minOrderValue)}
                             </td>
 
-                            <td className="text-center align-middle text-nowrap">
-                              {c.maxUses === 0
-                                ? `${c.usedCount} / ∞`
-                                : `${c.usedCount} / ${c.maxUses}`}
+                            <td className="text-center align-middle">
+                              {c.usedCount}
+                            </td>
+
+                            <td className="text-center align-middle">
+                              {c.maxUses === 0 ? "∞" : c.maxUses}
                             </td>
 
                             <td className="text-center align-middle text-nowrap">

@@ -42,7 +42,7 @@ const MainLayout = ({ children }) => {
         <ul className="navbar-nav ml-auto">
           <li className="nav-item dropdown">
             <a className="nav-link" data-toggle="dropdown" href="#">
-              <i className="far fa-user"></i> {user?.name || user?.username}
+              <i className="far fa-user"></i>{" "}{user?.fullName || user?.username}
             </a>
 
             <div className="dropdown-menu dropdown-menu-right">
@@ -76,7 +76,7 @@ const MainLayout = ({ children }) => {
             </div>
             <div className="info">
               <Link to="#" className="d-block">
-                {user?.name || user?.username}
+                {user?.fullName || user?.username}
               </Link>
             </div>
           </div>

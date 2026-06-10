@@ -53,7 +53,12 @@ namespace BaseCore.AuthService.Controllers
                 token = token,
                 role = user.Role,
                 userId = user.Id,
-                username = user.Username
+                username = user.Username,
+
+                fullName = user.FullName,
+                email = user.Email,
+                phone = user.Phone,
+                address = user.Address
             });
         }
 
