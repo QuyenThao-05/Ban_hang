@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết đơn hàng</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+
+    <style>
+      body {
+        background: #f5f5f5;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .container-box {
+        max-width: 1200px;
+        margin: 30px auto;
+      }
+
+      .order-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .order-status {
+        color: #d10024;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .product-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex: 1;
+      }
+
+      .product-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .product-name {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      .product-qty {
+        color: #777;
+      }
+
+      .product-price {
+        min-width: 150px;
+        text-align: right;
+        color: #d10024;
+        font-weight: 700;
+        font-size: 18px;
+      }
+
+      .summary {
+        clear: both;
+        width: 100%;
+        padding-top: 20px;
+        margin-top: 20px;
+        border-top: 1px solid #eee;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .summary h3 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #d10024;
+        margin-top: 10px;
+      }
+
+      .back-btn {
+        margin-bottom: 20px;
+      }
+
+      .product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .product-item img {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 1px solid #eee;
+      }
+
+      .product-info {
+        flex: 1;
+      }
+
+      .product-name {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .order-summary {
+        text-align: right;
+        margin-top: 20px;
+      }
+
+      .account-sidebar {
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      .account-content {
+        background: #fff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      .content-title {
+        font-size: 40px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .content-subtitle {
+        color: #888;
+        margin-bottom: 25px;
+      }
+
+      .user-info {
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .user-avatar {
+        width: 70px;
+        height: 70px;
+        background: #eee;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: #999;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .sidebar-menu li a {
+        display: block;
+        padding: 18px 30px;
+        color: #333;
+      }
+
+      .sidebar-menu li a.active {
+        color: #d10024;
+        background: #faf3f4;
+        font-weight: 600;
+      }
+
+      .account-page {
+        margin-top: 30px;
+      }
+
+      .order-progress {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 35px 25px;
+        margin-bottom: 30px;
+      }
+
+      .order-progress ul {
+        display: flex;
+        justify-content: space-between;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .order-progress li {
+        flex: 1;
+        text-align: center;
+        position: relative;
+      }
+
+      .order-progress li::after {
+        content: "";
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        width: 100%;
+        height: 4px;
+        background: #ddd;
+        z-index: 1;
+      }
+
+      .order-progress li:last-child::after {
+        display: none;
+      }
+
+      .order-progress .step {
+        width: 48px;
+        height: 48px;
+        line-height: 48px;
+        border-radius: 50%;
+        background: #ddd;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 auto 12px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .order-progress .active .step {
+        background: #d10024;
+      }
+
+      .order-progress .active::after {
+        background: #d10024;
+      }
+
+      .order-progress .step-title {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .order-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin: 20px 0;
+        padding: 20px 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .order-btn {
+        min-width: 180px;
+        height: 42px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        background: #fff;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .order-btn:hover {
+        background: #fafafa;
+      }
+
+      .order-btn-primary {
+        background: #ee4d2d;
+        border-color: #ee4d2d;
+        color: #fff;
+      }
+
+      .order-btn-primary:hover {
+        background: #d73211;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="header-placeholder"></div>
+    <div class="section">
+      <div class="container">
+        <div class="container account-page">
+          <div class="row">
+            <!-- SIDEBAR -->
+            <div class="col-lg-3">
+              <div class="account-sidebar">
+                <div class="user-info">
+                  <div class="user-avatar">
+                    <i class="fa fa-user"></i>
+                  </div>
+
+                  <div>
+                    <div class="user-name" id="sidebar-name">User</div>
+
+                    <div class="edit-profile">
+                      <i class="fa fa-pencil"></i>
+                      Sửa hồ sơ
+                    </div>
+                  </div>
+                </div>
+
+                <ul class="sidebar-menu">
+                  <li>
+                    <a href="profile.html">
+                      <i class="fa fa-user-o"></i>
+                      Hồ sơ
+                    </a>
+                  </li>
+
+                  <li>
+                    <a href="orders.html" class="active">
+                      <i class="fa fa-shopping-bag"></i>
+                      Đơn mua
+                    </a>
+                  </li>
+
+                  <li>
+                    <a href="voucher.html">
+                      <i class="fa fa-ticket"></i>
+                      Kho Voucher
+                    </a>
+                  </li>
+
+                  <li>
+                    <a href="address.html">
+                      <i class="fa fa-map-marker"></i>
+                      Địa chỉ
+                    </a>
+                  </li>
+
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-bell-o"></i>
+                      Thông báo
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="col-lg-9">
+              <div class="account-content">
+                <div class="content-title">Chi tiết đơn hàng</div>
+
+                <a href="orders.html" class="btn btn-default">
+                  <i class="fa fa-arrow-left"></i>
+                  Quay lại đơn mua
+                </a>
+
+                <br /><br />
+
+                <div id="order-info"></div>
+
+                <div id="order-progress"></div>
+
+                <div id="order-actions"></div>
+
+                <div id="product-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("id");
+
+      async function loadOrderDetail() {
+        try {
+          const token = localStorage.getItem("token");
+
+          const response = await fetch("http://localhost:5001/api/order", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          const result = await response.json();
+
+          const order = result.items.find((x) => x.id == orderId);
+
+          renderActionButtons(order.status);
+
+          setTimeout(() => {
+            const btnReceived = document.getElementById("btn-received");
+
+            if (btnReceived) {
+              btnReceived.addEventListener("click", () => {
+                if (confirm("Xác nhận đã nhận được hàng?")) {
+                  markAsReceived(order.id);
+                }
+              });
+            }
+          }, 100);
+
+          document.getElementById("sidebar-name").textContent =
+            localStorage.getItem("username") || "User";
+
+          if (!order) {
+            document.getElementById("order-info").innerHTML =
+              "<h3>Không tìm thấy đơn hàng</h3>";
+
+            return;
+          }
+
+          document.getElementById("order-info").innerHTML = `
+      <div class="order-header">
+        <div>
+          <p>
+            Ngày đặt:
+            ${new Date(order.createdAt).toLocaleString("vi-VN")}
+          </p>
+        </div>
+
+        <div class="order-status">
+          ${getStatusText(order.status)}
+        </div>
+
+      </div>
+    `;
+
+          const currentStep = getStep(order.status);
+
+          document.getElementById("order-progress").innerHTML = `
+<div class="order-progress">
+  <ul>
+
+    <li class="${currentStep >= 1 ? "active" : ""}">
+      <div class="step">1</div>
+      <div class="step-title">Đặt hàng</div>
+    </li>
+
+    <li class="${currentStep >= 2 ? "active" : ""}">
+      <div class="step">2</div>
+      <div class="step-title">Xác nhận</div>
+    </li>
+
+    <li class="${currentStep >= 3 ? "active" : ""}">
+      <div class="step">3</div>
+      <div class="step-title">Đóng gói</div>
+    </li>
+
+    <li class="${currentStep >= 4 ? "active" : ""}">
+      <div class="step">4</div>
+      <div class="step-title">Giao hàng</div>
+    </li>
+
+    <li class="${currentStep >= 5 ? "active" : ""}">
+      <div class="step">5</div>
+      <div class="step-title">Hoàn thành</div>
+    </li>
+
+  </ul>
+</div>
+`;
+
+          document.getElementById("product-list").innerHTML = `
+  ${(order.orderDetails || [])
+    .map(
+      (item) => `
+      <div class="product-item">
+
+        <div class="product-left">
+          <img src="${item.productImage}" alt="${item.productName}">
+
+          <div class="product-info">
+            <div class="product-name">${item.productName}</div>
+            <div>${item.color || ""} ${item.size || ""}</div>
+            <div class="product-qty">x${item.quantity}</div>
+          </div>
+        </div>
+
+        <div class="product-price">
+          ${Number(item.price).toLocaleString("vi-VN")} đ
+        </div>
+
+      </div>
+    `,
+    )
+    .join("")}
+
+  <div class="summary">
+    <p>Phí vận chuyển: ${Number(order.shippingFee || 0).toLocaleString("vi-VN")} đ</p>
+
+    <p>Giảm giá: ${Number(order.discountAmount || 0).toLocaleString("vi-VN")} đ</p>
+
+    <h3>
+      Tổng cộng:
+      ${Number(order.finalAmount).toLocaleString("vi-VN")} đ
+    </h3>
+  </div>
+`;
+        } catch (error) {
+          console.error(error);
+
+          document.getElementById("order-info").innerHTML =
+            "<h3>Lỗi tải đơn hàng</h3>";
+        }
+      }
+
+      function getStatusText(status) {
+        switch (status) {
+          case "Pending":
+            return "CHỜ XÁC NHẬN";
+
+          case "Confirmed":
+            return "ĐÃ XÁC NHẬN";
+
+          case "Packing":
+            return "ĐANG ĐÓNG GÓI";
+
+          case "Shipping":
+            return "ĐANG GIAO HÀNG";
+
+          case "Completed":
+            return "HOÀN THÀNH";
+
+          case "Cancelled":
+            return "ĐÃ HỦY";
+
+          default:
+            return status;
+        }
+      }
+
+      function getStep(status) {
+        switch (status) {
+          case "Pending":
+            return 1;
+
+          case "Confirmed":
+            return 2;
+
+          case "Packing":
+            return 3;
+
+          case "Shipping":
+            return 4;
+
+          case "Completed":
+            return 5;
+
+          default:
+            return 1;
+        }
+      }
+
+      function renderActionButtons(status) {
+        let html = `
+    <div class="order-actions">
+  `;
+
+        if (
+          status === "Pending" ||
+          status === "Confirmed" ||
+          status === "Packing"
+        ) {
+          html += `
+      <button class="order-btn">
+        Xác nhận hủy
+      </button>
+    `;
+        }
+
+        if (status === "Shipping") {
+          html += `
+      <button
+        id="btn-received"
+        class="order-btn order-btn-primary"
+      >
+        Đã nhận hàng
+      </button>
+    `;
+        }
+
+        html += `
+      <button class="order-btn">
+        Liên hệ người bán
+      </button>
+    </div>
+  `;
+
+        document.getElementById("order-actions").innerHTML = html;
+      }
+
+      async function markAsReceived(orderId) {
+        try {
+          const token = localStorage.getItem("token");
+
+          const response = await fetch(
+            `http://localhost:5001/api/order/${orderId}/status`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+
+              body: JSON.stringify({
+                status: "Completed",
+              }),
+            },
+          );
+
+          if (!response.ok) {
+            throw new Error("Update failed");
+          }
+
+          alert("Đã nhận hàng thành công");
+
+          location.reload();
+        } catch (error) {
+          console.error(error);
+          alert("Không thể cập nhật trạng thái");
+        }
+      }
+
+      loadOrderDetail();
+    </script>
+    <script>
+      fetch("header.html")
+        .then((res) => res.text())
+        .then((data) => {
+          document.getElementById("header-placeholder").innerHTML = data;
+
+          const scripts = document
+            .getElementById("header-placeholder")
+            .querySelectorAll("script");
+
+          scripts.forEach((oldScript) => {
+            const newScript = document.createElement("script");
+
+            if (oldScript.src) {
+              newScript.src = oldScript.src;
+            } else {
+              newScript.textContent = oldScript.textContent;
+            }
+
+            document.body.appendChild(newScript);
+          });
+        });
+    </script>
+  </body>
+</html>

@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/font-awesome.min.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700"
+      rel="stylesheet"
+    />
+
+    <link type="text/css" rel="stylesheet" href="css/slick.css" />
+    <link type="text/css" rel="stylesheet" href="css/slick-theme.css" />
+    <link type="text/css" rel="stylesheet" href="css/nouislider.min.css" />
 
     <style>
       body {
@@ -16,7 +24,7 @@
       }
 
       .account-page {
-        padding: 40px 0;
+        padding: 0 40px;
       }
 
       /* Sidebar giữ nguyên như profile */
@@ -69,7 +77,8 @@
       .account-content {
         background: white;
         border-radius: 12px;
-        padding: 25px;
+        padding: 35px;
+        min-height: 650px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
       }
 
@@ -149,9 +158,89 @@
       .btn-delete {
         color: #d10024;
       }
+
+      .content-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #222;
+      }
+
+      .content-subtitle {
+        color: #888;
+        margin-bottom: 30px;
+      }
+
+      .user-name {
+        font-weight: 700;
+        font-size: 16px;
+        color: #222;
+      }
+
+      .edit-profile {
+        font-size: 13px;
+        color: #888;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .sidebar-menu li a {
+        font-size: 15px;
+      }
+
+      .sidebar-menu .active {
+        color: #d10024 !important;
+        font-weight: 600;
+      }
     </style>
   </head>
   <body>
+    <div id="header-placeholder"></div>
+
+    <script>
+      fetch("header.html")
+        .then((res) => res.text())
+        .then((data) => {
+          document.getElementById("header-placeholder").innerHTML = data;
+
+          const scripts = document
+            .getElementById("header-placeholder")
+            .querySelectorAll("script");
+
+          scripts.forEach((oldScript) => {
+            const newScript = document.createElement("script");
+
+            if (oldScript.src) {
+              newScript.src = oldScript.src;
+            } else {
+              newScript.textContent = oldScript.textContent;
+            }
+
+            document.body.appendChild(newScript);
+          });
+
+          if (typeof updateCartCount === "function") {
+            updateCartCount();
+          }
+
+          if (typeof loadCartDropdown === "function") {
+            loadCartDropdown();
+          }
+
+          if (typeof updateWishlistCount === "function") {
+            updateWishlistCount();
+          }
+
+          if (typeof updateUserHeader === "function") {
+            updateUserHeader();
+          }
+        });
+    </script>
+
     <div class="container account-page">
       <div class="row">
         <!-- SIDEBAR -->
@@ -161,38 +250,51 @@
               <div class="user-avatar">
                 <i class="fa fa-user"></i>
               </div>
+
               <div>
                 <div class="user-name" id="sidebar-name">User</div>
+
                 <div class="edit-profile">
-                  <i class="fa fa-pencil"></i> Sửa hồ sơ
+                  <i class="fa fa-pencil"></i>
+                  Sửa hồ sơ
                 </div>
               </div>
             </div>
 
             <ul class="sidebar-menu">
               <li>
-                <a href="profile.html"><i class="fa fa-user-o"></i> Hồ sơ</a>
+                <a href="profile.html">
+                  <i class="fa fa-user-o"></i>
+                  Hồ sơ
+                </a>
               </li>
+
               <li>
-                <a href="orders.html"
-                  ><i class="fa fa-shopping-bag"></i> Đơn mua</a
-                >
+                <a href="orders.html">
+                  <i class="fa fa-shopping-bag"></i>
+                  Đơn mua
+                </a>
               </li>
+
               <li>
-                <a href="voucher.html"
-                  ><i class="fa fa-ticket"></i> Kho Voucher</a
-                >
+                <a href="voucher.html">
+                  <i class="fa fa-ticket"></i>
+                  Kho Voucher
+                </a>
               </li>
+
               <li>
-                <a href="address.html" class="active"
-                  ><i class="fa fa-map-marker"></i> Địa chỉ</a
-                >
+                <a href="address.html" class="active">
+                  <i class="fa fa-map-marker"></i>
+                  Địa chỉ
+                </a>
               </li>
+
               <li>
-                <a href="#"><i class="fa fa-lock"></i> Đổi mật khẩu</a>
-              </li>
-              <li>
-                <a href="#"><i class="fa fa-bell-o"></i> Thông báo</a>
+                <a href="#">
+                  <i class="fa fa-bell-o"></i>
+                  Thông báo
+                </a>
               </li>
             </ul>
           </div>
@@ -201,6 +303,11 @@
         <!-- MAIN CONTENT - ĐỊA CHỈ -->
         <div class="col-lg-9">
           <div class="account-content">
+            <div class="content-title">Địa chỉ của tôi</div>
+
+            <div class="content-subtitle">
+              Quản lý địa chỉ giao hàng của bạn
+            </div>
             <!-- Notification -->
             <div
               class="alert alert-info"
@@ -208,13 +315,6 @@
             >
               <i class="fa fa-info-circle"></i>
               Địa chỉ đã được cập nhật theo thông tin hành chính mới.
-            </div>
-
-            <div class="address-header">
-              <h3 class="title" style="margin: 0">Địa chỉ của tôi</h3>
-              <button class="add-address-btn" onclick="addNewAddress()">
-                <i class="fa fa-plus"></i> Thêm địa chỉ
-              </button>
             </div>
 
             <!-- Address List -->
@@ -227,89 +327,163 @@
     </div>
 
     <script>
-      // Dữ liệu mẫu (có thể lấy từ localStorage sau)
-      let addresses = [
-        {
-          id: 1,
-          name: "Thảo Quyên",
-          phone: "(+84) 869 437 552",
-          address: "Cổng Bể Bơi, Học Viện Kĩ Thuật Kĩ Thuật Quân Sự, Số 234",
-          ward: "Phường Nghĩa Đô",
-          district: "Thành phố Hà Nội",
-          isDefault: true,
-        },
-        {
-          id: 2,
-          name: "Thu trà",
-          phone: "(+84) 976 692 678",
-          address: "Số 7a, Ngách 9 Ngõ 28 Võ Chí Công",
-          ward: "Phường Tây Hồ",
-          district: "Thành phố Hà Nội",
-          isDefault: false,
-        },
-      ];
+      async function loadAddress() {
+        try {
+          const user = JSON.parse(localStorage.getItem("user"));
 
-      function renderAddresses() {
-        const container = document.getElementById("address-list");
-        container.innerHTML = addresses
-          .map(
-            (addr) => `
-                <div class="address-item ${addr.isDefault ? "default" : ""}">
-                    ${addr.isDefault ? `<div class="default-badge">Mặc định</div>` : ""}
-                    
-                    <div class="address-name">
-                        ${addr.name} <span class="address-phone">${addr.phone}</span>
-                    </div>
-                    
-                    <div class="address-text">
-                        ${addr.address}<br>
-                        ${addr.ward}, ${addr.district}
-                    </div>
+          if (!user) {
+            alert("Vui lòng đăng nhập");
+            return;
+          }
 
-                    <div class="address-actions">
-                        <button class="btn-action" onclick="editAddress(${addr.id})">Cập nhật</button>
-                        ${!addr.isDefault ? `<button class="btn-action" onclick="setDefault(${addr.id})">Thiết lập mặc định</button>` : ""}
-                        <button class="btn-action btn-delete" onclick="deleteAddress(${addr.id})">Xóa</button>
-                    </div>
-                </div>
-            `,
-          )
-          .join("");
+          const response = await fetch(
+            `http://localhost:5002/api/users/${user.id}`,
+          );
+
+          const data = await response.json();
+
+          document.getElementById("address-list").innerHTML = `
+      <div class="address-item default">
+
+        <div class="default-badge">Mặc định</div>
+
+        <div class="address-name">
+          ${data.fullName}
+          <span class="address-phone">
+            ${data.phone || ""}
+          </span>
+        </div>
+
+        <div class="address-text">
+          ${data.address || "Chưa có địa chỉ"}
+        </div>
+
+        <div class="address-actions">
+          <button class="btn-action" onclick="editAddress()">
+            Cập nhật
+          </button>
+        </div>
+
+      </div>
+    `;
+        } catch (error) {
+          console.error("Lỗi:", error);
+        }
       }
-
       // Các hàm xử lý
-      function addNewAddress() {
-        alert("Chức năng thêm địa chỉ mới đang được phát triển...");
-        // Có thể mở modal form sau
-      }
+      async function editAddress() {
+        const user = JSON.parse(localStorage.getItem("user"));
 
-      function editAddress(id) {
-        alert("Chức năng chỉnh sửa địa chỉ #" + id);
-      }
+        const currentAddress = document
+          .querySelector(".address-text")
+          .textContent.trim();
 
-      function setDefault(id) {
-        addresses.forEach((a) => (a.isDefault = a.id === id));
-        renderAddresses();
-        alert("Đã thiết lập địa chỉ mặc định!");
-      }
+        const newAddress = prompt("Nhập địa chỉ mới:", currentAddress);
 
-      function deleteAddress(id) {
-        if (confirm("Bạn có chắc muốn xóa địa chỉ này?")) {
-          addresses = addresses.filter((a) => a.id !== id);
-          renderAddresses();
+        if (!newAddress) return;
+
+        try {
+          const response = await fetch(
+            `http://localhost:5002/api/users/${user.id}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                address: newAddress,
+              }),
+            },
+          );
+
+          if (!response.ok) {
+            throw new Error("Update failed");
+          }
+
+          alert("Cập nhật địa chỉ thành công!");
+
+          loadAddress();
+        } catch (error) {
+          console.error(error);
+          alert("Cập nhật thất bại!");
         }
       }
 
       // Khởi tạo
       document.addEventListener("DOMContentLoaded", () => {
-        renderAddresses();
+        loadAddress();
 
-        // Hiển thị tên user từ localStorage
         const user = JSON.parse(localStorage.getItem("user"));
+
         if (user && user.username) {
           document.getElementById("sidebar-name").textContent = user.username;
         }
       });
     </script>
+    <script>
+      function getCartKey() {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (!user) return "cart_guest";
+
+        return `cart_${user.username}`;
+      }
+
+      function updateUserHeader() {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const accountArea = document.getElementById("account-area");
+
+        if (!accountArea) return;
+
+        if (user && user.username) {
+          accountArea.innerHTML = `
+        <li class="account-dropdown">
+          <a href="#" class="account-user">
+            <i class="fa fa-user"></i> ${user.username}
+          </a>
+
+          <div class="account-menu">
+            <a href="profile.html">
+              <i class="fa fa-user-circle"></i>
+              Tài khoản của tôi
+            </a>
+
+            <a href="orders.html">
+              <i class="fa fa-shopping-bag"></i>
+              Đơn mua
+            </a>
+
+            <a href="#" id="logout-btn">
+              <i class="fa fa-sign-out"></i>
+              Đăng xuất
+            </a>
+          </div>
+        </li>
+      `;
+
+          document.getElementById("logout-btn").onclick = () => {
+            localStorage.removeItem("user");
+            window.location.href = "index.html";
+          };
+        }
+      }
+
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem(getCartKey())) || [];
+
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+        const el = document.getElementById("cart-count");
+
+        if (el) {
+          el.innerText = count;
+        }
+      }
+    </script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/slick.min.js"></script>
+    <script src="js/nouislider.min.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>

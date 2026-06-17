@@ -2494,25 +2494,111 @@ textarea.input {
     border-radius:4px;
     font-weight:600;
 }
-.product-img {
-    height: 250px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+#pagination {
+  margin-top: 30px;
+}
+
+#pagination button {
+  width: 40px;
+  height: 40px;
+  margin: 0 4px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+}
+
+#pagination button.active-page {
+  background: #d10024;
+  color: #fff;
+  border-color: #d10024;
+}
+
+.category-sidebar {
+  background: #fff;
+  border: 1px solid #e4e7ed;
+  padding: 20px;
+}
+
+.category-sidebar h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.category-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-sidebar li {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f1f1f1;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.category-sidebar li:hover {
+  color: #d10024;
+  padding-left: 20px;
+}
+
+.category-sidebar li.active {
+  color: #d10024;
+  font-weight: bold;
+}
+
+#product-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* ===== HỖ TRỢ ===== */
+
+.support-dropdown {
+    position: relative;
+}
+
+.support-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 230px;
     background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.15);
+    display: none;
+    overflow: hidden;
+    z-index: 9999;
 }
 
-.product-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.support-dropdown:hover .support-menu {
+    display: block;
 }
 
-.product {
-    height: 420px;
+.support-menu a {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    color: #333 !important;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+    transition: .3s;
 }
 
-.product-body {
+.support-menu a:last-child {
+    border-bottom: none;
+}
+
+.support-menu a:hover {
+    background: #f8f8f8;
+    color: #D10024 !important;
+}
+
+.support-menu i {
+    width: 18px;
     text-align: center;
 }
