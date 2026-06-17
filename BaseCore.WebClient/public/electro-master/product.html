@@ -1001,7 +1001,7 @@ allImages.forEach((img, index) => {
     thumbsContainer.innerHTML += `
         <div class="product-preview">
             <img
-                src="http://localhost:5001${p.image}"
+                src="${img}"
                 class="thumb-image"
                 data-image="${img}">
         </div>
@@ -1237,7 +1237,7 @@ function loadCartDropdown() {
     list.innerHTML += `
   <div class="product-widget">
     <div class="product-img">
-      <img src="http://localhost:5001${p.image}" alt="${p.name}">
+      <img src="${p.image}" alt="${p.name}">
     </div>
     <div class="product-body">
       <h3 class="product-name">${p.name}</h3>

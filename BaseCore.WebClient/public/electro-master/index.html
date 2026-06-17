@@ -38,302 +38,65 @@
     <![endif]-->
   </head>
   <body>
-    <!-- NAVIGATION -->
-    <nav id="">
-      <!-- container -->
-      <div class="container">
-        <!-- responsive-nav -->
-        <div id="responsive-nav">
-          <!-- NAV -->
-          <ul class="main-nav nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#">Hot Deals</a></li>
-            <li><a href="#">Danh mục hàng</a></li>
-            <li><a href="#">Bút</a></li>
-            <li><a href="#">Vở / Sổ</a></li>
-            <li><a href="#">Giấy</a></li>
-            <li><a href="#">Khác</a></li>
-          </ul>
-          <!-- /NAV -->
-        </div>
-        <!-- /responsive-nav -->
-      </div>
-      <!-- /container -->
-    </nav>
-    <!-- /NAVIGATION -->
-
-    <!-- CATEGORY SHOP -->
-    <div class="section">
-      <div class="container">
-        <div class="row">
-          <!-- Bút -->
-          <div class="col-md-4 col-xs-6">
-            <div class="shop">
-              <div class="shop-img">
-                <img
-                  src="./img/shop01.png"
-                  alt=""
-                  style="height: 230px; object-fit: cover"
-                />
-              </div>
-              <div class="shop-body">
-                <h3>Bút</h3>
-                <a href="#" class="cta-btn"
-                  >SHOP NOW <i class="fa fa-arrow-circle-right"></i
-                ></a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Vở / Sổ -->
-          <div class="col-md-4 col-xs-6">
-            <div class="shop">
-              <div class="shop-img">
-                <img
-                  src="./img/shop03.png"
-                  alt=""
-                  style="height: 230px; object-fit: cover"
-                />
-              </div>
-              <div class="shop-body">
-                <h3>Vở / Sổ</h3>
-                <a href="#" class="cta-btn"
-                  >SHOP NOW <i class="fa fa-arrow-circle-right"></i
-                ></a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Khác -->
-          <div class="col-md-4 col-xs-6">
-            <div class="shop">
-              <div class="shop-img">
-                <img
-                  src="./img/shop02.png"
-                  alt=""
-                  style="height: 230px; object-fit: cover"
-                />
-              </div>
-              <div class="shop-body">
-                <h3>Khác</h3>
-                <a href="#" class="cta-btn"
-                  >SHOP NOW <i class="fa fa-arrow-circle-right"></i
-                ></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- SECTION -->
     <div class="section">
       <!-- container -->
       <div class="container">
         <!-- row -->
         <div class="row">
-          <!-- section title -->
-          <div class="col-md-12">
-            <div class="section-title">
-              <h3 class="title">Products</h3>
+          <!-- Sidebar -->
+          <div class="col-md-3">
+            <div class="category-sidebar">
+              <h3>TẤT CẢ DANH MỤC</h3>
 
-              <select id="filterType" style="margin-bottom: 20px; width: 200px">
-                <option value="">Tất cả</option>
-              </select>
-            </div>
-          </div>
-          <!-- /section title -->
+              <ul id="categoryList">
+                <li class="active" data-id="">Tất cả</li>
+              </ul>
+              </br></br>
 
-          <!-- Products tab & slick -->
-          <div class="col-md-12">
-            <div class="row">
-              <div class="products-tabs">
-                <!-- tab -->
-                <div id="tab1" class="tab-pane active">
-                  <div class="row" id="product-list">
-                    <!-- product -->
+              <h3>KHOẢNG GIÁ</h3>
 
-                    <!-- /product -->
+              <div class="price-filter">
+                <input
+                  type="number"
+                  id="minPrice"
+                  placeholder="Từ"
+                  class="form-control"
+                />
 
-                    <!-- product -->
-                    <div class="product">
-                      <div class="product-img">
-                        <img src="./img/product02.png" alt="" />
-                        <div class="product-label">
-                          <span class="new">NEW</span>
-                        </div>
-                      </div>
-                      <div class="product-body">
-                        <p class="product-category">Category</p>
-                        <h3 class="product-name">
-                          <a href="#">product name goes here</a>
-                        </h3>
-                        <h4 class="product-price">
-                          $980.00 <del class="product-old-price">$990.00</del>
-                        </h4>
-                        <div class="product-rating">
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star-o"></i>
-                        </div>
-                        <div class="product-btns">
-                          <button class="add-to-wishlist">
-                            <i class="fa fa-heart-o"></i
-                            ><span class="tooltipp">add to wishlist</span>
-                          </button>
-                          <button class="add-to-compare">
-                            <i class="fa fa-exchange"></i
-                            ><span class="tooltipp">add to compare</span>
-                          </button>
-                          <button class="quick-view">
-                            <i class="fa fa-eye"></i
-                            ><span class="tooltipp">quick view</span>
-                          </button>
-                        </div>
-                      </div>
-                      <div class="add-to-cart">
-                        <button class="add-to-cart-btn">
-                          <i class="fa fa-shopping-cart"></i> add to cart
-                        </button>
-                      </div>
-                    </div>
-                    <!-- /product -->
+                <br />
 
-                    <!-- product -->
-                    <div class="product">
-                      <div class="product-img">
-                        <img src="./img/product03.png" alt="" />
-                        <div class="product-label">
-                          <span class="sale">-30%</span>
-                        </div>
-                      </div>
-                      <div class="product-body">
-                        <p class="product-category">Category</p>
-                        <h3 class="product-name">
-                          <a href="#">product name goes here</a>
-                        </h3>
-                        <h4 class="product-price">
-                          $980.00 <del class="product-old-price">$990.00</del>
-                        </h4>
-                        <div class="product-rating"></div>
-                        <div class="product-btns">
-                          <button class="add-to-wishlist">
-                            <i class="fa fa-heart-o"></i
-                            ><span class="tooltipp">add to wishlist</span>
-                          </button>
-                          <button class="add-to-compare">
-                            <i class="fa fa-exchange"></i
-                            ><span class="tooltipp">add to compare</span>
-                          </button>
-                          <button class="quick-view">
-                            <i class="fa fa-eye"></i
-                            ><span class="tooltipp">quick view</span>
-                          </button>
-                        </div>
-                      </div>
-                      <div class="add-to-cart">
-                        <button class="add-to-cart-btn">
-                          <i class="fa fa-shopping-cart"></i> add to cart
-                        </button>
-                      </div>
-                    </div>
-                    <!-- /product -->
+                <input
+                  type="number"
+                  id="maxPrice"
+                  placeholder="Đến"
+                  class="form-control"
+                />
 
-                    <!-- product -->
-                    <div class="product">
-                      <div class="product-img">
-                        <img src="./img/product04.png" alt="" />
-                      </div>
-                      <div class="product-body">
-                        <p class="product-category">Category</p>
-                        <h3 class="product-name">
-                          <a href="#">product name goes here</a>
-                        </h3>
-                        <h4 class="product-price">
-                          $980.00 <del class="product-old-price">$990.00</del>
-                        </h4>
-                        <div class="product-rating">
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                        </div>
-                        <div class="product-btns">
-                          <button class="add-to-wishlist">
-                            <i class="fa fa-heart-o"></i
-                            ><span class="tooltipp">add to wishlist</span>
-                          </button>
-                          <button class="add-to-compare">
-                            <i class="fa fa-exchange"></i
-                            ><span class="tooltipp">add to compare</span>
-                          </button>
-                          <button class="quick-view">
-                            <i class="fa fa-eye"></i
-                            ><span class="tooltipp">quick view</span>
-                          </button>
-                        </div>
-                      </div>
-                      <div class="add-to-cart">
-                        <button class="add-to-cart-btn">
-                          <i class="fa fa-shopping-cart"></i> add to cart
-                        </button>
-                      </div>
-                    </div>
-                    <!-- /product -->
+                <br />
 
-                    <!-- product -->
-                    <div class="product">
-                      <div class="product-img">
-                        <img src="./img/product05.png" alt="" />
-                      </div>
-                      <div class="product-body">
-                        <p class="product-category">Category</p>
-                        <h3 class="product-name">
-                          <a href="#">product name goes here</a>
-                        </h3>
-                        <h4 class="product-price">
-                          $980.00 <del class="product-old-price">$990.00</del>
-                        </h4>
-                        <div class="product-rating">
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                          <i class="fa fa-star"></i>
-                        </div>
-                        <div class="product-btns">
-                          <button class="add-to-wishlist">
-                            <i class="fa fa-heart-o"></i
-                            ><span class="tooltipp">add to wishlist</span>
-                          </button>
-                          <button class="add-to-compare">
-                            <i class="fa fa-exchange"></i
-                            ><span class="tooltipp">add to compare</span>
-                          </button>
-                          <button class="quick-view">
-                            <i class="fa fa-eye"></i
-                            ><span class="tooltipp">quick view</span>
-                          </button>
-                        </div>
-                      </div>
-                      <div class="add-to-cart">
-                        <button class="add-to-cart-btn">
-                          <i class="fa fa-shopping-cart"></i> add to cart
-                        </button>
-                      </div>
-                    </div>
-                    <!-- /product -->
-                  </div>
-                  <div id="slick-nav-1" class="products-slick-nav"></div>
-                </div>
-                <!-- /tab -->
+                <button class="primary-btn" onclick="applyPriceFilter()">
+                  ÁP DỤNG
+                </button>
               </div>
             </div>
           </div>
-          <!-- Products tab & slick -->
+
+          <!-- Product Area -->
+          <div class="col-md-9">
+            <div class="section-title">
+              <h3 class="title">PRODUCTS</h3>
+            </div>
+
+            <div class="row">
+              <div id="product-list"></div>
+            </div>
+
+            <div
+              id="pagination"
+              style="text-align: center; margin-top: 30px"
+            ></div>
+          </div>
         </div>
         <!-- /row -->
       </div>
@@ -1067,14 +830,19 @@
     <script src="js/main.js"></script>
     <script>
       let currentSearch = "";
+      let currentPage = 1;
+      const pageSize = 8;
 
-      async function loadProducts(search = "") {
+      let currentMinPrice = "";
+      let currentMaxPrice = "";
+
+      async function loadProducts(search = "", page = 1) {
         try {
           if (typeof search !== "string") search = "";
 
-          const typeId = document.getElementById("filterType")?.value;
+          const typeId = window.currentTypeId || "";
 
-          let url = "http://localhost:5001/api/products?pageSize=20";
+          let url = `http://localhost:5001/api/products?page=${page}&pageSize=${pageSize}`;
 
           if (search) {
             url += `&search=${encodeURIComponent(search)}`;
@@ -1084,10 +852,19 @@
             url += `&productTypeId=${typeId}`;
           }
 
+          if (currentMinPrice) {
+            url += `&minPrice=${currentMinPrice}`;
+          }
+
+          if (currentMaxPrice) {
+            url += `&maxPrice=${currentMaxPrice}`;
+          }
+
           console.log("API:", url);
 
           const res = await fetch(url);
           const result = await res.json();
+          const totalPages = result.totalPages;
 
           const data = result.items;
 
@@ -1100,10 +877,10 @@
         <div class="product">
           <div class="product-img">
            <img
-              src="${ p.image? `http://localhost:5001${p.image}`: './img/product01.png'}"
+              src="${p.image}"
               alt="${p.name}"
               class="product-image"
-            >
+            />
           </div>
           <div class="product-body">
             <h3 class="product-name">
@@ -1118,10 +895,42 @@
     `,
             )
             .join("");
+          renderPagination(totalPages, page);
         } catch (err) {
           console.error("Lỗi:", err);
         }
       }
+
+      function renderPagination(totalPages, currentPage) {
+        const pagination = document.getElementById("pagination");
+
+        let html = "";
+
+        for (let i = 1; i <= totalPages; i++) {
+          html += `
+      <button
+        onclick="changePage(${i})"
+        class="${i === currentPage ? "active-page" : ""}">
+        ${i}
+      </button>
+    `;
+        }
+
+        pagination.innerHTML = html;
+      }
+      function changePage(page) {
+        currentPage = page;
+        loadProducts(currentSearch, page);
+      }
+
+      function applyPriceFilter() {
+        currentMinPrice = document.getElementById("minPrice").value;
+        currentMaxPrice = document.getElementById("maxPrice").value;
+        currentPage = 1;
+  
+        loadProducts(currentSearch, 1);
+      }
+
       async function loadProductTypes() {
         try {
           const res = await fetch("http://localhost:5001/api/producttypes");
@@ -1131,32 +940,54 @@
 
           const data = result.items; // chuẩn API của bạn
 
-          const select = document.getElementById("filterType");
+          const categoryList = document.getElementById("categoryList");
 
-          if (!select) {
-            console.error("Không tìm thấy select filterType");
-            return;
-          }
-
-          select.innerHTML = `<option value="">Tất cả</option>`;
+          categoryList.innerHTML = `<li class="active" data-id="">Tất cả</li>`;
 
           data.forEach((t) => {
-            select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+            categoryList.innerHTML += `
+    <li data-id="${t.id}">
+      ${t.name}
+    </li>
+  `;
           });
+
         } catch (err) {
           console.error("Lỗi loadProductTypes:", err);
         }
       }
+
+      window.currentTypeId = "";
+
+      document.addEventListener("click", (e) => {
+        if (
+          e.target.parentElement &&
+          e.target.parentElement.id === "categoryList"
+        ) {
+          document
+            .querySelectorAll("#categoryList li")
+            .forEach((li) => li.classList.remove("active"));
+
+          e.target.classList.add("active");
+
+          window.currentTypeId = e.target.dataset.id;
+
+          currentPage = 1;
+
+          loadProducts(currentSearch, 1);
+        }
+      });
+
       loadProductTypes();
       loadProducts();
 
-      document.getElementById("filterType").addEventListener("change", () => {
-        loadProducts(currentSearch);
-      });
-
       function handleSearch() {
         const keyword = document.getElementById("searchInput").value;
-        loadProducts(keyword);
+
+        currentSearch = keyword;
+        currentPage = 1;
+
+        loadProducts(keyword, 1);
       }
 
       function loadCartDropdown() {
@@ -1171,13 +1002,13 @@
         let total = 0;
 
         cart.forEach((p) => {
-  total += p.price * p.quantity;
+          total += p.price * p.quantity;
 
-  const imageUrl = p.image
-    ? `http://localhost:5001${p.image}`
-    : "./img/product01.png";
+          const imageUrl = p.image
+            ? `http://localhost:5001${p.image}`
+            : "./img/product01.png";
 
-  list.innerHTML += `
+          list.innerHTML += `
     <div class="product-widget">
       <div class="product-img">
         <img src="${imageUrl}" alt="">
@@ -1194,7 +1025,7 @@
       </button>
     </div>
   `;
-});
+        });
         if (totalEl) {
           totalEl.innerText = "Tổng: " + total.toLocaleString() + " VND";
         }
