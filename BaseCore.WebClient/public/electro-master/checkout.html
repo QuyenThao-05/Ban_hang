@@ -456,6 +456,16 @@
         totalEl.innerText = total.toLocaleString() + " VND";
       }
 
+      function getCartKey() {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (!user) {
+          return "cart_guest";
+        }
+
+        return `cart_${user.username}`;
+      }
+
       document.querySelector(".order-submit").onclick = async () => {
         const user = JSON.parse(localStorage.getItem("user"));
 
@@ -525,7 +535,7 @@
           alert("Đặt hàng thành công!");
 
           const fullCart =
-            JSON.parse(localStorage.getItem("cart")) || [];
+            JSON.parse(localStorage.getItem(getCartKey())) || [];
 
           const selectedIds = cart.map(x => x.id);
 
@@ -535,7 +545,7 @@
             );
 
           localStorage.setItem(
-            "cart",
+            getCartKey(),
             JSON.stringify(remainCart)
           );
 

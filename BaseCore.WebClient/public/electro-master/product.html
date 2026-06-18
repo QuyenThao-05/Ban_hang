@@ -167,13 +167,6 @@ fetch('header.html')
   </button>
 
 </div>
-
-              <ul class="product-btns">
-                <li>
-                  <a href="#"><i class="fa fa-heart-o"></i> Thêm vào yêu thích</a>
-                </li>
-              </ul>
-
               <ul class="product-links">
                 <li>Loại hàng:</li>
                 <li><a href="#" id="product-category"></a></li>
@@ -324,65 +317,6 @@ fetch('header.html')
                       </div>
                     </div>
                     <!-- /Reviews -->
-
-                    <!-- Review Form -->
-                    <div class="col-md-3">
-                      <div id="review-form">
-                        <form class="review-form">
-                          <input
-                            class="input"
-                            type="text"
-                            placeholder="Your Name"
-                          />
-                          <input
-                            class="input"
-                            type="email"
-                            placeholder="Your Email"
-                          />
-                          <textarea
-                            class="input"
-                            placeholder="Your Review"
-                          ></textarea>
-                          <div class="input-rating">
-                            <span>Your Rating: </span>
-                            <div class="stars">
-                              <input
-                                id="star5"
-                                name="rating"
-                                value="5"
-                                type="radio"
-                              /><label for="star5"></label>
-                              <input
-                                id="star4"
-                                name="rating"
-                                value="4"
-                                type="radio"
-                              /><label for="star4"></label>
-                              <input
-                                id="star3"
-                                name="rating"
-                                value="3"
-                                type="radio"
-                              /><label for="star3"></label>
-                              <input
-                                id="star2"
-                                name="rating"
-                                value="2"
-                                type="radio"
-                              /><label for="star2"></label>
-                              <input
-                                id="star1"
-                                name="rating"
-                                value="1"
-                                type="radio"
-                              /><label for="star1"></label>
-                            </div>
-                          </div>
-                          <button class="primary-btn">Submit</button>
-                        </form>
-                      </div>
-                    </div>
-                    <!-- /Review Form -->
                   </div>
                 </div>
                 <!-- /tab3  -->
@@ -406,7 +340,7 @@ fetch('header.html')
         <div class="row">
   <div class="col-md-12">
     <div class="section-title text-center">
-      <h3 class="title">Related Products</h3>
+      <h3 class="title">Có thể bạn sẽ thích</h3>
     </div>
   </div>
 
@@ -506,11 +440,12 @@ const products = data.data || data.items || data;
     container.innerHTML = "";
 
     related.slice(0, 4).forEach(p => {
+      console.log("Related image:", p.image);
       container.innerHTML += `
         <div class="col-md-3 col-xs-6">
           <div class="product">
             <div class="product-img">
-              <img src="http://localhost:5001${p.image}">
+              <img src="${p.image}">
             </div>
             <div class="product-body">
               <h3 class="product-name">

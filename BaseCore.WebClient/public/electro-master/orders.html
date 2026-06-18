@@ -177,6 +177,118 @@
         border: none !important;
         box-shadow: inset 0 -3px 0 #d10024;
       }
+
+      .review-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        background: rgba(0, 0, 0, 0.5);
+
+        z-index: 9999;
+
+        justify-content: center;
+        align-items: center;
+      }
+
+      .review-modal.show {
+        display: flex !important;
+      }
+
+      .review-modal-content {
+        width: 700px;
+        max-width: 95%;
+        background: #fff;
+        border-radius: 10px;
+        padding: 25px;
+      }
+
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .review-header h3 {
+        margin: 0;
+        font-size: 28px;
+      }
+
+      .close-review {
+        font-size: 30px;
+        cursor: pointer;
+      }
+
+      .review-product {
+        display: flex;
+        gap: 15px;
+        margin: 25px 0;
+      }
+
+      .review-product img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 1px solid #eee;
+      }
+
+      .review-rating {
+        margin-bottom: 20px;
+      }
+
+      .review-rating span {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .stars {
+        display: flex;
+        gap: 8px;
+      }
+
+      .stars i {
+        font-size: 34px;
+        color: #ddd;
+        cursor: pointer;
+      }
+
+      .stars i.active {
+        color: #ee4d2d;
+      }
+
+      #reviewText {
+        width: 100%;
+        height: 150px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        resize: none;
+      }
+
+      .review-actions {
+        margin-top: 20px;
+        text-align: right;
+      }
+
+      .review-actions button {
+        padding: 10px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #cancelReview {
+        background: #eee;
+      }
+
+      #submitReview {
+        background: #ee4d2d;
+        color: white;
+        margin-left: 10px;
+      }
     </style>
   </head>
   <body>
@@ -355,28 +467,27 @@
     </script>
 
     <script>
-      // Nhúng Header và Footer
-      fetch("footer.html")
-        .then((res) => res.text())
-        .then(
-          (data) =>
-            (document.getElementById("footer-placeholder").innerHTML = data),
-        );
-
+      // Nhúng Header
       let allOrders = [];
+
+      let reviewedProducts =
+        JSON.parse(localStorage.getItem("reviewedProducts")) || [];
 
       async function loadOrders() {
         try {
           // nếu có token đăng nhập
           const token = localStorage.getItem("token");
 
-          const response = await fetch("http://localhost:5001/api/order", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+          const response = await fetch(
+            "http://localhost:5001/api/order?page=1&pageSize=1000",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
             },
-          });
+          );
 
           if (!response.ok) {
             throw new Error("Không thể tải đơn hàng");
@@ -395,10 +506,10 @@
           console.error(error);
 
           document.getElementById("order-list").innerHTML = `
-        <div class="alert alert-danger">
-          Không tải được đơn hàng
-        </div>
-      `;
+                    <div class="alert alert-danger">
+                      Không tải được đơn hàng
+                    </div>
+                  `;
         }
       }
 
@@ -407,84 +518,87 @@
 
         if (!orders || orders.length === 0) {
           container.innerHTML = `
-      <div class="text-center" style="padding:40px">
-        <h4>Chưa có đơn hàng</h4>
-      </div>
-    `;
+                  <div class="text-center" style="padding:40px">
+                    <h4>Chưa có đơn hàng</h4>
+                  </div>
+                `;
           return;
         }
 
         container.innerHTML = orders
           .map(
             (o) => `
-    
-    <div
-      class="order-item"
-      onclick="viewOrderDetail(${o.id})"
-      style="cursor:pointer"
-    >
 
-      <div class="order-header">
-        <div>
-          <strong>Đơn hàng</strong>
-        </div>
-        <div>
-          ${getStatusText(o.status)}
-        </div>
-      </div>
+                <div
+                  class="order-item"
+                  style="cursor:pointer"
+                >
 
-      ${(o.orderDetails || [])
-        .map(
-          (item) => `
+                  <div class="order-header">
+                    <div>
+                      <strong>Đơn hàng</strong>
+                    </div>
+                    <div>
+                      ${getStatusText(o.status)}
+                    </div>
+                  </div>
 
-        <div class="order-product">
+                  ${(o.orderDetails || [])
+                    .map(
+                      (item) => `
 
-          <img
-            src="${item.productImage}"
-            alt="${item.productName}"
-            class="order-product-image"
-          >
+                    <div class="order-product">
 
-          <div class="order-product-info">
+                      <img
+                        src="${item.productImage}"
+                        alt="${item.productName}"
+                        class="order-product-image"
+                      >
 
-            <div class="product-name">
-              ${item.productName}
-            </div>
+                      <div class="order-product-info">
 
-            <div class="product-variant">
-              ${item.color || ""} ${item.size || ""}
-            </div>
+                        <div
+                          class="product-name"
+                          onclick="viewOrderDetail(${o.id})"
+                          style="cursor:pointer"
+                        >
+                            ${item.productName}
+                        </div>
 
-            <div class="product-qty">
-              x${item.quantity}
-            </div>
+                        <div class="product-variant">
+                          ${item.color || ""} ${item.size || ""}
+                        </div>
 
-          </div>
+                        <div class="product-qty">
+                          x${item.quantity}
+                        </div>
 
-          <div class="product-price">
-            ${Number(item.price).toLocaleString("vi-VN")} đ
-          </div>
+                      </div>
 
-        </div>
+                      <div class="product-price">
+                        ${Number(item.price).toLocaleString("vi-VN")} đ
+                      </div>
 
-      `,
-        )
-        .join("")}
+                    </div>
 
-      <div class="order-footer">
+                  `,
+                    )
+                    .join("")}
 
-        <strong>
-          Thành tiền:
-          ${Number(o.finalAmount).toLocaleString("vi-VN")} đ
-        </strong>
+                  <div class="order-footer">
 
-         ${renderOrderActions(o)}
+                    <strong>
+                      Thành tiền:
+                      ${Number(o.finalAmount).toLocaleString("vi-VN")} đ
+                    </strong>
 
-      </div>
+                     ${renderOrderActions(o)}
 
-    </div>
+                  </div>
 
-  `,
+                </div>
+
+              `,
           )
           .join("");
       }
@@ -528,60 +642,60 @@
         switch (status) {
           case "Pending":
             return `
-        <span style="color:#ff9900;font-weight:600">
-          CHỜ XÁC NHẬN
-        </span>
-      `;
+                    <span style="color:#ff9900;font-weight:600">
+                      CHỜ XÁC NHẬN
+                    </span>
+                  `;
 
           case "Confirmed":
             return `
-        <span style="color:#17a2b8;font-weight:600">
-          ĐÃ XÁC NHẬN
-        </span>
-      `;
+                    <span style="color:#17a2b8;font-weight:600">
+                      ĐÃ XÁC NHẬN
+                    </span>
+                  `;
 
           case "Packing":
             return `
-        <span style="color:#6f42c1;font-weight:600">
-          ĐANG ĐÓNG GÓI
-        </span>
-      `;
+                    <span style="color:#6f42c1;font-weight:600">
+                      ĐANG ĐÓNG GÓI
+                    </span>
+                  `;
 
           case "Shipping":
             return `
-        <span style="color:#007bff;font-weight:600">
-          ĐANG GIAO HÀNG
-        </span>
-      `;
+                    <span style="color:#007bff;font-weight:600">
+                      ĐANG GIAO HÀNG
+                    </span>
+                  `;
 
           case "Completed":
             return `
-        <span style="color:#26aa99;font-weight:600">
-          GIAO HÀNG THÀNH CÔNG
-        </span>
+                    <span style="color:#26aa99;font-weight:600">
+                      GIAO HÀNG THÀNH CÔNG
+                    </span>
 
-        <span style="
-          margin-left:12px;
-          color:#d10024;
-          font-weight:600;
-        ">
-          HOÀN THÀNH
-        </span>
-      `;
+                    <span style="
+                      margin-left:12px;
+                      color:#d10024;
+                      font-weight:600;
+                    ">
+                      HOÀN THÀNH
+                    </span>
+                  `;
 
           case "Cancelled":
             return `
-        <span style="color:#d10024;font-weight:600">
-          ĐÃ HỦY
-        </span>
-      `;
+                    <span style="color:#d10024;font-weight:600">
+                      ĐÃ HỦY
+                    </span>
+                  `;
 
           case "Returned":
             return `
-        <span style="color:#dc3545;font-weight:600">
-          TRẢ HÀNG / HOÀN TIỀN
-        </span>
-      `;
+                    <span style="color:#dc3545;font-weight:600">
+                      TRẢ HÀNG / HOÀN TIỀN
+                    </span>
+                  `;
 
           default:
             return status;
@@ -589,42 +703,55 @@
       }
 
       function renderOrderActions(order) {
+        const firstItem = order.orderDetails?.[0];
+
+        const reviewed = reviewedProducts.includes(firstItem?.productId);
+
         if (order.status === "Completed") {
+          if (reviewed) {
+            return `
+              <button
+                class="btn btn-info view-review-btn"
+                data-productid="${firstItem.productId}">
+                Xem đánh giá
+              </button>
+
+              <button
+                class="btn btn-warning edit-review-btn"
+                data-productid="${firstItem.productId}">
+                Thay đổi đánh giá
+              </button>
+
+              <button
+                class="btn btn-default"
+                onclick="buyAgain(${order.id})">
+                Mua lại
+              </button>
+            `;
+          }
           return `
-      <button
-        class="btn btn-danger"
-        onclick="reviewOrder(${order.id})"
-      >
-        Đánh giá
-      </button>
+                  <button
+                    class="btn btn-danger review-btn"
+                    data-orderid="${order.id}"
+                    data-productid="${firstItem?.productId}"
+                    data-name="${firstItem?.productName || ""}"
+                    data-image="${firstItem?.productImage || ""}">
+                    Đánh giá
+                  </button>
 
-      <button
-        class="btn btn-default"
-        onclick="buyAgain(${order.id})"
-      >
-        Mua lại
-      </button>
-    `;
+                  <button
+                    class="btn btn-warning"
+                    onclick="requestReturn(${order.id})">
+                    Trả hàng / Hoàn tiền
+                  </button>
+
+                  <button
+                    class="btn btn-default"
+                    onclick="buyAgain(${order.id})">
+                    Mua lại
+                  </button>
+            `;
         }
-
-        if (order.status === "Cancelled") {
-          return `
-      <button
-        class="btn btn-default"
-        onclick="viewCancelReason(${order.id})"
-      >
-        Xem chi tiết hủy đơn
-      </button>
-
-      <button
-        class="btn btn-danger"
-        onclick="buyAgain(${order.id})"
-      >
-        Mua lại
-      </button>
-    `;
-        }
-
         return "";
       }
 
@@ -634,6 +761,42 @@
 
       function buyAgain(id) {
         alert("Mua lại đơn #" + id);
+      }
+
+      async function requestReturn(orderId) {
+        const reason = prompt("Nhập lý do trả hàng / hoàn tiền:");
+
+        if (!reason) return;
+
+        try {
+          const token = localStorage.getItem("token");
+
+          const response = await fetch(
+            `http://localhost:5001/api/order/${orderId}/status`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                status: "Returned",
+              }),
+            },
+          );
+
+          if (!response.ok) {
+            throw new Error("Không thể gửi yêu cầu");
+          }
+
+          alert("Đã gửi yêu cầu trả hàng");
+
+          loadOrders();
+        } catch (err) {
+          console.error(err);
+
+          alert(err.message);
+        }
       }
 
       function viewCancelReason(id) {
@@ -646,6 +809,329 @@
 
       // load dữ liệu khi mở trang
       window.onload = loadOrders;
+    </script>
+    <!-- Review Modal -->
+    <div id="reviewModal" class="review-modal">
+      <div class="review-modal-content">
+        <div class="review-header">
+          <h3>Đánh Giá Sản Phẩm</h3>
+          <span class="close-review">&times;</span>
+        </div>
+
+        <div class="review-product">
+          <img id="reviewProductImage" src="" alt="" />
+          <div>
+            <h4 id="reviewProductName"></h4>
+          </div>
+        </div>
+
+        <div class="review-rating">
+          <span>Chất lượng sản phẩm</span>
+
+          <div class="stars">
+            <i class="fa fa-star" data-rating="1"></i>
+            <i class="fa fa-star" data-rating="2"></i>
+            <i class="fa fa-star" data-rating="3"></i>
+            <i class="fa fa-star" data-rating="4"></i>
+            <i class="fa fa-star" data-rating="5"></i>
+          </div>
+        </div>
+
+        <textarea
+          id="reviewText"
+          placeholder="Hãy chia sẻ cảm nhận của bạn về sản phẩm..."
+        ></textarea>
+
+        <div class="review-actions">
+          <button id="cancelReview">Trở lại</button>
+          <button id="submitReview">Hoàn thành</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const reviewModal = document.getElementById("reviewModal");
+
+      document.addEventListener("click", function (e) {
+        // Mở popup đánh giá
+        if (e.target.classList.contains("review-btn")) {
+          console.log(e.target.dataset.image);
+          console.log("ProductId:", currentProductId);
+          console.log("UserId:", localStorage.getItem("userId"));
+
+          currentOrderId = e.target.dataset.orderid;
+          currentProductId = Number(e.target.dataset.productid);
+
+          document.getElementById("reviewProductName").textContent =
+            e.target.dataset.name;
+
+          document.getElementById("reviewProductImage").src =
+            e.target.dataset.image;
+
+          document.getElementById("reviewText").value = "";
+
+          document.getElementById("submitReview").style.display =
+            "inline-block";
+
+          reviewModal.classList.add("show");
+        }
+
+        if (e.target.classList.contains("view-review-btn")) {
+          const productId = e.target.dataset.productid;
+
+          const reviewData =
+            JSON.parse(localStorage.getItem("reviewData")) || {};
+
+          const review = reviewData[productId];
+
+          if (!review) {
+            alert("Không tìm thấy đánh giá");
+            return;
+          }
+
+          document.getElementById("reviewProductName").textContent =
+            review.productName;
+
+          document.getElementById("reviewProductImage").src =
+            review.productImage;
+
+          document.getElementById("reviewText").value = review.comment;
+
+          stars.forEach((s) => s.classList.remove("active"));
+
+          for (let i = 0; i < review.rating; i++) {
+            stars[i].classList.add("active");
+          }
+
+          document.getElementById("submitReview").style.display = "none";
+
+          reviewModal.classList.add("show");
+        }
+
+        if (e.target.classList.contains("edit-review-btn")) {
+          const productId = e.target.dataset.productid;
+
+          const reviewData =
+            JSON.parse(localStorage.getItem("reviewData")) || {};
+
+          const review = reviewData[productId];
+
+          if (!review) {
+            alert("Không tìm thấy đánh giá");
+            return;
+          }
+
+          currentProductId = Number(productId);
+
+          document.getElementById("reviewProductName").textContent =
+            review.productName;
+
+          document.getElementById("reviewProductImage").src =
+            review.productImage;
+
+          document.getElementById("reviewText").value = review.comment;
+
+          stars.forEach((s) => s.classList.remove("active"));
+
+          for (let i = 0; i < review.rating; i++) {
+            stars[i].classList.add("active");
+          }
+
+          rating = review.rating;
+
+          document.getElementById("submitReview").style.display =
+            "inline-block";
+
+          reviewModal.classList.add("show");
+        }
+
+        // Xem đánh giá
+        async function submitReview() {
+          const reviewText = document.getElementById("reviewText").value.trim();
+
+          if (!reviewText) {
+            alert("Vui lòng nhập nội dung đánh giá");
+            return;
+          }
+
+          const userId = Number(localStorage.getItem("userId"));
+
+          try {
+            const response = await fetch("http://localhost:5001/api/reviews", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                productId: currentProductId,
+                userId: userId,
+                rating: rating,
+                comment: reviewText,
+              }),
+            });
+
+            const result = await response.json();
+
+            console.log(result);
+
+            if (!response.ok) {
+              throw new Error(result.message || "Không thể đánh giá");
+            }
+
+            if (!reviewedProducts.includes(currentProductId)) {
+              reviewedProducts.push(currentProductId);
+
+              localStorage.setItem(
+                "reviewedProducts",
+                JSON.stringify(reviewedProducts),
+              );
+            }
+
+            const reviewData =
+              JSON.parse(localStorage.getItem("reviewData")) || {};
+
+            reviewData[currentProductId] = {
+              rating: rating,
+              comment: reviewText,
+              productName:
+                document.getElementById("reviewProductName").textContent,
+              productImage: document.getElementById("reviewProductImage").src,
+            };
+
+            localStorage.setItem("reviewData", JSON.stringify(reviewData));
+
+            alert("Đánh giá thành công");
+
+            reviewModal.classList.remove("show");
+
+            document.getElementById("reviewText").value = "";
+
+            // cập nhật lại danh sách đã đánh giá
+            reviewedProducts =
+              JSON.parse(localStorage.getItem("reviewedProducts")) || [];
+
+            // render lại đơn hàng
+            renderOrders(allOrders);
+          } catch (error) {
+            console.error(error);
+
+            alert(error.message);
+          }
+        }
+      });
+
+      document.querySelector(".close-review").addEventListener("click", () => {
+        reviewModal.classList.remove("show");
+        document.getElementById("submitReview").style.display = "inline-block";
+      });
+
+      document.getElementById("cancelReview").addEventListener("click", () => {
+        reviewModal.classList.remove("show");
+        document.getElementById("submitReview").style.display = "inline-block";
+      });
+
+      window.addEventListener("click", (e) => {
+        if (e.target === reviewModal) {
+          reviewModal.classList.remove("show");
+        }
+      });
+    </script>
+    <script>
+      let currentOrderId = null;
+      let currentProductId = null;
+      let rating = 5;
+
+      const stars = document.querySelectorAll(".stars i");
+
+      stars.forEach((star) => {
+        star.addEventListener("click", () => {
+          rating = parseInt(star.dataset.rating);
+
+          stars.forEach((s) => s.classList.remove("active"));
+
+          for (let i = 0; i < rating; i++) {
+            stars[i].classList.add("active");
+          }
+        });
+      });
+
+      for (let i = 0; i < 5; i++) {
+        stars[i].classList.add("active");
+      }
+
+      document
+        .getElementById("submitReview")
+        .addEventListener("click", submitReview);
+
+      async function submitReview() {
+        const reviewText = document.getElementById("reviewText").value;
+
+        if (!reviewText.trim()) {
+          alert("Vui lòng nhập nội dung đánh giá");
+          return;
+        }
+
+        const userId = Number(localStorage.getItem("userId"));
+
+        try {
+          const response = await fetch("http://localhost:5001/api/reviews", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              productId: currentProductId,
+              userId: userId,
+              rating: rating,
+              comment: reviewText,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.message || "Không thể đánh giá");
+          }
+
+          // Lưu sản phẩm đã đánh giá
+          if (!reviewedProducts.includes(currentProductId)) {
+            reviewedProducts.push(currentProductId);
+
+            localStorage.setItem(
+              "reviewedProducts",
+              JSON.stringify(reviewedProducts),
+            );
+          }
+
+          // Lưu nội dung đánh giá
+          const reviewData =
+            JSON.parse(localStorage.getItem("reviewData")) || {};
+
+          reviewData[currentProductId] = {
+            rating: rating,
+            comment: reviewText,
+            productName:
+              document.getElementById("reviewProductName").textContent,
+            productImage: document.getElementById("reviewProductImage").src,
+          };
+
+          localStorage.setItem("reviewData", JSON.stringify(reviewData));
+
+          alert("Đánh giá thành công");
+
+          reviewModal.classList.remove("show");
+
+          document.getElementById("reviewText").value = "";
+
+          reviewedProducts =
+            JSON.parse(localStorage.getItem("reviewedProducts")) || [];
+
+          renderOrders(allOrders);
+        } catch (err) {
+          console.error(err);
+
+          alert(err.message);
+        }
+      }
     </script>
   </body>
 </html>

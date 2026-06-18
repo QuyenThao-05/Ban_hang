@@ -326,7 +326,7 @@ namespace BaseCore.Services
                 ["Confirmed"] = new List<string> { "Packing", "Cancelled" },
                 ["Packing"] = new List<string> { "Shipping" },
                 ["Shipping"] = new List<string> { "Completed", "Returned" },
-                ["Completed"] = new List<string>(),
+                ["Completed"] = new List<string> { "Returned" },
                 ["Cancelled"] = new List<string>(),
                 ["Returned"] = new List<string>()
             };
